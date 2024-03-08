@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "PassMan"
 include(":app")
- 
+include(":database")
+include(":database:api")
+include(":database:impl")

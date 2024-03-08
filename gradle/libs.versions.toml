@@ -19,6 +19,8 @@ compose-ui = "1.6.2"
 compose-lifecycle = "2.7.0"
 compose-compiler = "1.5.8"
 hilt = "2.44"
+appcompat = "1.6.1"
+material = "1.11.0"
 
 
 [libraries]
@@ -59,6 +61,8 @@ compose-lifecycle = { module = "androidx.lifecycle:lifecycle-runtime-compose", v
 # Room
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
@@ -66,3 +70,4 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
