@@ -15,9 +15,12 @@ interface SiteInfoDao {
     @Insert
     suspend fun insertAll(entities: List<SiteInfoEntity>)
 
+    @Insert
+    suspend fun insert(entity: SiteInfoEntity)
+
     @Upsert
     suspend fun update(entity: SiteInfoEntity)
 
     @Query("SELECT * FROM site_info_table WHERE name=:name")
-    suspend fun getByName(name: String): SiteInfoEntity
+    suspend fun getByName(name: String): SiteInfoEntity?
 }

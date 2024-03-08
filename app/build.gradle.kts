@@ -68,6 +68,8 @@ dependencies {
     implementation(project(":database:impl"))
     implementation(project(":cipher:api"))
     implementation(project(":cipher:impl"))
+    implementation(project(":features:main"))
+
 
     testImplementation(libs.junit)
 

@@ -16,9 +16,9 @@ class SiteInfoDbRepositoryImpl(
         return siteInfoDao.getAll().map { it.map { entity -> entity.map() } }
     }
 
-    override suspend fun getByName(name: String, dispatcher: CoroutineDispatcher): SiteInfoModel {
+    override suspend fun getByName(name: String, dispatcher: CoroutineDispatcher): SiteInfoModel? {
         return withContext(dispatcher) {
-            siteInfoDao.getByName(name).map()
+            siteInfoDao.getByName(name)?.map()
         }
     }
 
@@ -28,9 +28,21 @@ class SiteInfoDbRepositoryImpl(
         }
     }
 
-    override suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher) {
+    override suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher): Boolean {
+        return withContext(dispatcher) {
+            val previous = siteInfoDao.getByName(model.name)
+             if (previous != null) {
+                siteInfoDao.update(model.copy(id = previous.id).map())
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    override suspend fun insert(model: SiteInfoModel, dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) {
-            siteInfoDao.update(model.map())
+            siteInfoDao.insert(model.map())
         }
     }
 }
