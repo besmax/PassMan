@@ -48,7 +48,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 
 # Dependency Injection
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-kapt = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
 # UI
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "ktx-activity" }

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -59,9 +61,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.hilt)
+    ksp(libs.hilt.compiler)
 
     implementation(project(":database:api"))
     implementation(project(":database:impl"))
+    implementation(project(":cipher:api"))
+    implementation(project(":cipher:impl"))
 
     testImplementation(libs.junit)
 
