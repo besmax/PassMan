@@ -9,8 +9,12 @@ android.namespace = "bes.max.database.impl"
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.room.ktx)
-    implementation(project(":database:api"))
     ksp(libs.androidx.room.compiler)
     implementation(libs.hilt)
     implementation(libs.hilt.compiler)
+    implementation(project(":database:api"))
+
+    //Only for purpose of populating database with mockData
+    implementation(project(":cipher:impl"))
+    implementation(project(":cipher:api"))
 }
