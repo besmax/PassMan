@@ -9,6 +9,13 @@ android {
     namespace = "bes.max.passman"
     compileSdk = 34
 
+    packaging.resources {
+        pickFirsts += "/META-INF/LICENSE.md"
+        pickFirsts += "/META-INF/LICENSE-notice.md"
+        pickFirsts += "/META-INF/AL2.0"
+        pickFirsts += "/META-INF/gradle/incremental.annotation.processors"
+    }
+
     defaultConfig {
         applicationId = "bes.max.passman"
         minSdk = 24
@@ -63,6 +70,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
+    implementation(libs.compose.navigation)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
 
     implementation(project(":database:api"))
     implementation(project(":database:impl"))

@@ -1,4 +1,4 @@
-package bes.max.database.impl
+package bes.max.database.impl.di
 
 import android.os.Build
 import androidx.annotation.RequiresApi

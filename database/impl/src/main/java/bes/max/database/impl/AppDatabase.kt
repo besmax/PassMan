@@ -10,6 +10,7 @@ import bes.max.database.impl.dao.SiteInfoDao
         SiteInfoEntity::class,
     ],
     version = 1,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun siteInfoDao(): SiteInfoDao

@@ -1,0 +1,8 @@
+<resources>
+    <string name="refresh">Обновить</string>
+    <string name="error">Ошибка, попробуйте ещё раз </string>
+    <string name="site">Сайт:</string>
+    <string name="link">Ссылка:</string>
+    <string name="password">Пароль:</string>
+
+</resources>
