@@ -6,4 +6,5 @@ data class SiteInfoModel(
     val password: String,
     val url: String,
     val iconUrl: String,
+    val passwordIv: String
 )

@@ -1,7 +1,9 @@
 package bes.max.cipher.api
 
-interface CipherApi {
-    fun encrypt(alias: String, textToEncrypt: String): ByteArray
+import bes.max.cipher.model.EncryptedData
 
-    fun decrypt(alias: String, encryptedData: ByteArray, encryptionIv: ByteArray): String
+interface CipherApi {
+    fun encrypt(alias: String, textToEncrypt: String): EncryptedData
+
+    fun decrypt(alias: String, encryptedData: String, initVector: String): String
 }

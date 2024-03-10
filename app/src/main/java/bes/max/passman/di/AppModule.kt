@@ -41,7 +41,16 @@ object AppModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     CoroutineScope(SupervisorJob()).launch(Dispatchers.IO) {
-                        provideDatabase(context).siteInfoDao().insertAll(MockData.list)
+                        provideDatabase(context).siteInfoDao().insertAll(
+                            MockData.list.map { item ->
+                                val encryptedData =
+                                    provideCipherApi().encrypt(item.name, item.password)
+                                item.copy(
+                                    password = encryptedData.encryptedData,
+                                    passwordIv = encryptedData.passwordIv
+                                )
+                            }
+                        )
 
                     }
                 }
@@ -65,10 +74,9 @@ object AppModule {
     fun provideSiteInfoRepository(siteInfoDbRepository: SiteInfoDbRepository): SiteInfoRepository =
         SiteInfoRepositoryImpl(siteInfoDbRepository)
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @Provides
     @Singleton
     fun provideCipherApi(): CipherApi {
-        return CipherImpl()
+        return CipherImpl
     }
 }

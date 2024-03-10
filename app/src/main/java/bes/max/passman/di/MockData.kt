@@ -4,33 +4,42 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import bes.max.database.impl.entities.SiteInfoEntity
 import bes.max.passman.cipher.CipherImpl
+import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal object MockData {
 
-    private val cipher = CipherImpl()
+    private val cipher = CipherImpl
+    private val vkEncryptedData = cipher.encrypt("vk", "qwerty123")
+    private val youtubeEncryptedData = cipher.encrypt("youtube", "123qwerty")
+    private val wikipediaEncryptedData = cipher.encrypt("wikipedia", "qwe123rty")
+    private val stackoverflowEncryptedData = cipher.encrypt("stackoverflow", "12qw3e")
 
 
     val list = listOf(
         SiteInfoEntity(
-            password = cipher.encrypt("vk", "qwerty123").toString(),
+            password = vkEncryptedData.encryptedData,
             name = "vk",
-            url = "https://vk.com"
+            url = "https://vk.com",
+            passwordIv = vkEncryptedData.passwordIv
         ),
         SiteInfoEntity(
-            password = cipher.encrypt("youtube", "123qwerty").toString(),
+            password = youtubeEncryptedData.encryptedData,
             name = "youtube",
-            url = "https://youtube.com"
+            url = "https://youtube.com",
+            passwordIv = youtubeEncryptedData.passwordIv
         ),
         SiteInfoEntity(
-            password = cipher.encrypt("wikipedia", "qwe123rty").toString(),
+            password = wikipediaEncryptedData.encryptedData,
             name = "wikipedia",
-            url = "https://www.wikipedia.org/"
+            url = "https://www.wikipedia.org/",
+            passwordIv = wikipediaEncryptedData.passwordIv
         ),
         SiteInfoEntity(
-            password = cipher.encrypt("stackoverflow", "12qw3e").toString(),
+            password = stackoverflowEncryptedData.encryptedData,
             name = "stackoverflow",
-            url = "https://stackoverflow.com/"
+            url = "https://stackoverflow.com/",
+            passwordIv = stackoverflowEncryptedData.passwordIv
         ),
     )
 

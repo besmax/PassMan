@@ -1,6 +1,8 @@
 package bes.max.main.ui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,23 +10,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.SitesScreenState
 import bes.max.main.presentation.SitesViewModel
@@ -34,38 +43,85 @@ import coil.compose.AsyncImage
 
 @Composable
 fun SitesScreen(
-    sitesViewModel: SitesViewModel = viewModel()
+    sitesViewModel: SitesViewModel = hiltViewModel()
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
+    val onItemClick: (Int) -> Unit = { }
+    val showPassword = { alias: String, encryptedPass: String, passwordIv: String ->
+        sitesViewModel.showPassword(alias, encryptedPass, passwordIv)
+    }
+    val refresh: () -> Unit = sitesViewModel::getSites
 
     when (uiState) {
-        is SitesScreenState.Error -> ShowError(refresh = { })
+        is SitesScreenState.Error -> ShowError(refresh = refresh)
         is SitesScreenState.Loading -> ShowLoading()
-        is SitesScreenState.Content -> ShowContent(uiState as SitesScreenState.Content)
+        is SitesScreenState.Content -> ShowContent(
+            uiState as SitesScreenState.Content,
+            onItemClick,
+            showPassword,
+        )
     }
 
 }
 
 @Composable
-fun ShowContent(uiState: SitesScreenState.Content) {
-
+fun ShowContent(
+    uiState: SitesScreenState.Content,
+    onItemClick: (Int) -> Unit,
+    showPassword: (String, String, String) -> String,
+) {
+    if (uiState.sites.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(text = stringResource(id = R.string.no_sites))
+        }
+    } else {
+        SitesList(uiState.sites, onItemClick, showPassword)
+    }
 }
+
+@Composable
+fun SitesList(
+    list: List<SiteInfoModel>,
+    onItemClick: (Int) -> Unit,
+    showPassword: (String, String, String) -> String,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(vertical = 12.dp)
+    ) {
+        items(
+            items = list,
+            key = { model -> model.id }
+        ) { model ->
+            SiteListItem(model, onItemClick, showPassword)
+        }
+    }
+}
+
 
 @Composable
 fun SiteListItem(
     model: SiteInfoModel,
     onItemClick: (Int) -> Unit,
-    showPassword: (String) -> Unit
+    showPassword: (String, String, String) -> String,
 ) {
+
+    var isPasswordVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Gray,
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, top = 12.dp, end = 20.dp)
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
             .clickable { onItemClick(model.id) },
+        shape = RoundedCornerShape(20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -74,34 +130,62 @@ fun SiteListItem(
             AsyncImage(
                 model = model.iconUrl,
                 placeholder = painterResource(R.drawable.logo_placeholder),
-                contentDescription = "site logo"
+                error = painterResource(R.drawable.logo_placeholder),
+                contentDescription = "site logo",
+                modifier = Modifier
+                    .size(80.dp)
             )
-            Column() {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+            ) {
                 Row {
                     Text(text = stringResource(id = R.string.site))
+                    Spacer(
+                        modifier = Modifier
+                            .width(16.dp),
+                    )
+                    Text(text = model.name)
+                }
+
+                Spacer(modifier = Modifier.width(24.dp))
+
+                Row {
+                    Text(text = stringResource(id = R.string.password))
+                    Spacer(
+                        modifier = Modifier
+                            .width(16.dp),
+                    )
+                    Text(
+                        text = if (isPasswordVisible) {
+                            Log.e("SitesScreen!!!!!!!!!!!", model.passwordIv)
+                            showPassword(
+                                model.name,
+                                model.password,
+                                model.passwordIv
+                            )
+                        }
+                        else stringResource(id = R.string.hidden_text)
+                    )
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
                     )
-                    Text(text = model.name)
+                    Icon(
+                        painter = painterResource(
+                            id = if (isPasswordVisible) (R.drawable.hide_icon)
+                            else R.drawable.show_icon
+                        ),
+                        contentDescription = "Show password icon",
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clickable { isPasswordVisible = !isPasswordVisible }
+                    )
                 }
             }
         }
     }
-
-}
-
-@Composable
-@Preview
-fun SiteListItemPreview() {
-    SiteListItem(
-        model = SiteInfoModel(
-            1, "youtube", "qwerty123", "https://youtube.com", "https://youtube.com/favicon.ico",
-        ),
-        onItemClick = { },
-        showPassword = { }
-    )
 }
 
 @Composable

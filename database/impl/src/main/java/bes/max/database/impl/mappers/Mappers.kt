@@ -9,6 +9,7 @@ fun SiteInfoEntity.map(): SiteInfoModel = SiteInfoModel(
     url = url,
     password = password,
     iconUrl = iconUrl,
+    passwordIv = passwordIv,
 )
 
 
@@ -18,4 +19,5 @@ fun SiteInfoModel.map(): SiteInfoEntity = SiteInfoEntity(
     url = url,
     password = password,
     iconUrl = iconUrl,
+    passwordIv = passwordIv,
 )

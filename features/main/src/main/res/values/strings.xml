@@ -4,5 +4,7 @@
     <string name="site">Сайт:</string>
     <string name="link">Ссылка:</string>
     <string name="password">Пароль:</string>
+    <string name="hidden_text">*******</string>
+    <string name="no_sites">У вас ещё нет сохранённых паролей</string>
 
 </resources>
