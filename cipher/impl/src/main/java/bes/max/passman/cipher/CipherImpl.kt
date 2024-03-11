@@ -3,10 +3,8 @@ package bes.max.passman.cipher
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import android.util.Log
 import bes.max.cipher.api.CipherApi
 import bes.max.cipher.model.EncryptedData
-import java.nio.charset.StandardCharsets
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -49,12 +47,12 @@ object CipherImpl : CipherApi {
         val encryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
             init(Cipher.ENCRYPT_MODE, getKey(alias))
         }
-        val bytesToEncrypt = textToEncrypt.encodeToByteArray()//Base64.decode(textToEncrypt, Base64.DEFAULT)              textToEncrypt.encodeToByteArray()
-        val encryptedData = encryptCipher.doFinal(bytesToEncrypt)
+        val bytesToEncrypt = textToEncrypt.encodeToByteArray()
+        val encryptedBytes = encryptCipher.doFinal(bytesToEncrypt)
         val initVector = encryptCipher.iv
-        val ivString = Base64.encodeToString(initVector, Base64.DEFAULT)  //Base64.encodeToString(initVector, Base64.DEFAULT)          initVector.decodeToString()
-        val encryptedStr = Base64.encodeToString(encryptedData, Base64.DEFAULT)//Base64.encodeToString(encryptedData, Base64.DEFAULT)   encryptedData.decodeToString()
-        return EncryptedData(encryptedStr, ivString) //initVector.toString(Charsets.UTF_8)
+        val initVectorAsString = Base64.encodeToString(initVector, Base64.DEFAULT)
+        val encryptedStr = Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
+        return EncryptedData(encryptedStr, initVectorAsString)
     }
 
     override fun decrypt(alias: String, encryptedData: String, initVector: String): String {
@@ -62,42 +60,11 @@ object CipherImpl : CipherApi {
             init(
                 Cipher.DECRYPT_MODE,
                 getKey(alias),
-                IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT)) //initVector.toByteArray(Charsets.UTF_8)   initVector.encodeToByteArray()
+                IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
             )
         }
-        Log.e("AAAAAAAAAA", "${encryptedData}")
-        val byteArr = decryptCipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT)) //decryptCipher.doFinal(encryptedData.encodeToByteArray())
-        return byteArr.decodeToString()
+        val decryptedBytes = decryptCipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT))
+        return decryptedBytes.decodeToString()
     }
 
-
 }
-
-//.hexStringToByteArray()
-
-//    fun String.hexStringToByteArray(): ByteArray {
-//
-//        val result = ByteArray(length / 2)
-//
-//        for (i in 0 until length step 2) {
-//            val firstIndex = HEX_CHARS_STR.indexOf(this[i]);
-//            val secondIndex = HEX_CHARS_STR.indexOf(this[i + 1]);
-//
-//            val octet = firstIndex.shl(4).or(secondIndex)
-//            result.set(i.shr(1), octet.toByte())
-//        }
-//
-//        return result
-//    }
-//
-//
-//    fun ByteArray.toHex(): String {
-//        val result = StringBuffer()
-//
-//        forEach {
-//            val st = String.format("%02x", it)
-//            result.append(st)
-//        }
-//
-//        return result.toString()
-//    }

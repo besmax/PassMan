@@ -41,17 +41,7 @@ object AppModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     CoroutineScope(SupervisorJob()).launch(Dispatchers.IO) {
-                        provideDatabase(context).siteInfoDao().insertAll(
-                            MockData.list.map { item ->
-                                val encryptedData =
-                                    provideCipherApi().encrypt(item.name, item.password)
-                                item.copy(
-                                    password = encryptedData.encryptedData,
-                                    passwordIv = encryptedData.passwordIv
-                                )
-                            }
-                        )
-
+                        provideDatabase(context).siteInfoDao().insertAll(MockData.list)
                     }
                 }
             })

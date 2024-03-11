@@ -1,6 +1,5 @@
 package bes.max.main.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,8 +47,8 @@ fun SitesScreen(
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val onItemClick: (Int) -> Unit = { }
-    val showPassword = { alias: String, encryptedPass: String, passwordIv: String ->
-        sitesViewModel.showPassword(alias, encryptedPass, passwordIv)
+    val showPassword = { model: SiteInfoModel ->
+        sitesViewModel.showPassword(model)
     }
     val refresh: () -> Unit = sitesViewModel::getSites
 
@@ -69,7 +68,7 @@ fun SitesScreen(
 fun ShowContent(
     uiState: SitesScreenState.Content,
     onItemClick: (Int) -> Unit,
-    showPassword: (String, String, String) -> String,
+    showPassword: (SiteInfoModel) -> String,
 ) {
     if (uiState.sites.isEmpty()) {
         Box(
@@ -87,7 +86,7 @@ fun ShowContent(
 fun SitesList(
     list: List<SiteInfoModel>,
     onItemClick: (Int) -> Unit,
-    showPassword: (String, String, String) -> String,
+    showPassword: (SiteInfoModel) -> String,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -107,7 +106,7 @@ fun SitesList(
 fun SiteListItem(
     model: SiteInfoModel,
     onItemClick: (Int) -> Unit,
-    showPassword: (String, String, String) -> String,
+    showPassword: (SiteInfoModel) -> String,
 ) {
 
     var isPasswordVisible by rememberSaveable {
@@ -158,14 +157,8 @@ fun SiteListItem(
                     )
                     Text(
                         text = if (isPasswordVisible) {
-                            Log.e("SitesScreen!!!!!!!!!!!", model.passwordIv)
-                            showPassword(
-                                model.name,
-                                model.password,
-                                model.passwordIv
-                            )
-                        }
-                        else stringResource(id = R.string.hidden_text)
+                            showPassword(model)
+                        } else stringResource(id = R.string.hidden_text)
                     )
                     Spacer(
                         modifier = Modifier

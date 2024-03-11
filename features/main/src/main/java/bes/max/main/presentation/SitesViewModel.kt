@@ -1,11 +1,11 @@
 package bes.max.main.presentation
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
+import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -32,18 +32,17 @@ class SitesViewModel @Inject constructor(
                 if (!list.isNullOrEmpty()) {
                     _uiState.postValue(SitesScreenState.Content(list))
                 } else {
-                    Log.e("AAAAAAAAAA", "${list.size}")
                     _uiState.postValue(SitesScreenState.Error)
                 }
             }
         }
     }
 
-    fun showPassword(alias: String, encryptedPassword: String, passwordIv: String): String {
+    fun showPassword(model: SiteInfoModel): String {
         return cipher.decrypt(
-            alias = alias,
-            encryptedData = encryptedPassword,
-            initVector = passwordIv
+            alias = model.name,
+            encryptedData = model.password,
+            initVector = model.passwordIv
         )
     }
 
