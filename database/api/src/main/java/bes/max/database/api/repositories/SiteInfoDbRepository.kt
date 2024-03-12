@@ -10,6 +10,8 @@ interface SiteInfoDbRepository {
 
     suspend fun getByName(name: String, dispatcher: CoroutineDispatcher): SiteInfoModel?
 
+    suspend fun getById(id: Int, dispatcher: CoroutineDispatcher): SiteInfoModel?
+
     suspend fun insertAll(models: List<SiteInfoModel>, dispatcher: CoroutineDispatcher)
 
     suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher): Boolean

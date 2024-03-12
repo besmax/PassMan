@@ -1,4 +1,4 @@
-package bes.max.main.presentation
+package bes.max.main.presentation.sites
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

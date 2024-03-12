@@ -6,5 +6,8 @@
     <string name="password">Пароль:</string>
     <string name="hidden_text">*******</string>
     <string name="no_sites">У вас ещё нет сохранённых паролей</string>
-
+    <string name="title_edit">Редактировать</string>
+    <string name="title_new">Добавить</string>
+    <string name="hint_url">Введите адрес сайта</string>
+    <string name="hint_name">Введите наименование сайта</string>
 </resources>

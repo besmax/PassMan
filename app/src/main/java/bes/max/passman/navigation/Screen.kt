@@ -9,5 +9,5 @@ sealed class Screen(
     @DrawableRes val iconResId: Int? = null
 ) {
     object SitesScreen : Screen("sitesScreen")
-    object EditSiteScreen : Screen("editSiteScreen/{id}")
+    object EditSiteScreen : Screen("editSiteScreen?{id}")
 }

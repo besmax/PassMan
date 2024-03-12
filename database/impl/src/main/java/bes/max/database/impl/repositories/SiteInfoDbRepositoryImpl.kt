@@ -22,6 +22,10 @@ class SiteInfoDbRepositoryImpl(
         }
     }
 
+    override suspend fun getById(id: Int, dispatcher: CoroutineDispatcher): SiteInfoModel? {
+        return withContext(dispatcher) { siteInfoDao.getById(id)?.map() }
+    }
+
     override suspend fun insertAll(models: List<SiteInfoModel>, dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) {
             siteInfoDao.insertAll(models.map { it.map() })
@@ -31,7 +35,7 @@ class SiteInfoDbRepositoryImpl(
     override suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher): Boolean {
         return withContext(dispatcher) {
             val previous = siteInfoDao.getByName(model.name)
-             if (previous != null) {
+            if (previous != null) {
                 siteInfoDao.update(model.copy(id = previous.id).map())
                 true
             } else {

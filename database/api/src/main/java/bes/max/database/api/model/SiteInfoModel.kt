@@ -5,6 +5,7 @@ data class SiteInfoModel(
     val name: String,
     val password: String,
     val url: String,
-    val iconUrl: String,
     val passwordIv: String
-)
+) {
+    val iconUrl: String get() = "$url/favicon.ico"
+}

@@ -33,20 +33,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import bes.max.database.api.model.SiteInfoModel
-import bes.max.main.presentation.SitesScreenState
-import bes.max.main.presentation.SitesViewModel
+import bes.max.main.presentation.sites.SitesScreenState
+import bes.max.main.presentation.sites.SitesViewModel
+import bes.max.main.ui.common.LightGray
+import bes.max.main.ui.common.ShowError
+import bes.max.main.ui.common.ShowLoading
 import bes.max.passman.features.main.R
 import coil.compose.AsyncImage
 
 
 @Composable
 fun SitesScreen(
-    sitesViewModel: SitesViewModel = hiltViewModel()
+    navigateToEdit: (Int) -> Unit,
+    sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
-    val onItemClick: (Int) -> Unit = { }
     val showPassword = { model: SiteInfoModel ->
         sitesViewModel.showPassword(model)
     }
@@ -57,7 +61,7 @@ fun SitesScreen(
         is SitesScreenState.Loading -> ShowLoading()
         is SitesScreenState.Content -> ShowContent(
             uiState as SitesScreenState.Content,
-            onItemClick,
+            navigateToEdit,
             showPassword,
         )
     }
@@ -114,7 +118,7 @@ fun SiteListItem(
     }
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Gray,
+            containerColor = LightGray,
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -177,42 +181,6 @@ fun SiteListItem(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ShowLoading() {
-    Column(
-        modifier = Modifier
-            .padding(top = 140.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .size(44.dp),
-            color = Blue,
-        )
-    }
-}
-
-@Composable
-fun ShowError(
-    message: String? = null,
-    refresh: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .padding(top = 140.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = message ?: stringResource(id = R.string.error)
-        )
-        Button(onClick = { refresh() }) {
-            Text(text = stringResource(id = R.string.refresh))
         }
     }
 }

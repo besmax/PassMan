@@ -13,7 +13,14 @@ import bes.max.main.ui.SitesScreen
 fun NavigationGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = Screen.SitesScreen.route) {
         composable(route = Screen.SitesScreen.route) {
-            SitesScreen()
+            SitesScreen(navigateToEdit = { id ->
+                navHostController.navigate(
+                    Screen.EditSiteScreen.route.replace(
+                        "{id}",
+                        id.toString()
+                    )
+                )
+            })
         }
 
         composable(
@@ -22,6 +29,7 @@ fun NavigationGraph(navHostController: NavHostController) {
                 navArgument(name = "id") {
                     type = NavType.IntType
                     nullable = false
+                    defaultValue = -1
                 }
             )) {
 

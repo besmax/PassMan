@@ -1,4 +1,4 @@
-package bes.max.main.presentation
+package bes.max.main.presentation.sites
 
 import bes.max.database.api.model.SiteInfoModel
 

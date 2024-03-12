@@ -10,6 +10,7 @@ class SiteInfoRepositoryImpl(
     private val siteInfoDbRepository: SiteInfoDbRepository
 ): SiteInfoRepository {
     override fun getAll(): Flow<List<SiteInfoModel>> = siteInfoDbRepository.getAll(Dispatchers.IO)
+    override suspend fun getById(id: Int): SiteInfoModel? = siteInfoDbRepository.getById(id, Dispatchers.IO)
 
     override suspend fun create(model: SiteInfoModel) {
         siteInfoDbRepository.insert(model, Dispatchers.IO)

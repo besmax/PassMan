@@ -37,7 +37,7 @@ object CipherImpl : CipherApi {
                     .setBlockModes(BLOCK_MODE)
                     .setEncryptionPaddings(PADDING)
                     .setUserAuthenticationRequired(false)
-                    .setRandomizedEncryptionRequired(false)
+                    .setRandomizedEncryptionRequired(true)
                     .build()
             )
         }.generateKey()

@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import bes.max.database.impl.entities.SiteInfoEntity
 import bes.max.passman.cipher.CipherImpl
-import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal object MockData {
