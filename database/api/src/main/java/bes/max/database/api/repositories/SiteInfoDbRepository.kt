@@ -14,7 +14,7 @@ interface SiteInfoDbRepository {
 
     suspend fun insertAll(models: List<SiteInfoModel>, dispatcher: CoroutineDispatcher)
 
-    suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher): Boolean
+    suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher)
 
     suspend fun insert(model: SiteInfoModel, dispatcher: CoroutineDispatcher)
 

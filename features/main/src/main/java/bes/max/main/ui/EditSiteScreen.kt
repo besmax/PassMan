@@ -1,20 +1,16 @@
 package bes.max.main.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.edit.EditScreenState
@@ -52,6 +48,14 @@ fun EditSiteScreen(
                 changeUrl = { url = it },
                 changePassword = { newPassword = it },
                 showPassword = { model -> editViewModel.showPassword(model) },
+                doEdit = {
+                    editViewModel.update(
+                        (uiState as EditScreenState.Edit).model,
+                        name,
+                        url,
+                        newPassword
+                    )
+                }
             )
         }
 
@@ -70,13 +74,14 @@ fun ShowEdit(
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
     showPassword: (SiteInfoModel) -> String,
+    doEdit: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
 
-        ShowTitle(title = stringResource(id = R.string.title_edit))
+        ShowTitle(title = stringResource(id = R.string.edit))
 
         UserInput(
             hintRes = R.string.hint_name,
@@ -93,6 +98,15 @@ fun ShowEdit(
             passwordInput = true,
             showPassword = { showPassword(model) }
         )
+
+        Button(
+            onClick = { doEdit() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = stringResource(id = R.string.edit),
+            )
+        }
 
     }
 }

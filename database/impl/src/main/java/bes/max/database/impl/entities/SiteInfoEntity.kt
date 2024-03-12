@@ -11,6 +11,5 @@ data class SiteInfoEntity(
     @ColumnInfo("password") val password: String,
     @ColumnInfo("name") val name: String,
     @ColumnInfo("url") val url: String,
-    @ColumnInfo("icon_url") val iconUrl: String = "$url/favicon.ico",
     @ColumnInfo("password_iv") val passwordIv: String,
 )

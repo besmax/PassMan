@@ -20,7 +20,8 @@ class EditViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Int>("id")
-    private val _uiState: MutableLiveData<EditScreenState> = MutableLiveData(EditScreenState.Loading)
+    private val _uiState: MutableLiveData<EditScreenState> =
+        MutableLiveData(EditScreenState.Loading)
     val uiState: LiveData<EditScreenState> = _uiState
 
     init {
@@ -34,7 +35,7 @@ class EditViewModel @Inject constructor(
     private fun getSiteModel(id: Int) {
         viewModelScope.launch {
             val model = siteInfoRepository.getById(id)
-            if (model!= null) {
+            if (model != null) {
                 _uiState.postValue(EditScreenState.Edit(model))
             } else {
                 _uiState.postValue(EditScreenState.Error)
@@ -50,5 +51,25 @@ class EditViewModel @Inject constructor(
         )
     }
 
+    fun update(model: SiteInfoModel, name: String?, url: String?, password: String?) {
+        val updatedModel = if (password != null) {
+            val encryptedData = cipher.encrypt(alias = model.name, textToEncrypt = model.password)
+             model.copy(
+                name = name ?: model.name,
+                password = encryptedData.encryptedData,
+                url = url ?: model.url,
+                passwordIv = encryptedData.passwordIv,
+            )
+        } else {
+            model.copy(
+                name = name ?: model.name,
+                url = url ?: model.url,
+            )
+        }
+
+        viewModelScope.launch {
+            siteInfoRepository.update(updatedModel)
+        }
+    }
 
 }

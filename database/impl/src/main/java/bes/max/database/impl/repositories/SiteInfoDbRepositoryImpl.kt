@@ -32,15 +32,9 @@ class SiteInfoDbRepositoryImpl(
         }
     }
 
-    override suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher): Boolean {
+    override suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher) {
         return withContext(dispatcher) {
-            val previous = siteInfoDao.getByName(model.name)
-            if (previous != null) {
-                siteInfoDao.update(model.copy(id = previous.id).map())
-                true
-            } else {
-                false
-            }
+            siteInfoDao.update(model.map())
         }
     }
 
