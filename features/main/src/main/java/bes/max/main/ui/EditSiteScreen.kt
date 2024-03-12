@@ -21,6 +21,7 @@ import bes.max.main.presentation.edit.EditScreenState
 import bes.max.main.presentation.edit.EditViewModel
 import bes.max.main.ui.common.ShowError
 import bes.max.main.ui.common.ShowLoading
+import bes.max.main.ui.common.ShowTitle
 import bes.max.main.ui.common.UserInput
 import bes.max.passman.features.main.R
 
@@ -59,22 +60,6 @@ fun EditSiteScreen(
 
             TODO()
         }
-    }
-}
-
-@Composable
-fun ShowTitle(title: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 24.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
-    ) {
-        Text(
-            text = title,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            color = MaterialTheme.colorScheme.onBackground
-        )
     }
 }
 

@@ -2,6 +2,7 @@ package bes.max.main.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,7 @@ import bes.max.main.presentation.sites.SitesViewModel
 import bes.max.main.ui.common.LightGray
 import bes.max.main.ui.common.ShowError
 import bes.max.main.ui.common.ShowLoading
+import bes.max.main.ui.common.ShowTitle
 import bes.max.passman.features.main.R
 import coil.compose.AsyncImage
 
@@ -50,14 +52,19 @@ fun SitesScreen(
     }
     val refresh: () -> Unit = sitesViewModel::getSites
 
-    when (uiState) {
-        is SitesScreenState.Error -> ShowError(refresh = refresh)
-        is SitesScreenState.Loading -> ShowLoading()
-        is SitesScreenState.Content -> ShowContent(
-            uiState as SitesScreenState.Content,
-            navigateToEdit,
-            showPassword,
-        )
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        ShowTitle(title = stringResource(id = R.string.saved_passwords))
+
+        when (uiState) {
+            is SitesScreenState.Error -> ShowError(refresh = refresh)
+            is SitesScreenState.Loading -> ShowLoading()
+            is SitesScreenState.Content -> ShowContent(
+                uiState as SitesScreenState.Content,
+                navigateToEdit,
+                showPassword,
+            )
+        }
     }
 
 }
@@ -88,7 +95,7 @@ fun SitesList(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(vertical = 12.dp)
+            .padding(bottom = 12.dp)
     ) {
         items(
             items = list,
