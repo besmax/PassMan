@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
+import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +40,14 @@ class EditViewModel @Inject constructor(
                 _uiState.postValue(EditScreenState.Error)
             }
         }
+    }
+
+    fun showPassword(model: SiteInfoModel): String {
+        return cipher.decrypt(
+            alias = model.name,
+            encryptedData = model.password,
+            initVector = model.passwordIv
+        )
     }
 
 

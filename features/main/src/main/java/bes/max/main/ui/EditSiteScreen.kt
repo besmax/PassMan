@@ -32,6 +32,7 @@ fun EditSiteScreen(
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
     var name: String? = null
     var url: String? = null
+    var newPassword: String? = null
 
 
     when (uiState) {
@@ -47,7 +48,9 @@ fun EditSiteScreen(
             ShowEdit(
                 model = (uiState as EditScreenState.Edit).model,
                 changeName = { name = it },
-                changeUrl = { url = it }
+                changeUrl = { url = it },
+                changePassword = { newPassword = it },
+                showPassword = { model -> editViewModel.showPassword(model) },
             )
         }
 
@@ -80,6 +83,8 @@ fun ShowEdit(
     model: SiteInfoModel,
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
+    changePassword: (String) -> Unit,
+    showPassword: (SiteInfoModel) -> String,
 ) {
     Column(
         modifier = Modifier
@@ -95,6 +100,14 @@ fun ShowEdit(
         )
 
         UserInput(hintRes = R.string.hint_url, initialText = model.url, onValueChanged = changeUrl)
+
+        UserInput(
+            hintRes = R.string.password,
+            initialText = stringResource(id = R.string.hidden_text),
+            onValueChanged = changePassword,
+            passwordInput = true,
+            showPassword = { showPassword(model) }
+        )
 
     }
 }

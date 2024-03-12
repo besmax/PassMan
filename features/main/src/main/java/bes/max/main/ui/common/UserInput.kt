@@ -1,9 +1,11 @@
 package bes.max.main.ui.common
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -15,19 +17,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import bes.max.passman.features.main.R
 
 @Composable
 fun UserInput(
     @StringRes hintRes: Int,
     initialText: String = "",
-    onValueChanged: ((String) -> Unit)? = null
+    onValueChanged: ((String) -> Unit)? = null,
+    passwordInput: Boolean = false,
+    showPassword: (() -> String)?  = null
 ) {
     var text by remember { mutableStateOf(initialText) }
+    var passwordIsShown by remember { mutableStateOf(false) }
+
     TextField(
         value = text,
         onValueChange = {
@@ -51,6 +59,29 @@ fun UserInput(
             unfocusedTextColor = Color.Black
         ),
         shape = RoundedCornerShape(8.dp),
+        trailingIcon = {
+            if (passwordInput) {
+                Icon(
+                    painter = painterResource(
+                        id =
+                        if (passwordIsShown) R.drawable.show_icon
+                        else R.drawable.hide_icon
+                    ),
+                    contentDescription = "show password icon",
+                    modifier = Modifier
+                        .clickable {
+                            if (passwordIsShown) {
+                                text = initialText
+                            } else {
+                                if (showPassword != null) {
+                                    text = showPassword()
+                                }
+                            }
+                            passwordIsShown = !passwordIsShown
+                        }
+                )
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
