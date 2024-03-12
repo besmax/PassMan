@@ -54,7 +54,7 @@ class EditViewModel @Inject constructor(
     fun update(model: SiteInfoModel, name: String?, url: String?, password: String?) {
         val updatedModel = if (password != null) {
             val encryptedData = cipher.encrypt(alias = model.name, textToEncrypt = model.password)
-             model.copy(
+            model.copy(
                 name = name ?: model.name,
                 password = encryptedData.encryptedData,
                 url = url ?: model.url,
@@ -69,6 +69,20 @@ class EditViewModel @Inject constructor(
 
         viewModelScope.launch {
             siteInfoRepository.update(updatedModel)
+        }
+    }
+
+    fun add(name: String, url: String, password: String) {
+        val encryptedData = cipher.encrypt(alias = name, textToEncrypt = password)
+        viewModelScope.launch {
+            siteInfoRepository.create(
+                SiteInfoModel(
+                    name = name,
+                    password = encryptedData.encryptedData,
+                    url = url,
+                    passwordIv = encryptedData.passwordIv
+                )
+            )
         }
     }
 

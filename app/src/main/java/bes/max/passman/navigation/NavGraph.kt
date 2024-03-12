@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import bes.max.main.ui.EditSiteScreen
+import bes.max.main.ui.EditOrNewSiteScreen
 import bes.max.main.ui.SitesScreen
 
 @Composable
@@ -15,7 +15,7 @@ fun NavigationGraph(navHostController: NavHostController) {
         composable(route = Screen.SitesScreen.route) {
             SitesScreen(navigateToEdit = { id ->
                 navHostController.navigate(
-                    Screen.EditSiteScreen.route.replace(
+                    Screen.EditOrNewSiteScreen.route.replace(
                         "{id}",
                         id.toString()
                     )
@@ -24,16 +24,16 @@ fun NavigationGraph(navHostController: NavHostController) {
         }
 
         composable(
-            route = Screen.EditSiteScreen.route,
+            route = Screen.EditOrNewSiteScreen.route,
             arguments = listOf(
                 navArgument(name = "id") {
                     type = NavType.IntType
                     nullable = false
                     defaultValue = -1
                 }
-            )) {
-
-            EditSiteScreen()
+            )
+        ) {
+            EditOrNewSiteScreen()
         }
     }
 }
