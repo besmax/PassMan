@@ -1,8 +1,10 @@
 package bes.max.passman.cipher
 
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import androidx.annotation.RequiresApi
 import bes.max.cipher.api.CipherApi
 import bes.max.cipher.model.EncryptedData
 import java.security.KeyStore
@@ -15,12 +17,15 @@ private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
 private const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
 private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
+private const val VALIDITY_DURATION_SECONDS = 10
 
+@RequiresApi(Build.VERSION_CODES.R)
 object CipherImpl : CipherApi {
 
     private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply {
         load(null)
     }
+
 
     private fun getKey(alias: String): SecretKey {
         val existingKey = keyStore.getEntry(alias, null) as? KeyStore.SecretKeyEntry
@@ -36,7 +41,11 @@ object CipherImpl : CipherApi {
                 )
                     .setBlockModes(BLOCK_MODE)
                     .setEncryptionPaddings(PADDING)
-                    .setUserAuthenticationRequired(false)
+                    .setUserAuthenticationRequired(true)
+                    .setUserAuthenticationParameters(
+                        VALIDITY_DURATION_SECONDS,
+                        KeyProperties.AUTH_DEVICE_CREDENTIAL
+                    )
                     .setRandomizedEncryptionRequired(true)
                     .build()
             )

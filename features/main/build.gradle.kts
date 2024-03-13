@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.hilt.nav.compose)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.coil)
-
+    implementation(libs.biometric.ktx)
 
     implementation(project(":database:api"))
     implementation(project(":cipher:api"))

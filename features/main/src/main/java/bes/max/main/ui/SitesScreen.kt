@@ -1,5 +1,14 @@
 package bes.max.main.ui
 
+import android.Manifest
+import android.app.KeyguardManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.hardware.biometrics.BiometricPrompt
+import android.os.Build
+import android.os.CancellationSignal
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,9 +38,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.sites.SitesScreenState
@@ -42,6 +53,7 @@ import bes.max.main.ui.common.ShowLoading
 import bes.max.main.ui.common.ShowTitle
 import bes.max.passman.features.main.R
 import coil.compose.AsyncImage
+import java.util.concurrent.Executor
 
 
 @Composable
@@ -50,6 +62,14 @@ fun SitesScreen(
     navigateToNew: () -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
+
+    val context = LocalContext.current
+//
+//    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+//        .setTitle("Biometric login for my app")
+//        .setSubtitle("Log in using your biometric credential")
+//        .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+//        .build()
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val showPassword = { model: SiteInfoModel ->
@@ -222,3 +242,81 @@ fun FabAdd(addItem: () -> Unit) {
         )
     }
 }
+
+private fun checkBiometricSupport(context: Context): Boolean {
+    val keyGuardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+
+    if (!keyGuardManager.isDeviceSecure) {
+        return true
+    }
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.USE_BIOMETRIC
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        return false
+    }
+
+    return context.packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+}
+
+@RequiresApi(Build.VERSION_CODES.Q)
+private fun launchBiometric(context: Context, mainExecutor: Executor) {
+    if (checkBiometricSupport(context)) {
+        val biometricPrompt = BiometricPrompt.Builder(context)
+            .apply {
+                setTitle(context.getString(R.string.prompt_title))
+                setSubtitle(context.getString(R.string.prompt_subtitle))
+                setDescription(context.getString(R.string.prompt_description))
+                setConfirmationRequired(false)
+                setNegativeButton(
+                    context.getString(R.string.prompt_info_use_app_password),
+                    mainExecutor,
+                    { _, _ ->
+                        Log.e("AAAAAAAa", "MESSAGE")
+                    })
+            }.build()
+
+        biometricPrompt.authenticate(
+            getCancellationSignal(),
+            mainExecutor,
+            getAuthenticationCallback()
+        )
+    }
+}
+
+private fun getCancellationSignal(): CancellationSignal {
+    val cancellationSignal = CancellationSignal()
+    cancellationSignal.setOnCancelListener {
+        //show message
+    }
+
+    return cancellationSignal as CancellationSignal
+}
+
+private fun getAuthenticationCallback(
+    onSuccess: () -> Unit,
+    onFail: () -> Unit,
+    onError: () -> Unit,
+): BiometricPrompt.AuthenticationCallback =
+    @RequiresApi(Build.VERSION_CODES.P)
+    object : BiometricPrompt.AuthenticationCallback() {
+        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+            super.onAuthenticationSucceeded(result)
+            onSuccess()
+        }
+
+        override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+            super.onAuthenticationError(errorCode, errString)
+            onError()
+        }
+
+        override fun onAuthenticationFailed() {
+            super.onAuthenticationFailed()
+            onFail()
+        }
+
+        override fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence?) {
+            super.onAuthenticationHelp(helpCode, helpString)
+        }
+    }

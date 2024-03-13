@@ -12,5 +12,8 @@
     <string name="hint_url">Введите адрес сайта</string>
     <string name="hint_name">Введите наименование сайта</string>
     <string name="init_url">https://</string>
-
+    <string name="prompt_title">Authentication</string>
+    <string name="prompt_subtitle">Please authenticate</string>
+    <string name="prompt_description">Authenticate to continue</string>
+    <string name="prompt_info_use_app_password">Use app password</string>
 </resources>

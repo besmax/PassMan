@@ -29,6 +29,7 @@ hilt-nav-compose = "1.2.0"
 material3Android = "1.2.1"
 coil = "2.6.0"
 compose-navigation = "2.7.7"
+biometric = "1.2.0-alpha05"
 
 
 [libraries]
@@ -72,6 +73,7 @@ compose-lifecycle = { module = "androidx.lifecycle:lifecycle-runtime-compose", v
 compose-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose-livedata" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
+biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "biometric" }
 
 # Room
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
