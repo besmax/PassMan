@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +47,7 @@ import coil.compose.AsyncImage
 @Composable
 fun SitesScreen(
     navigateToEdit: (Int) -> Unit,
+    navigateToNew: () -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
 
@@ -52,20 +57,30 @@ fun SitesScreen(
     }
     val refresh: () -> Unit = sitesViewModel::getSites
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        floatingActionButton = { FabAdd(navigateToNew) },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
 
-        ShowTitle(title = stringResource(id = R.string.saved_passwords))
+                ShowTitle(title = stringResource(id = R.string.saved_passwords))
 
-        when (uiState) {
-            is SitesScreenState.Error -> ShowError(refresh = refresh)
-            is SitesScreenState.Loading -> ShowLoading()
-            is SitesScreenState.Content -> ShowContent(
-                uiState as SitesScreenState.Content,
-                navigateToEdit,
-                showPassword,
-            )
+                when (uiState) {
+                    is SitesScreenState.Error -> ShowError(refresh = refresh)
+                    is SitesScreenState.Loading -> ShowLoading()
+                    is SitesScreenState.Content -> ShowContent(
+                        uiState as SitesScreenState.Content,
+                        navigateToEdit,
+                        showPassword,
+                    )
+                }
+            }
         }
-    }
+    )
+
 
 }
 
@@ -93,6 +108,7 @@ fun SitesList(
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModel) -> String,
 ) {
+
     LazyColumn(
         modifier = Modifier
             .padding(bottom = 12.dp)
@@ -104,6 +120,8 @@ fun SitesList(
             SiteListItem(model, onItemClick, showPassword)
         }
     }
+
+
 }
 
 
@@ -186,5 +204,21 @@ fun SiteListItem(
             )
 
         }
+    }
+}
+
+@Composable
+fun FabAdd(addItem: () -> Unit) {
+    FloatingActionButton(
+        onClick = { addItem() },
+        modifier = Modifier
+            .padding(end = 16.dp, bottom = 24.dp),
+        shape = RoundedCornerShape(100.dp),
+        containerColor = LightGray,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add icon",
+        )
     }
 }

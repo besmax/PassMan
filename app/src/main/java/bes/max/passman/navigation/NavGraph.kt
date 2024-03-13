@@ -20,7 +20,13 @@ fun NavigationGraph(navHostController: NavHostController) {
                         id.toString()
                     )
                 )
-            })
+            },
+                navigateToNew = {
+                    navHostController.navigate(
+                        Screen.EditOrNewSiteScreen.route
+                    )
+                }
+            )
         }
 
         composable(
