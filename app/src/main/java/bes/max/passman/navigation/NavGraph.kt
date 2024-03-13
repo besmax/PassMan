@@ -10,7 +10,10 @@ import bes.max.main.ui.EditOrNewSiteScreen
 import bes.max.main.ui.SitesScreen
 
 @Composable
-fun NavigationGraph(navHostController: NavHostController) {
+fun NavigationGraph(
+    navHostController: NavHostController,
+    launchBiometric: (() -> Unit, () -> Unit) -> Unit,
+) {
     NavHost(navController = navHostController, startDestination = Screen.SitesScreen.route) {
         composable(route = Screen.SitesScreen.route) {
             SitesScreen(navigateToEdit = { id ->
@@ -25,7 +28,7 @@ fun NavigationGraph(navHostController: NavHostController) {
                     navHostController.navigate(
                         Screen.EditOrNewSiteScreen.route
                     )
-                }
+                },
             )
         }
 
@@ -39,7 +42,7 @@ fun NavigationGraph(navHostController: NavHostController) {
                 }
             )
         ) {
-            EditOrNewSiteScreen(navigateBack = { navHostController.popBackStack() })
+            EditOrNewSiteScreen(navigateBack = { navHostController.popBackStack() }, launchBiometric = launchBiometric)
         }
     }
 }

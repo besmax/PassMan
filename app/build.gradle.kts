@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.compose.navigation)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.biometric.ktx)
 
 
     implementation(project(":database:api"))

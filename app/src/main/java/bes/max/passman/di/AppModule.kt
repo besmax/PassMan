@@ -46,6 +46,7 @@ object AppModule {
     fun provideSiteInfoRepository(siteInfoDbRepository: SiteInfoDbRepository): SiteInfoRepository =
         SiteInfoRepositoryImpl(siteInfoDbRepository)
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Provides
     @Singleton
     fun provideCipherApi(): CipherApi {

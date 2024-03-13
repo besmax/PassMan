@@ -41,11 +41,7 @@ object CipherImpl : CipherApi {
                 )
                     .setBlockModes(BLOCK_MODE)
                     .setEncryptionPaddings(PADDING)
-                    .setUserAuthenticationRequired(true)
-                    .setUserAuthenticationParameters(
-                        VALIDITY_DURATION_SECONDS,
-                        KeyProperties.AUTH_DEVICE_CREDENTIAL
-                    )
+                    .setUserAuthenticationRequired(false)
                     .setRandomizedEncryptionRequired(true)
                     .build()
             )
