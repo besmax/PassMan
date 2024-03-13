@@ -3,6 +3,8 @@ package bes.max.passman
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_WEAK
+import android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.hardware.biometrics.BiometricPrompt
 import android.os.Build
 import android.os.Bundle
@@ -95,7 +97,7 @@ class MainActivity : ComponentActivity() {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.R)
     fun launchBiometric(
         onSuccess: () -> Unit,
         onFail: () -> Unit,
@@ -111,12 +113,31 @@ class MainActivity : ComponentActivity() {
                         getString(bes.max.passman.features.main.R.string.prompt_info_use_app_password),
                         mainExecutor,
                         { _, _ ->
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Authentication Cancelled",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            launchKeyAuth(onSuccess, onFail)
                         })
+                }.build()
+
+            biometricPrompt.authenticate(
+                getCancellationSignal(),
+                mainExecutor,
+                authenticationCallback(onSuccess, onFail)
+            )
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun launchKeyAuth(
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        if (checkBiometricSupport()) {
+            val biometricPrompt = BiometricPrompt.Builder(this)
+                .apply {
+                    setTitle(getString(bes.max.passman.features.main.R.string.prompt_title))
+                    setSubtitle(getString(bes.max.passman.features.main.R.string.prompt_subtitle))
+                    setDescription(getString(bes.max.passman.features.main.R.string.prompt_description))
+                    setConfirmationRequired(false)
+                    setAllowedAuthenticators(DEVICE_CREDENTIAL)
                 }.build()
 
             biometricPrompt.authenticate(
