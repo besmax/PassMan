@@ -1,6 +1,5 @@
 package bes.max.main.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -60,7 +59,6 @@ fun EditOrNewSiteScreen(
                     url,
                     newPassword
                 )
-                Log.e("AAAAAAAAAAA", "password= $newPassword")
                 navigateBack()
             },
         )
@@ -69,7 +67,10 @@ fun EditOrNewSiteScreen(
             changeName = { name = it },
             changeUrl = { url = it },
             changePassword = { newPassword = it },
-            create = { editViewModel.add(name, url, newPassword) },
+            create = {
+                editViewModel.add(name, url, newPassword)
+                navigateBack()
+            },
             isButtonEnabled = isButtonEnabledForNew
         )
     }
