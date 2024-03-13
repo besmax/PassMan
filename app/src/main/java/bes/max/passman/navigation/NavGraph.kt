@@ -39,7 +39,7 @@ fun NavigationGraph(navHostController: NavHostController) {
                 }
             )
         ) {
-            EditOrNewSiteScreen()
+            EditOrNewSiteScreen(navigateBack = { navHostController.popBackStack() })
         }
     }
 }

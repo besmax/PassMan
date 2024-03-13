@@ -1,14 +1,16 @@
 package bes.max.main.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,25 +27,19 @@ import bes.max.passman.features.main.R
 
 @Composable
 fun EditOrNewSiteScreen(
+    navigateBack: () -> Unit,
     editViewModel: EditViewModel = hiltViewModel()
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
-    var name: String? = null
-    var url: String? = null
-    var newPassword: String? = null
+    var name by remember { mutableStateOf("") }
+    var url by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
 
-    // todo() need to modify buttons behaviour
-    var isButtonEnabledForNew by rememberSaveable {
-        mutableStateOf(
-            (name != null && name != "") &&
-                    (url != null && url != "") &&
-                    (newPassword != null && newPassword != "")
-        )
-    }
-
-    var isButtonEnabledForEdit by rememberSaveable {
-        mutableStateOf(name != "" && url != "" && newPassword != "")
+    val isButtonEnabledForNew by remember {
+        derivedStateOf {
+            (name != "" && url != "" && newPassword != "")
+        }
     }
 
     when (uiState) {
@@ -64,15 +60,16 @@ fun EditOrNewSiteScreen(
                     url,
                     newPassword
                 )
+                Log.e("AAAAAAAAAAA", "password= $newPassword")
+                navigateBack()
             },
-            isButtonEnabled = isButtonEnabledForEdit
         )
 
         is EditScreenState.New -> ShowNew(
             changeName = { name = it },
             changeUrl = { url = it },
             changePassword = { newPassword = it },
-            create = { editViewModel.add(name!!, url!!, newPassword!!) },
+            create = { editViewModel.add(name, url, newPassword) },
             isButtonEnabled = isButtonEnabledForNew
         )
     }
@@ -86,7 +83,6 @@ fun ShowEdit(
     changePassword: (String) -> Unit,
     showPassword: (SiteInfoModel) -> String,
     doEdit: () -> Unit,
-    isButtonEnabled: Boolean,
 ) {
     Column(
         modifier = Modifier
@@ -114,7 +110,6 @@ fun ShowEdit(
         Button(
             onClick = { doEdit() },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            enabled = isButtonEnabled
         ) {
             Text(
                 text = stringResource(id = R.string.edit),
