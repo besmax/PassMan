@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -110,6 +109,7 @@ fun ShowEdit(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     deleteItem: (SiteInfoModel) -> Unit,
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -130,7 +130,8 @@ fun ShowEdit(
             initialText = stringResource(id = R.string.hidden_text),
             onValueChanged = changePassword,
             passwordInput = true,
-            showPassword = { showPassword(model) }
+            showPassword = { showPassword(model) },
+            launchBiometric = launchBiometric
         )
 
         Row(
@@ -153,8 +154,6 @@ fun ShowEdit(
                 )
             }
         }
-
-
     }
 }
 
@@ -202,6 +201,5 @@ fun ShowNew(
                 text = stringResource(id = R.string.add),
             )
         }
-
     }
 }

@@ -31,7 +31,8 @@ fun UserInput(
     initialText: String = "",
     onValueChanged: ((String) -> Unit)? = null,
     passwordInput: Boolean = false,
-    showPassword: (() -> String)?  = null
+    showPassword: (() -> String)? = null,
+    launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
 ) {
     var text by remember { mutableStateOf(initialText) }
     var passwordIsShown by remember { mutableStateOf(false) }
@@ -74,7 +75,9 @@ fun UserInput(
                                 text = initialText
                             } else {
                                 if (showPassword != null) {
-                                    text = showPassword()
+                                    if (launchBiometric != null) {
+                                        launchBiometric({ text = showPassword() }, {})
+                                    }
                                 }
                             }
                             passwordIsShown = !passwordIsShown

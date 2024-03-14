@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,10 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.currentStateAsState
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.sites.SitesScreenState
 import bes.max.main.presentation.sites.SitesViewModel
@@ -60,6 +64,15 @@ fun SitesScreen(
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val showPassword = { model: SiteInfoModel ->
         sitesViewModel.showPassword(model)
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val state by lifecycleOwner.lifecycle.currentStateAsState()
+
+    LaunchedEffect(key1 = state) {
+        if (state == Lifecycle.State.RESUMED) run {
+             sitesViewModel::getSites
+        }
     }
 
     Scaffold(

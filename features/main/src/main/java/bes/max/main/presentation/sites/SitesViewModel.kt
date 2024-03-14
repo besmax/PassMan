@@ -25,7 +25,7 @@ class SitesViewModel @Inject constructor(
     }
 
 
-    private fun getSites() {
+    fun getSites() {
         _uiState.value = SitesScreenState.Loading
         viewModelScope.launch {
             siteInfoRepository.getAll().collect() { list ->
