@@ -167,9 +167,12 @@ fun SiteListItem(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+            .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp)
             .clickable { onItemClick(model.id) },
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
     ) {
         Row(
             modifier = Modifier
