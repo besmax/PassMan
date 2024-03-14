@@ -43,8 +43,8 @@ import bes.max.main.presentation.sites.SitesViewModel
 import bes.max.main.ui.common.LightGray
 import bes.max.main.ui.common.ShowLoading
 import bes.max.main.ui.common.ShowTitle
+import bes.max.main.ui.common.UserInput
 import bes.max.passman.features.main.R
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 
@@ -106,18 +106,33 @@ fun SitesList(
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(bottom = 12.dp)
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(
-            items = list,
-            key = { model -> model.id }
-        ) { model ->
-            SiteListItem(model, onItemClick, showPassword, launchAuth)
+        var filterText by rememberSaveable {
+            mutableStateOf("")
+        }
+        UserInput(
+            hintRes = R.string.hint_sites_filter,
+            initialText = filterText,
+            onValueChanged = { filterText = it }
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(bottom = 12.dp, top = 8.dp)
+        ) {
+            val filteredList =
+                if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
+                else list
+            items(
+                items = filteredList,
+                key = { model -> model.id }
+            ) { model ->
+                SiteListItem(model, onItemClick, showPassword, launchAuth)
+            }
         }
     }
-
 
 }
 
