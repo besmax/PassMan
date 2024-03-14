@@ -27,7 +27,7 @@ import bes.max.passman.features.main.R
 @Composable
 fun EditOrNewSiteScreen(
     navigateBack: () -> Unit,
-    launchBiometric: (() -> Unit, () -> Unit) -> Unit,
+    launchAuth: (() -> Unit, () -> Unit) -> Unit,
     editViewModel: EditViewModel = hiltViewModel()
 ) {
 
@@ -62,6 +62,7 @@ fun EditOrNewSiteScreen(
                 )
                 navigateBack()
             },
+            launchBiometric = launchAuth
         )
 
         is EditScreenState.New -> ShowNew(
@@ -73,7 +74,7 @@ fun EditOrNewSiteScreen(
                 navigateBack()
             },
             isButtonEnabled = isButtonEnabledForNew,
-            launchBiometric = launchBiometric
+            launchBiometric = launchAuth,
         )
     }
 }
@@ -86,6 +87,7 @@ fun ShowEdit(
     changePassword: (String) -> Unit,
     showPassword: (SiteInfoModel) -> String,
     doEdit: () -> Unit,
+    launchBiometric: (() -> Unit, () -> Unit) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -111,7 +113,7 @@ fun ShowEdit(
         )
 
         Button(
-            onClick = { doEdit() },
+            onClick = { launchBiometric(doEdit, {  }) },
             modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
             Text(

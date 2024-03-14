@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
     private var cancellationSignal: CancellationSignal? = null
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         packageManager
@@ -125,6 +125,8 @@ class MainActivity : ComponentActivity() {
                 mainExecutor,
                 authenticationCallback(onSuccess, onFail)
             )
+        } else {
+            launchKeyAuth(onSuccess, onFail)
         }
     }
 
@@ -153,7 +155,7 @@ class MainActivity : ComponentActivity() {
     private fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
-            Toast.makeText(this, "Authentication Cancelled Signal", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Аутентификация отменена", Toast.LENGTH_SHORT).show()
         }
 
         return cancellationSignal as CancellationSignal
