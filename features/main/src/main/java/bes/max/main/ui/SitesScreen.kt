@@ -52,7 +52,6 @@ import bes.max.passman.features.main.R
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 
-
 @Composable
 fun SitesScreen(
     navigateToEdit: (Int) -> Unit,
@@ -71,7 +70,7 @@ fun SitesScreen(
 
     LaunchedEffect(key1 = state) {
         if (state == Lifecycle.State.RESUMED) run {
-             sitesViewModel::getSites
+            sitesViewModel::getSites
         }
     }
 
@@ -146,9 +145,7 @@ fun SitesList(
             }
         }
     }
-
 }
-
 
 @Composable
 fun SiteListItem(
@@ -226,6 +223,7 @@ fun SiteListItem(
                     showPassword(model)
                 } else stringResource(id = R.string.hidden_text)
             )
+
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
