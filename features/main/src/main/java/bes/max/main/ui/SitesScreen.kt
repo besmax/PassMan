@@ -37,7 +37,6 @@ import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.sites.SitesScreenState
 import bes.max.main.presentation.sites.SitesViewModel
 import bes.max.main.ui.common.LightGray
-import bes.max.main.ui.common.ShowError
 import bes.max.main.ui.common.ShowLoading
 import bes.max.main.ui.common.ShowTitle
 import bes.max.passman.features.main.R
@@ -134,7 +133,7 @@ fun SiteListItem(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
             .clickable { onItemClick(model.id) },
         shape = RoundedCornerShape(12.dp)
     ) {
