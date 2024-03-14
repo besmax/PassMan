@@ -57,16 +57,6 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
-//            //insert mock data in db
-//            .addCallback(object : RoomDatabase.Callback() {
-//                @RequiresApi(Build.VERSION_CODES.M)
-//                override fun onCreate(db: SupportSQLiteDatabase) {
-//                    super.onCreate(db)
-//                    CoroutineScope(SupervisorJob()).launch(Dispatchers.IO) {
-//                        provideDatabase(context).siteInfoDao().insertAll(MockData.list)
-//                    }
-//                }
-//            })
             .fallbackToDestructiveMigration()
             .build()
     }
