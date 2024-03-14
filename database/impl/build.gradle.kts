@@ -35,8 +35,4 @@ dependencies {
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
     implementation(project(":database:api"))
-
-    //Only for purpose of populating database with mockData
-    implementation(project(":cipher:impl"))
-    implementation(project(":cipher:api"))
 }
