@@ -1,9 +1,9 @@
 package bes.max.features.main.presentation.edit
 
-import bes.max.database.api.model.SiteInfoModel
+import bes.max.features.main.domain.models.SiteInfoModelMain
 
 sealed interface EditScreenState {
-    data class Edit(val model: SiteInfoModel) : EditScreenState
+    data class Edit(val model: SiteInfoModelMain) : EditScreenState
 
     data object Error : EditScreenState
 

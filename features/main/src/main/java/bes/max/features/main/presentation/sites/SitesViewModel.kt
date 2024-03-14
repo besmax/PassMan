@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
-import bes.max.database.api.model.SiteInfoModel
+import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ class SitesViewModel @Inject constructor(
         }
     }
 
-    fun showPassword(model: SiteInfoModel): String {
+    fun showPassword(model: SiteInfoModelMain): String {
         return cipher.decrypt(
             alias = model.name,
             encryptedData = model.password,

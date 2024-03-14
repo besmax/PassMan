@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import bes.max.database.api.model.SiteInfoModel
+import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.edit.EditScreenState
 import bes.max.features.main.presentation.edit.EditViewModel
 import bes.max.features.main.ui.common.ShowError
@@ -100,14 +100,14 @@ fun EditOrNewSiteScreen(
 
 @Composable
 fun ShowEdit(
-    model: SiteInfoModel,
+    model: SiteInfoModelMain,
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
-    showPassword: (SiteInfoModel) -> String,
+    showPassword: (SiteInfoModelMain) -> String,
     doEdit: () -> Unit,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
-    deleteItem: (SiteInfoModel) -> Unit,
+    deleteItem: (SiteInfoModelMain) -> Unit,
 ) {
 
     Column(

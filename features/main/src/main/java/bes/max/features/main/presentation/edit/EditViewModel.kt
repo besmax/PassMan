@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.database.api.model.SiteInfoModel
+import bes.max.features.main.data.map
+import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -43,7 +45,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun showPassword(model: SiteInfoModel): String {
+    fun showPassword(model: SiteInfoModelMain): String {
         return cipher.decrypt(
             alias = model.name,
             encryptedData = model.password,
@@ -51,7 +53,7 @@ class EditViewModel @Inject constructor(
         )
     }
 
-    fun update(model: SiteInfoModel, name: String, url: String, password: String) {
+    fun update(model: SiteInfoModelMain, name: String, url: String, password: String) {
         //model with  password which is not encrypted
         val partiallyUpdatedModel = if (password.isNotBlank()) {
             model.copy(
@@ -83,7 +85,7 @@ class EditViewModel @Inject constructor(
         val encryptedData = cipher.encrypt(alias = name, textToEncrypt = password)
         viewModelScope.launch {
             siteInfoRepository.create(
-                SiteInfoModel(
+                SiteInfoModelMain(
                     name = name,
                     password = encryptedData.encryptedData,
                     url = url,
@@ -93,7 +95,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun delete(model: SiteInfoModel) {
+    fun delete(model: SiteInfoModelMain) {
         viewModelScope.launch {
             siteInfoRepository.delete(model)
         }

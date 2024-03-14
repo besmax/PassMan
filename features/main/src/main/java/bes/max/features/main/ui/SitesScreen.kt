@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
-import bes.max.database.api.model.SiteInfoModel
+import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.common.LightGray
@@ -61,7 +61,7 @@ fun SitesScreen(
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
-    val showPassword = { model: SiteInfoModel ->
+    val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
     }
 
@@ -104,7 +104,7 @@ fun SitesScreen(
 fun ShowContent(
     uiState: SitesScreenState.Content,
     onItemClick: (Int) -> Unit,
-    showPassword: (SiteInfoModel) -> String,
+    showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
     SitesList(uiState.sites, onItemClick, showPassword, launchAuth)
@@ -112,9 +112,9 @@ fun ShowContent(
 
 @Composable
 fun SitesList(
-    list: List<SiteInfoModel>,
+    list: List<SiteInfoModelMain>,
     onItemClick: (Int) -> Unit,
-    showPassword: (SiteInfoModel) -> String,
+    showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
 
@@ -149,9 +149,9 @@ fun SitesList(
 
 @Composable
 fun SiteListItem(
-    model: SiteInfoModel,
+    model: SiteInfoModelMain,
     onItemClick: (Int) -> Unit,
-    showPassword: (SiteInfoModel) -> String,
+    showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
 
