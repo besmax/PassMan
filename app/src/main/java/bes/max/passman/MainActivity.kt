@@ -88,7 +88,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun checkBiometricSupport(): Boolean {
         val keyGuardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
@@ -160,7 +159,8 @@ class MainActivity : ComponentActivity() {
     private fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
-            Toast.makeText(this, "Аутентификация отменена", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.prompt_info_auth_cancelled), Toast.LENGTH_SHORT)
+                .show()
         }
 
         return cancellationSignal as CancellationSignal
