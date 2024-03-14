@@ -32,7 +32,7 @@ class SitesViewModel @Inject constructor(
                 if (!list.isNullOrEmpty()) {
                     _uiState.postValue(SitesScreenState.Content(list))
                 } else {
-                    _uiState.postValue(SitesScreenState.Error)
+                    _uiState.postValue(SitesScreenState.Empty)
                 }
             }
         }

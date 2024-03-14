@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,11 +56,6 @@ fun SitesScreen(
     val showPassword = { model: SiteInfoModel ->
         sitesViewModel.showPassword(model)
     }
-    var authIsPassed by remember {
-        mutableStateOf(false)
-    }
-    val auth = { authIsPassed = !authIsPassed }
-    val refresh: () -> Unit = sitesViewModel::getSites
 
     Scaffold(
         floatingActionButton = { FabAdd(navigateToNew) },
@@ -75,53 +69,36 @@ fun SitesScreen(
                 ShowTitle(title = stringResource(id = R.string.saved_passwords))
 
                 when (uiState) {
-                    is SitesScreenState.Error -> ShowError(refresh = refresh)
+                    is SitesScreenState.Empty -> ShowEmpty()
                     is SitesScreenState.Loading -> ShowLoading()
                     is SitesScreenState.Content -> ShowContent(
                         uiState as SitesScreenState.Content,
-                        authIsPassed,
                         navigateToEdit,
                         showPassword,
                         launchAuth,
-                        auth,
                     )
                 }
             }
         }
     )
-
-
 }
 
 @Composable
 fun ShowContent(
     uiState: SitesScreenState.Content,
-    authIsPassed: Boolean,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModel) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    auth: () -> Unit,
 ) {
-    if (uiState.sites.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(text = stringResource(id = R.string.no_sites))
-        }
-    } else {
-        SitesList(uiState.sites, authIsPassed, onItemClick, showPassword, launchAuth, auth)
-    }
+    SitesList(uiState.sites, onItemClick, showPassword, launchAuth)
 }
 
 @Composable
 fun SitesList(
     list: List<SiteInfoModel>,
-    authIsPassed: Boolean,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModel) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    auth: () -> Unit,
 ) {
 
     LazyColumn(
@@ -132,7 +109,7 @@ fun SitesList(
             items = list,
             key = { model -> model.id }
         ) { model ->
-            SiteListItem(model, authIsPassed, onItemClick, showPassword, launchAuth, auth)
+            SiteListItem(model, onItemClick, showPassword, launchAuth)
         }
     }
 
@@ -143,11 +120,9 @@ fun SitesList(
 @Composable
 fun SiteListItem(
     model: SiteInfoModel,
-    authIsPassed: Boolean,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModel) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    auth: () -> Unit,
 ) {
 
     var isPasswordVisible by rememberSaveable {
@@ -219,15 +194,24 @@ fun SiteListItem(
                 modifier = Modifier
                     .clickable {
                         if (isPasswordVisible) {
-                             isPasswordVisible = !isPasswordVisible
+                            isPasswordVisible = !isPasswordVisible
                         } else {
                             launchAuth({ isPasswordVisible = !isPasswordVisible }, {})
                         }
                     }
                     .size(24.dp)
             )
-
         }
+    }
+}
+
+@Composable
+fun ShowEmpty() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text = stringResource(id = R.string.no_sites))
     }
 }
 
