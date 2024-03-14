@@ -3,7 +3,6 @@ package bes.max.passman
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.hardware.biometrics.BiometricPrompt
 import android.os.Build
@@ -67,6 +66,11 @@ class MainActivity : ComponentActivity() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
                 super.onAuthenticationError(errorCode, errString)
                 onFail()
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.prompt_info_no_credentials),
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
             override fun onAuthenticationFailed() {
@@ -105,12 +109,11 @@ class MainActivity : ComponentActivity() {
         if (checkBiometricSupport()) {
             val biometricPrompt = BiometricPrompt.Builder(this)
                 .apply {
-                    setTitle(getString(bes.max.passman.features.main.R.string.prompt_title))
-                    setSubtitle(getString(bes.max.passman.features.main.R.string.prompt_subtitle))
-                    setDescription(getString(bes.max.passman.features.main.R.string.prompt_description))
+                    setTitle(getString(R.string.prompt_title))
+                    setDescription(getString(R.string.prompt_description))
                     setConfirmationRequired(false)
                     setNegativeButton(
-                        getString(bes.max.passman.features.main.R.string.prompt_info_use_app_password),
+                        getString(R.string.prompt_info_use_app_password),
                         mainExecutor,
                         { _, _ ->
                             launchKeyAuth(onSuccess, onFail)
@@ -133,9 +136,8 @@ class MainActivity : ComponentActivity() {
         if (checkBiometricSupport()) {
             val biometricPrompt = BiometricPrompt.Builder(this)
                 .apply {
-                    setTitle(getString(bes.max.passman.features.main.R.string.prompt_title))
-                    setSubtitle(getString(bes.max.passman.features.main.R.string.prompt_subtitle))
-                    setDescription(getString(bes.max.passman.features.main.R.string.prompt_description))
+                    setTitle(getString(R.string.prompt_title))
+                    setDescription(getString(R.string.prompt_description))
                     setConfirmationRequired(false)
                     setAllowedAuthenticators(DEVICE_CREDENTIAL)
                 }.build()
