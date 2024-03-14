@@ -13,4 +13,6 @@ interface SiteInfoRepository {
 
     suspend fun update(model: SiteInfoModel)
 
+    suspend fun delete(model: SiteInfoModel)
+
 }

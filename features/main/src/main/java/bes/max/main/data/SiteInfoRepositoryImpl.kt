@@ -19,4 +19,8 @@ class SiteInfoRepositoryImpl(
     override suspend fun update(model: SiteInfoModel) {
         siteInfoDbRepository.update(model, Dispatchers.IO)
     }
+
+    override suspend fun delete(model: SiteInfoModel) {
+        siteInfoDbRepository.delete(model, Dispatchers.IO)
+    }
 }

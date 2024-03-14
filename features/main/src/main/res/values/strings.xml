@@ -8,6 +8,7 @@
     <string name="hidden_text">*******</string>
     <string name="no_sites">У вас ещё нет сохранённых паролей</string>
     <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
     <string name="add">Добавить</string>
     <string name="hint_url">Введите адрес сайта</string>
     <string name="hint_name">Введите наименование сайта</string>

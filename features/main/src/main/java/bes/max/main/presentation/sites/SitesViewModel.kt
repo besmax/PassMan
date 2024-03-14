@@ -25,11 +25,11 @@ class SitesViewModel @Inject constructor(
     }
 
 
-    fun getSites() {
+    private fun getSites() {
         _uiState.value = SitesScreenState.Loading
         viewModelScope.launch {
             siteInfoRepository.getAll().collect() { list ->
-                if (!list.isNullOrEmpty()) {
+                if (list.isNotEmpty()) {
                     _uiState.postValue(SitesScreenState.Content(list))
                 } else {
                     _uiState.postValue(SitesScreenState.Empty)

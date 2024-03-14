@@ -1,7 +1,13 @@
 package bes.max.main.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.main.presentation.edit.EditScreenState
@@ -62,7 +69,11 @@ fun EditOrNewSiteScreen(
                 )
                 navigateBack()
             },
-            launchBiometric = launchAuth
+            launchBiometric = launchAuth,
+            deleteItem = { model ->
+                editViewModel.delete(model)
+                navigateBack()
+            }
         )
 
         is EditScreenState.New -> ShowNew(
@@ -88,6 +99,7 @@ fun ShowEdit(
     showPassword: (SiteInfoModel) -> String,
     doEdit: () -> Unit,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
+    deleteItem: (SiteInfoModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -112,14 +124,27 @@ fun ShowEdit(
             showPassword = { showPassword(model) }
         )
 
-        Button(
-            onClick = { launchBiometric(doEdit, {  }) },
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = stringResource(id = R.string.edit),
-            )
+            Button(
+                onClick = { launchBiometric(doEdit, { }) },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.edit),
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Button(
+                onClick = { launchBiometric({ deleteItem(model) }, { }) },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.delete),
+                )
+            }
         }
+
 
     }
 }
@@ -158,7 +183,7 @@ fun ShowNew(
 
         Button(
             onClick = {
-                launchBiometric({ create() }, {  })
+                launchBiometric({ create() }, { })
 
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),

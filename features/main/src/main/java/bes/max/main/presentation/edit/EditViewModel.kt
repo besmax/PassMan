@@ -93,4 +93,10 @@ class EditViewModel @Inject constructor(
         }
     }
 
+    fun delete(model: SiteInfoModel) {
+        viewModelScope.launch {
+            siteInfoRepository.delete(model)
+        }
+    }
+
 }

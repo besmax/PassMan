@@ -43,4 +43,10 @@ class SiteInfoDbRepositoryImpl(
             siteInfoDao.insert(model.map())
         }
     }
+
+    override suspend fun delete(model: SiteInfoModel, dispatcher: CoroutineDispatcher) {
+        withContext(dispatcher) {
+            siteInfoDao.delete(model.map())
+        }
+    }
 }

@@ -18,5 +18,8 @@ interface SiteInfoDbRepository {
 
     suspend fun insert(model: SiteInfoModel, dispatcher: CoroutineDispatcher)
 
+    suspend fun delete(model: SiteInfoModel, dispatcher: CoroutineDispatcher)
+
+
 
 }

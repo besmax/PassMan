@@ -1,6 +1,7 @@
 package bes.max.database.impl.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
@@ -26,4 +27,7 @@ interface SiteInfoDao {
 
     @Query("SELECT * FROM site_info_table WHERE id=:id")
     suspend fun getById(id: Int): SiteInfoEntity?
+
+    @Delete
+    suspend fun delete(entity: SiteInfoEntity)
 }
