@@ -1,11 +1,20 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "bes.max.passman"
     compileSdk = 34
+
+    packaging.resources {
+        pickFirsts += "/META-INF/LICENSE.md"
+        pickFirsts += "/META-INF/LICENSE-notice.md"
+        pickFirsts += "/META-INF/AL2.0"
+        pickFirsts += "/META-INF/gradle/incremental.annotation.processors"
+    }
 
     defaultConfig {
         applicationId = "bes.max.passman"
@@ -59,7 +68,23 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.hilt)
+    ksp(libs.hilt.compiler)
+    implementation(libs.compose.navigation)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.biometric.ktx)
+
+
+    implementation(project(":database:api"))
+    implementation(project(":database:impl"))
+    implementation(project(":cipher:api"))
+    implementation(project(":cipher:impl"))
+    implementation(project(":features:main"))
+
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
