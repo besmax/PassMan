@@ -1,5 +1,6 @@
 package bes.max.main.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +24,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,8 @@ import bes.max.main.ui.common.ShowLoading
 import bes.max.main.ui.common.ShowTitle
 import bes.max.passman.features.main.R
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 
 
 @Composable
@@ -142,14 +148,25 @@ fun SiteListItem(
                 .fillMaxWidth()
                 .padding(start = 8.dp, top = 8.dp, end = 8.dp)
         ) {
-            AsyncImage(
-                model = model.iconUrl,
-                placeholder = painterResource(R.drawable.logo_placeholder),
-                error = painterResource(R.drawable.logo_placeholder),
-                contentDescription = "site logo",
-                modifier = Modifier
-                    .size(24.dp)
-            )
+
+            val context = LocalContext.current
+            key(model) {
+                Image(
+                    rememberAsyncImagePainter(
+                        remember(model.iconUrl) {
+                            ImageRequest.Builder(context)
+                                .data(model.iconUrl)
+                                .diskCacheKey(model.iconUrl)
+                                .memoryCacheKey(model.iconUrl)
+                                .error(R.drawable.logo_placeholder)
+                                .build()
+                        }
+                    ),
+                    "site logo",
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 

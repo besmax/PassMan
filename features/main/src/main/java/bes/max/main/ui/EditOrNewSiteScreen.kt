@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,7 +31,11 @@ import bes.max.main.ui.common.ShowLoading
 import bes.max.main.ui.common.ShowTitle
 import bes.max.main.ui.common.UserInput
 import bes.max.passman.features.main.R
+import coil.annotation.ExperimentalCoilApi
+import coil.imageLoader
+import coil.memory.MemoryCache
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun EditOrNewSiteScreen(
     navigateBack: () -> Unit,
@@ -42,6 +47,7 @@ fun EditOrNewSiteScreen(
     var name by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     val isButtonEnabledForNew by remember {
         derivedStateOf {
@@ -72,6 +78,9 @@ fun EditOrNewSiteScreen(
             launchBiometric = launchAuth,
             deleteItem = { model ->
                 editViewModel.delete(model)
+                val imageLoader = context.imageLoader
+                imageLoader.diskCache?.remove(url)
+                imageLoader.memoryCache?.remove(MemoryCache.Key(url))
                 navigateBack()
             }
         )
