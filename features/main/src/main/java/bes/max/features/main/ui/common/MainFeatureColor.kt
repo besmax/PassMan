@@ -1,4 +1,4 @@
-package bes.max.main.ui.common
+package bes.max.features.main.ui.common
 
 import androidx.compose.ui.graphics.Color
 

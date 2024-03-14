@@ -1,4 +1,4 @@
-package bes.max.main.presentation.edit
+package bes.max.features.main.presentation.edit
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.database.api.model.SiteInfoModel
-import bes.max.main.domain.repositories.SiteInfoRepository
+import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

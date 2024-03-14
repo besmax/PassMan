@@ -1,4 +1,4 @@
-package bes.max.main.domain.repositories
+package bes.max.features.main.domain.repositories
 
 import bes.max.database.api.model.SiteInfoModel
 import kotlinx.coroutines.flow.Flow

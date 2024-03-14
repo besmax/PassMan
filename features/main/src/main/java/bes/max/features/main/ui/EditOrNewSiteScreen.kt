@@ -1,4 +1,4 @@
-package bes.max.main.ui
+package bes.max.features.main.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,12 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.database.api.model.SiteInfoModel
-import bes.max.main.presentation.edit.EditScreenState
-import bes.max.main.presentation.edit.EditViewModel
-import bes.max.main.ui.common.ShowError
-import bes.max.main.ui.common.ShowLoading
-import bes.max.main.ui.common.ShowTitle
-import bes.max.main.ui.common.UserInput
+import bes.max.features.main.presentation.edit.EditScreenState
+import bes.max.features.main.presentation.edit.EditViewModel
+import bes.max.features.main.ui.common.ShowError
+import bes.max.features.main.ui.common.ShowLoading
+import bes.max.features.main.ui.common.ShowTitle
+import bes.max.features.main.ui.common.UserInput
 import bes.max.passman.features.main.R
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader

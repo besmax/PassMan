@@ -1,4 +1,4 @@
-package bes.max.main.ui
+package bes.max.features.main.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -42,12 +42,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import bes.max.database.api.model.SiteInfoModel
-import bes.max.main.presentation.sites.SitesScreenState
-import bes.max.main.presentation.sites.SitesViewModel
-import bes.max.main.ui.common.LightGray
-import bes.max.main.ui.common.ShowLoading
-import bes.max.main.ui.common.ShowTitle
-import bes.max.main.ui.common.UserInput
+import bes.max.features.main.presentation.sites.SitesScreenState
+import bes.max.features.main.presentation.sites.SitesViewModel
+import bes.max.features.main.ui.common.LightGray
+import bes.max.features.main.ui.common.ShowLoading
+import bes.max.features.main.ui.common.ShowTitle
+import bes.max.features.main.ui.common.UserInput
 import bes.max.passman.features.main.R
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest

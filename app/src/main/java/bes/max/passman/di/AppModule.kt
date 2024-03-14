@@ -11,8 +11,8 @@ import bes.max.database.api.repositories.SiteInfoDbRepository
 import bes.max.database.impl.AppDatabase
 import bes.max.database.impl.dao.SiteInfoDao
 import bes.max.database.impl.repositories.SiteInfoDbRepositoryImpl
-import bes.max.main.data.SiteInfoRepositoryImpl
-import bes.max.main.domain.repositories.SiteInfoRepository
+import bes.max.features.main.data.SiteInfoRepositoryImpl
+import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.passman.cipher.CipherImpl
 import dagger.Module
 import dagger.Provides

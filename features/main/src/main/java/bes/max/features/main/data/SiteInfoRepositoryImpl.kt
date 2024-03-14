@@ -1,8 +1,8 @@
-package bes.max.main.data
+package bes.max.features.main.data
 
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.database.api.repositories.SiteInfoDbRepository
-import bes.max.main.domain.repositories.SiteInfoRepository
+import bes.max.features.main.domain.repositories.SiteInfoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
