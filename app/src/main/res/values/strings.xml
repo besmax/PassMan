@@ -4,4 +4,5 @@
     <string name="prompt_description">Для продолжения необходимо пройти аутентификацию</string>
     <string name="prompt_info_use_app_password">Использовать пин-код</string>
     <string name="prompt_info_no_credentials">Для продолжения добавьте отпечаток пальца или пин-код в настройках телефона</string>
+    <string name="prompt_info_auth_cancelled">Аутентификация отменена</string>
 </resources>

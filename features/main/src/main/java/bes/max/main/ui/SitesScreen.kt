@@ -69,8 +69,8 @@ fun SitesScreen(
     val state by lifecycleOwner.lifecycle.currentStateAsState()
 
     LaunchedEffect(key1 = state) {
-        if (state == Lifecycle.State.RESUMED) run {
-            sitesViewModel::getSites
+        if (state == Lifecycle.State.STARTED) run {
+            sitesViewModel.getSites()
         }
     }
 

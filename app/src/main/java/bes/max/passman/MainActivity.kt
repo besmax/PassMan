@@ -75,6 +75,11 @@ class MainActivity : ComponentActivity() {
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.prompt_info_no_credentials),
+                    Toast.LENGTH_LONG
+                ).show()
                 onFail()
             }
 
