@@ -2,8 +2,8 @@ package bes.max.database.impl
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import bes.max.database.impl.entities.SiteInfoEntity
 import bes.max.database.impl.dao.SiteInfoDao
+import bes.max.database.impl.entities.SiteInfoEntity
 
 @Database(
     entities = [
