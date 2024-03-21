@@ -15,7 +15,10 @@
 ## Скриншоты экранов
 
 ### Главный экран
-<img src="https://github.com/besmax/PassMan/assets/88286767/63bb74cc-0b63-4aa9-bc7a-103d6d7f7d32"  width="135" height="300" alt="Main screen2">
+<img src="https://github.com/besmax/PassMan/assets/88286767/63bb74cc-0b63-4aa9-bc7a-103d6d7f7d32"  width="135" height="300" alt="Main screen">
 
 ### Экран новой/редактирования записи
-<img src="https://github.com/besmax/PassMan/assets/88286767/fc3a4f9e-2ac9-4e1b-b249-38e6d9853ef6"  width="135" height="300" alt="History on Search screen">
+<img src="https://github.com/besmax/PassMan/assets/88286767/fc3a4f9e-2ac9-4e1b-b249-38e6d9853ef6"  width="135" height="300" alt="Edit/New screen">
+
+## Добавить
+1) Поле комментарий к каждому элементу.
