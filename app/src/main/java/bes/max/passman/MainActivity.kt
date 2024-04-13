@@ -11,12 +11,14 @@ import android.os.CancellationSignal
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import bes.max.passman.navigation.NavigationGraph
 import bes.max.passman.ui.theme.PassManTheme
@@ -30,7 +32,11 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        packageManager
+
+        enableEdgeToEdge()
+
+        setLightStatusBarIconsColor()
+
         setContent {
             PassManTheme {
                 val navController = rememberNavController()
@@ -164,5 +170,9 @@ class MainActivity : ComponentActivity() {
         }
 
         return cancellationSignal as CancellationSignal
+    }
+
+    private fun setLightStatusBarIconsColor() {
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
     }
 }

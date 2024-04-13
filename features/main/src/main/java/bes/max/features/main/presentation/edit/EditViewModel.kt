@@ -51,7 +51,13 @@ class EditViewModel @Inject constructor(
         )
     }
 
-    fun update(model: SiteInfoModelMain, name: String, url: String, password: String) {
+    fun update(
+        model: SiteInfoModelMain,
+        name: String,
+        url: String,
+        password: String,
+        comment: String?
+    ) {
         //model with  password which is not encrypted
         val partiallyUpdatedModel = if (password.isNotBlank()) {
             model.copy(
@@ -59,12 +65,14 @@ class EditViewModel @Inject constructor(
                 password = password,
                 url = url.ifBlank { model.url },
                 passwordIv = "",
+                description = if (comment.isNullOrBlank()) model.description else comment,
             )
         } else {
             model.copy(
                 name = name.ifBlank { model.name },
                 password = cipher.decrypt(model.name, model.password, model.passwordIv),
                 url = url.ifBlank { model.url },
+                description = if (comment.isNullOrBlank()) model.description else comment,
             )
         }
         val encryptedData =
@@ -79,7 +87,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun add(name: String, url: String, password: String) {
+    fun add(name: String, url: String, password: String, comment: String?) {
         val encryptedData = cipher.encrypt(alias = name, textToEncrypt = password)
         viewModelScope.launch {
             siteInfoRepository.create(
@@ -87,7 +95,9 @@ class EditViewModel @Inject constructor(
                     name = name,
                     password = encryptedData.encryptedData,
                     url = url,
-                    passwordIv = encryptedData.passwordIv
+                    passwordIv = encryptedData.passwordIv,
+                    description = if (comment?.isBlank() == true) null else comment,
+
                 )
             )
         }

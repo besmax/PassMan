@@ -8,7 +8,8 @@ fun SiteInfoModelMain.map(): SiteInfoModel = SiteInfoModel(
     name = name,
     password = password,
     url = url,
-    passwordIv = passwordIv
+    passwordIv = passwordIv,
+    description = description,
 )
 
 fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
@@ -16,5 +17,6 @@ fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
     name = name,
     password = password,
     url = url,
-    passwordIv = passwordIv
+    passwordIv = passwordIv,
+    description = description,
 )
