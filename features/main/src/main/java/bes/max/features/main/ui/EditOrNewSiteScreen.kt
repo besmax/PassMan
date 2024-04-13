@@ -98,6 +98,7 @@ fun EditOrNewSiteScreen(
             isButtonEnabled = isButtonEnabledForNew,
             launchBiometric = launchAuth,
             changeComment = { comment = it },
+            showPassword = { newPassword }
         )
     }
 }
@@ -136,7 +137,7 @@ fun ShowEdit(
 
         UserInput(
             hintRes = R.string.password,
-            initialText = stringResource(id = R.string.hidden_text),
+            initialText = model.password,
             onValueChanged = changePassword,
             passwordInput = true,
             showPassword = { showPassword(model) },
@@ -181,6 +182,7 @@ fun ShowNew(
     create: () -> Unit,
     isButtonEnabled: Boolean,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
+    showPassword: () -> String
 ) {
     Column(
         modifier = Modifier
@@ -203,6 +205,9 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.password,
             onValueChanged = changePassword,
+            passwordInput = true,
+            showPassword = { showPassword() },
+            launchBiometric = launchBiometric
         )
 
         UserInput(

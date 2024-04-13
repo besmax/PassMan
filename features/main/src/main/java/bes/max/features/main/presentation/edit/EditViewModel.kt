@@ -98,7 +98,7 @@ class EditViewModel @Inject constructor(
                     passwordIv = encryptedData.passwordIv,
                     description = if (comment?.isBlank() == true) null else comment,
 
-                )
+                    )
             )
         }
     }

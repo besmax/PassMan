@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,6 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bes.max.passman.features.main.R
@@ -60,6 +64,10 @@ fun UserInput(
             unfocusedTextColor = Color.Black
         ),
         shape = RoundedCornerShape(8.dp),
+        keyboardOptions = if (passwordInput) KeyboardOptions(keyboardType = KeyboardType.Password)
+        else KeyboardOptions(keyboardType = KeyboardType.Text),
+        visualTransformation = if (!passwordIsShown && passwordInput) PasswordVisualTransformation()
+        else VisualTransformation.None,
         trailingIcon = {
             if (passwordInput) {
                 Icon(
@@ -68,19 +76,26 @@ fun UserInput(
                         if (passwordIsShown) R.drawable.show_icon
                         else R.drawable.hide_icon
                     ),
-                    contentDescription = "show password icon",
+                    contentDescription = "show/hide password icon",
                     modifier = Modifier
                         .clickable {
-                            if (passwordIsShown) {
-                                text = initialText
-                            } else {
+                            if (!passwordIsShown) {
                                 if (showPassword != null) {
                                     if (launchBiometric != null) {
-                                        launchBiometric({ text = showPassword() }, {})
+                                        if (text.isNotBlank()) {
+                                            launchBiometric(
+                                                {
+                                                    text = showPassword()
+                                                    passwordIsShown = !passwordIsShown
+                                                },
+                                                {}
+                                            )
+                                        }
                                     }
                                 }
+                            } else {
+                                passwordIsShown = !passwordIsShown
                             }
-                            passwordIsShown = !passwordIsShown
                         }
                 )
             }
