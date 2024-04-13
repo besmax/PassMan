@@ -128,7 +128,11 @@ fun ShowEdit(
             onValueChanged = changeName
         )
 
-        UserInput(hintRes = R.string.hint_url, initialText = model.url, onValueChanged = changeUrl)
+        UserInput(
+            hintRes = R.string.hint_url,
+            initialText = model.url,
+            onValueChanged = changeUrl
+        )
 
         UserInput(
             hintRes = R.string.password,
@@ -137,6 +141,12 @@ fun ShowEdit(
             passwordInput = true,
             showPassword = { showPassword(model) },
             launchBiometric = launchBiometric
+        )
+
+        UserInput(
+            hintRes = R.string.comment,
+            initialText = model.description ?: "",
+            onValueChanged = changeComment
         )
 
         Row(
@@ -197,7 +207,7 @@ fun ShowNew(
 
         UserInput(
             hintRes = R.string.comment,
-            onValueChanged = changePassword,
+            onValueChanged = changeComment,
         )
 
         Button(
