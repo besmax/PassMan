@@ -45,6 +45,7 @@ fun EditOrNewSiteScreen(
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
     var name by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
+    var comment by remember { mutableStateOf<String?>(null) }
     var newPassword by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -64,13 +65,15 @@ fun EditOrNewSiteScreen(
             changeName = { name = it },
             changeUrl = { url = it },
             changePassword = { newPassword = it },
+            changeComment = { comment = it },
             showPassword = { model -> editViewModel.showPassword(model) },
             doEdit = {
                 editViewModel.update(
                     (uiState as EditScreenState.Edit).model,
                     name,
                     url,
-                    newPassword
+                    newPassword,
+                    comment,
                 )
                 navigateBack()
             },
@@ -89,11 +92,13 @@ fun EditOrNewSiteScreen(
             changeUrl = { url = it },
             changePassword = { newPassword = it },
             create = {
-                editViewModel.add(name, url, newPassword)
+                editViewModel.add(name, url, newPassword, comment)
                 navigateBack()
             },
             isButtonEnabled = isButtonEnabledForNew,
             launchBiometric = launchAuth,
+            changeComment = { comment = it },
+            showPassword = { newPassword }
         )
     }
 }
@@ -104,6 +109,7 @@ fun ShowEdit(
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
+    changeComment: (String?) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     doEdit: () -> Unit,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
@@ -123,15 +129,25 @@ fun ShowEdit(
             onValueChanged = changeName
         )
 
-        UserInput(hintRes = R.string.hint_url, initialText = model.url, onValueChanged = changeUrl)
+        UserInput(
+            hintRes = R.string.hint_url,
+            initialText = model.url,
+            onValueChanged = changeUrl
+        )
 
         UserInput(
             hintRes = R.string.password,
-            initialText = stringResource(id = R.string.hidden_text),
+            initialText = model.password,
             onValueChanged = changePassword,
             passwordInput = true,
             showPassword = { showPassword(model) },
             launchBiometric = launchBiometric
+        )
+
+        UserInput(
+            hintRes = R.string.comment,
+            initialText = model.description ?: "",
+            onValueChanged = changeComment
         )
 
         Row(
@@ -162,9 +178,11 @@ fun ShowNew(
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
+    changeComment: (String) -> Unit,
     create: () -> Unit,
     isButtonEnabled: Boolean,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
+    showPassword: () -> String
 ) {
     Column(
         modifier = Modifier
@@ -187,6 +205,14 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.password,
             onValueChanged = changePassword,
+            passwordInput = true,
+            showPassword = { showPassword() },
+            launchBiometric = launchBiometric
+        )
+
+        UserInput(
+            hintRes = R.string.comment,
+            onValueChanged = changeComment,
         )
 
         Button(
