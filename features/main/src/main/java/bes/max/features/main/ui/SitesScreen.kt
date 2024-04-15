@@ -86,7 +86,7 @@ fun SitesScreen(
                 ShowTitle(title = stringResource(id = R.string.saved_passwords))
 
                 when (uiState) {
-                    is SitesScreenState.Empty -> ShowEmpty()
+                    is SitesScreenState.Empty -> ShowEmpty(messageResId = R.string.no_sites)
                     is SitesScreenState.Loading -> ShowLoading()
                     is SitesScreenState.Content -> ShowContent(
                         uiState as SitesScreenState.Content,
@@ -121,6 +121,7 @@ fun SitesList(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+
         var filterText by rememberSaveable {
             mutableStateOf("")
         }
@@ -138,6 +139,14 @@ fun SitesList(
             val filteredList =
                 if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
                 else list
+
+            // Show not found after filter
+            if (filteredList.isEmpty()) {
+                item {
+                    ShowEmpty(messageResId = R.string.filter_no_sites)
+                }
+            }
+
             items(
                 items = filteredList,
                 key = { model -> model.id }
@@ -145,7 +154,6 @@ fun SitesList(
                 SiteListItem(model, onItemClick, showPassword, launchAuth)
             }
         }
-
     }
 }
 
@@ -253,12 +261,15 @@ fun SiteListItem(
 }
 
 @Composable
-fun ShowEmpty() {
+fun ShowEmpty(
+    messageResId: Int,
+) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(id = R.string.no_sites))
+        Text(text = stringResource(id = messageResId))
     }
 }
 

@@ -8,6 +8,7 @@
     <string name="saved_passwords">Сохранённые пароли</string>
     <string name="hidden_text">*******</string>
     <string name="no_sites">У вас ещё нет сохранённых паролей</string>
+    <string name="filter_no_sites">Таких сайтов не найдено</string>
     <string name="edit">Редактировать</string>
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>
