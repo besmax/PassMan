@@ -37,6 +37,7 @@ fun UserInput(
     passwordInput: Boolean = false,
     showPassword: (() -> String)? = null,
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     var text by remember { mutableStateOf(initialText) }
     var passwordIsShown by remember { mutableStateOf(false) }
@@ -100,7 +101,7 @@ fun UserInput(
                 )
             }
         },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .onFocusChanged {

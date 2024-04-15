@@ -124,10 +124,11 @@ fun SitesList(
         var filterText by rememberSaveable {
             mutableStateOf("")
         }
+
         UserInput(
             hintRes = R.string.hint_sites_filter,
             initialText = filterText,
-            onValueChanged = { filterText = it }
+            onValueChanged = { filterText = it },
         )
 
         LazyColumn(
@@ -144,6 +145,7 @@ fun SitesList(
                 SiteListItem(model, onItemClick, showPassword, launchAuth)
             }
         }
+
     }
 }
 
