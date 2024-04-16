@@ -6,7 +6,7 @@
     <string name="password">Password:</string>
     <string name="comment">Comment:</string>
     <string name="saved_passwords">Saved passwords</string>
-    <string name="hidden_text">*******</string>
+    <string name="hidden_text" translatable="false">*******</string>
     <string name="no_sites">You do not have saved passwords</string>
     <string name="filter_no_sites">No such sites were found</string>
     <string name="edit">Edit</string>
@@ -16,5 +16,5 @@
     <string name="hint_url">Enter site url</string>
     <string name="hint_name">Enter site name</string>
     <string name="hint_sites_filter">Search</string>
-    <string name="init_url">https://</string>
+    <string name="init_url" translatable="false">https://</string>
 </resources>
