@@ -32,12 +32,14 @@ import bes.max.passman.features.main.R
 @Composable
 fun UserInput(
     @StringRes hintRes: Int,
+    modifier: Modifier = Modifier,
     initialText: String = "",
     onValueChanged: ((String) -> Unit)? = null,
     passwordInput: Boolean = false,
     showPassword: (() -> String)? = null,
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
-    modifier: Modifier = Modifier,
+    minLines: Int = 1,
+    maxLines: Int = 1,
 ) {
     var text by remember { mutableStateOf(initialText) }
     var passwordIsShown by remember { mutableStateOf(false) }
@@ -49,7 +51,7 @@ fun UserInput(
             onValueChanged?.invoke(it)
         },
         label = { Text(text = stringResource(id = hintRes)) },
-        maxLines = 1,
+        maxLines = maxLines,
         textStyle = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp
@@ -108,6 +110,7 @@ fun UserInput(
                 if (it.hasFocus && text.isBlank()) {
                     onValueChanged?.invoke(text)
                 }
-            }
+            },
+        minLines = minLines
     )
 }

@@ -147,7 +147,8 @@ fun ShowEdit(
         UserInput(
             hintRes = R.string.comment,
             initialText = model.description ?: "",
-            onValueChanged = changeComment
+            onValueChanged = changeComment,
+            maxLines = 10,
         )
 
         Row(
@@ -213,6 +214,7 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.comment,
             onValueChanged = changeComment,
+            maxLines = 10,
         )
 
         Button(
