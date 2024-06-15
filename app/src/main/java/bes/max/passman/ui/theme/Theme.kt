@@ -1,6 +1,7 @@
 package bes.max.passman.ui.theme
 
 import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -13,7 +14,14 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Color(0xFF1C1B1F),
+    surface = Color(0xFF1C1B1F),
+    onPrimary = Color(0xFF1C1B1F),
+    onSecondary = Color(0xFF1C1B1F),
+    onTertiary = Color(0xFF1C1B1F),
+    onBackground = Color(0xFFFFFBFE),
+    onSurface = Color(0xFFFFFBFE),
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -31,7 +39,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PassManTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
