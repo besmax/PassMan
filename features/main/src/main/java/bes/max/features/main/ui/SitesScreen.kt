@@ -44,7 +44,6 @@ import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
-import bes.max.features.main.ui.common.LightGray
 import bes.max.features.main.ui.common.ShowLoading
 import bes.max.features.main.ui.common.ShowTitle
 import bes.max.features.main.ui.common.UserInput
@@ -169,9 +168,6 @@ fun SiteListItem(
         mutableStateOf(false)
     }
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = LightGray,
-        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp)
@@ -280,7 +276,6 @@ fun FabAdd(addItem: () -> Unit) {
         modifier = Modifier
             .padding(end = 16.dp, bottom = 24.dp),
         shape = RoundedCornerShape(100.dp),
-        containerColor = LightGray,
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
