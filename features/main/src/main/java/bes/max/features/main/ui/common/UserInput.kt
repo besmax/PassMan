@@ -57,16 +57,10 @@ fun UserInput(
             fontSize = 16.sp
         ),
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = LightGray,
-            unfocusedContainerColor = LightGray,
-            disabledContainerColor = LightGray,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            focusedTrailingIconColor = Color.Black,
-            unfocusedTrailingIconColor = Color.Black,
+
         ),
         shape = RoundedCornerShape(8.dp),
         keyboardOptions = if (passwordInput) KeyboardOptions(keyboardType = KeyboardType.Password)
