@@ -125,32 +125,37 @@ fun SitesList(
             mutableStateOf("")
         }
 
-        UserInput(
-            hintRes = R.string.hint_sites_filter,
-            initialText = filterText,
-            onValueChanged = { filterText = it },
-        )
-
-        LazyColumn(
-            modifier = Modifier
-                .padding(bottom = 12.dp, top = 8.dp)
-        ) {
-            val filteredList =
-                if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
-                else list
-
-            // Show not found after filter
-            if (filteredList.isEmpty()) {
-                item {
-                    ShowEmpty(messageResId = R.string.filter_no_sites)
-                }
+        Scaffold(
+            bottomBar = {
+                UserInput(
+                    hintRes = R.string.hint_sites_filter,
+                    initialText = filterText,
+                    onValueChanged = { filterText = it },
+                )
             }
+        ) { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .padding(bottom = 12.dp, top = 8.dp)
+                    .padding(paddingValues)
+            ) {
+                val filteredList =
+                    if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
+                    else list
 
-            items(
-                items = filteredList,
-                key = { model -> model.id }
-            ) { model ->
-                SiteListItem(model, onItemClick, showPassword, launchAuth)
+                // Show not found after filter
+                if (filteredList.isEmpty()) {
+                    item {
+                        ShowEmpty(messageResId = R.string.filter_no_sites)
+                    }
+                }
+
+                items(
+                    items = filteredList,
+                    key = { model -> model.id }
+                ) { model ->
+                    SiteListItem(model, onItemClick, showPassword, launchAuth)
+                }
             }
         }
     }
