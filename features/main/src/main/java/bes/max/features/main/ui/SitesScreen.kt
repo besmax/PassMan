@@ -82,7 +82,7 @@ fun SitesScreen(
                     .padding(paddingValues)
             ) {
 
-                ShowTitle(title = stringResource(id = R.string.saved_passwords))
+                ShowTitle(title = stringResource(id = R.string.saved_passwords), onSettingsIconClick = {})
 
                 when (uiState) {
                     is SitesScreenState.Empty -> ShowEmpty(messageResId = R.string.no_sites)
