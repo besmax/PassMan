@@ -3,6 +3,8 @@ package bes.max.passman.di
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import bes.max.cipher.api.CipherApi
 import bes.max.database.api.repositories.SiteInfoDbRepository
@@ -17,13 +19,25 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.prefs.Preferences
 import javax.inject.Singleton
 
 private const val DATABASE_NAME = "appdatabase.db"
+private const val SETTINGS_PIN_CODE_TYPE_PREFERENCES = "pin_code_type_preferences"
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = SETTINGS_PIN_CODE_TYPE_PREFERENCES
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun providePinCodeTypeDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.dataStore
+    }
 
     @Provides
     @Singleton

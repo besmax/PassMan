@@ -27,6 +27,7 @@ coil = "2.6.0"
 compose-navigation = "2.7.7"
 biometric = "1.2.0-alpha05"
 uiTextGoogleFonts = "1.6.8"
+datastoreCoreAndroid = "1.1.1"
 
 
 [libraries]
@@ -69,6 +70,7 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastoreCoreAndroid" }
 
 
 [plugins]
