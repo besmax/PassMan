@@ -69,14 +69,22 @@ class MainActivity : ComponentActivity() {
                 onSuccess()
             }
 
+            @RequiresApi(Build.VERSION_CODES.R)
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
                 super.onAuthenticationError(errorCode, errString)
-                onFail()
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.prompt_info_no_credentials),
-                    Toast.LENGTH_LONG
-                ).show()
+
+                if (errorCode == 11) {
+                    // Fingerprint is not added
+                    launchKeyAuth(onSuccess, onFail)
+                } else {
+                    onFail()
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.prompt_info_no_credentials),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
             }
 
             override fun onAuthenticationFailed() {
@@ -145,21 +153,20 @@ class MainActivity : ComponentActivity() {
         onSuccess: () -> Unit,
         onFail: () -> Unit,
     ) {
-        if (checkBiometricSupport()) {
-            val biometricPrompt = BiometricPrompt.Builder(this)
-                .apply {
-                    setTitle(getString(R.string.prompt_title))
-                    setDescription(getString(R.string.prompt_description))
-                    setConfirmationRequired(false)
-                    setAllowedAuthenticators(DEVICE_CREDENTIAL)
-                }.build()
+        val biometricPrompt = BiometricPrompt.Builder(this)
+            .apply {
+                setTitle(getString(R.string.prompt_title))
+                setDescription(getString(R.string.prompt_description))
+                setConfirmationRequired(false)
+                setAllowedAuthenticators(DEVICE_CREDENTIAL)
+            }.build()
 
-            biometricPrompt.authenticate(
-                getCancellationSignal(),
-                mainExecutor,
-                authenticationCallback(onSuccess, onFail)
-            )
-        }
+        biometricPrompt.authenticate(
+            getCancellationSignal(),
+            mainExecutor,
+            authenticationCallback(onSuccess, onFail)
+        )
+
     }
 
     private fun getCancellationSignal(): CancellationSignal {

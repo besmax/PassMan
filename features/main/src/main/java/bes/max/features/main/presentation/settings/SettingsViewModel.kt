@@ -10,12 +10,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+   // private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val systemPinCode = settingsRepository.isSystemPinCodeType().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = true
-    )
+//    val systemPinCode = settingsRepository.isSystemPinCodeType().stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5000L),
+//        initialValue = true
+//    )
 }
