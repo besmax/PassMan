@@ -69,14 +69,20 @@ class MainActivity : ComponentActivity() {
                 onSuccess()
             }
 
+            @RequiresApi(Build.VERSION_CODES.R)
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
                 super.onAuthenticationError(errorCode, errString)
-                onFail()
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.prompt_info_no_credentials),
-                    Toast.LENGTH_LONG
-                ).show()
+                if (errorCode == 11) {
+                    // Fingerprint is not added
+                    launchKeyAuth(onSuccess, onFail)
+                } else {
+                    onFail()
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.prompt_info_no_credentials),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
 
             override fun onAuthenticationFailed() {
