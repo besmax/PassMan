@@ -158,7 +158,7 @@ fun ShowEdit(
                 onClick = { launchBiometric(doEdit, { }) },
             ) {
                 Text(
-                    text = stringResource(id = R.string.edit),
+                    text = stringResource(id = R.string.save),
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
