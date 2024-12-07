@@ -1,0 +1,19 @@
+<resources>
+    <string name="refresh">Обновить</string>
+    <string name="error">Ошибка, попробуйте ещё раз </string>
+    <string name="site">Сайт:</string>
+    <string name="link">Ссылка:</string>
+    <string name="password">Пароль:</string>
+    <string name="comment">Коментарий:</string>
+    <string name="saved_passwords">Сохранённые пароли</string>
+    <string name="hidden_text">*******</string>
+    <string name="no_sites">У вас ещё нет сохранённых паролей</string>
+    <string name="edit">Редактировать</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="add">Добавить</string>
+    <string name="hint_url">Введите адрес сайта</string>
+    <string name="hint_name">Введите наименование сайта</string>
+    <string name="hint_sites_filter">Поиск</string>
+    <string name="init_url">https://</string>
+</resources>
