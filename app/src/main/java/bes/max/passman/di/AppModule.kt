@@ -5,9 +5,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import bes.max.cipher.api.CipherApi
+import bes.max.database.api.repositories.CategoryDbRepository
 import bes.max.database.api.repositories.SiteInfoDbRepository
 import bes.max.database.impl.AppDatabase
+import bes.max.database.impl.dao.CategoryDao
 import bes.max.database.impl.dao.SiteInfoDao
+import bes.max.database.impl.repositories.CategoryDbRepositoryImpl
 import bes.max.database.impl.repositories.SiteInfoDbRepositoryImpl
 import bes.max.features.main.data.SiteInfoRepositoryImpl
 import bes.max.features.main.domain.repositories.SiteInfoRepository
@@ -32,8 +35,18 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCategoryDao(database: AppDatabase): CategoryDao =
+        database.categoryDao()
+
+    @Provides
+    @Singleton
     fun provideSiteInfoDbRepository(dao: SiteInfoDao): SiteInfoDbRepository =
         SiteInfoDbRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
+    fun provideCategoryDbRepository(dao: CategoryDao): CategoryDbRepository =
+        CategoryDbRepositoryImpl(dao)
 
     @Provides
     @Singleton
