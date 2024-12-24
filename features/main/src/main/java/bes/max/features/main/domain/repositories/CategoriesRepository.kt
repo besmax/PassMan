@@ -30,5 +30,5 @@ interface CategoriesRepository {
 
     suspend fun delete(model: CategoryModelMain, dispatcher: CoroutineDispatcher = Dispatchers.IO)
 
-    suspend fun getFilters(): List<FilterModel>
+    suspend fun getFilters(filterAction: (Int) -> Unit, dispatcher: CoroutineDispatcher = Dispatchers.IO): List<FilterModel>
 }

@@ -2,9 +2,12 @@ package bes.max.features.main.data
 
 import bes.max.database.api.repositories.CategoryDbRepository
 import bes.max.features.main.domain.models.CategoryModelMain
+import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class CategoriesRepositoryImpl(
@@ -42,5 +45,10 @@ class CategoriesRepositoryImpl(
 
     override suspend fun delete(model: CategoryModelMain, dispatcher: CoroutineDispatcher) {
         categoryDbRepository.delete(model.map(), dispatcher)
+    }
+
+    override suspend fun getFilters(filterAction: (Int) -> Unit, dispatcher: CoroutineDispatcher): List<FilterModel> {
+        val categories = getAll(dispatcher).flowOn(dispatcher).firstOrNull()
+        return categories?.map { it.toFilter(filterAction) } ?: emptyList()
     }
 }

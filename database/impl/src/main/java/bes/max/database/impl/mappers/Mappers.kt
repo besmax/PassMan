@@ -12,6 +12,7 @@ fun SiteInfoEntity.map(): SiteInfoModel = SiteInfoModel(
     password = password,
     passwordIv = passwordIv,
     description = description,
+    categoryColor = category,
 )
 
 
@@ -22,16 +23,15 @@ fun SiteInfoModel.map(): SiteInfoEntity = SiteInfoEntity(
     password = password,
     passwordIv = passwordIv,
     description = description,
+    category = categoryColor,
 )
 
 fun CategoryEntity.map(): CategoryModel = CategoryModel(
-    id = id,
     name = name,
     color = color,
 )
 
 fun CategoryModel.map(): CategoryEntity = CategoryEntity(
-    id = id,
     name = name,
     color = color,
 )

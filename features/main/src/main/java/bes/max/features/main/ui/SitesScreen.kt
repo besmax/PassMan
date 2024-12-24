@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -41,9 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
+import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
+import bes.max.features.main.ui.common.Categories
 import bes.max.features.main.ui.common.LightGray
 import bes.max.features.main.ui.common.ShowLoading
 import bes.max.features.main.ui.common.ShowTitle
@@ -107,12 +110,19 @@ fun ShowContent(
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
-    SitesList(uiState.sites, onItemClick, showPassword, launchAuth)
+    SitesList(
+        uiState.filteredSites,
+        uiState.filters,
+        onItemClick,
+        showPassword,
+        launchAuth
+    )
 }
 
 @Composable
 fun SitesList(
     list: List<SiteInfoModelMain>,
+    filters: List<FilterModel>,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
@@ -128,6 +138,11 @@ fun SitesList(
             hintRes = R.string.hint_sites_filter,
             initialText = filterText,
             onValueChanged = { filterText = it }
+        )
+
+        Categories(
+            filters = filters,
+            modifier = Modifier,
         )
 
         LazyColumn(

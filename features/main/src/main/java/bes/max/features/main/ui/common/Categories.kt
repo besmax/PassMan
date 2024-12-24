@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.domain.models.FilterModel
@@ -28,12 +30,16 @@ fun Categories(
 ) {
     var selected by remember { mutableIntStateOf(-1) }
 
-    Row(modifier.fillMaxWidth()) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         filters.forEachIndexed() { index, filter ->
             FilterChip(
                 onClick = {
                     selected = index
-                    filter.filterAction()
+                    filter.filterAction(filter.color.toArgb())
                 },
                 label = {
                     Text(
@@ -54,7 +60,7 @@ fun Categories(
                     null
                 },
                 modifier = Modifier.defaultMinSize(minWidth = 36.dp),
-                colors =  FilterChipDefaults.filterChipColors().copy(
+                colors = FilterChipDefaults.filterChipColors().copy(
                     containerColor = filter.color.copy(alpha = 0.3f),
                     selectedContainerColor = filter.color,
                 )
@@ -67,7 +73,7 @@ fun Categories(
 @Preview
 @Composable
 private fun CategoriesPreview() {
-    val model = FilterModel("filter1", Color.Blue, {  })
+    val model = FilterModel("filter1", Color.Blue, { })
     val filters = mutableListOf(
         model,
         model.copy(name = null, color = Color.Yellow),

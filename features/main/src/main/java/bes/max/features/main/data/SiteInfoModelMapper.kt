@@ -10,6 +10,7 @@ fun SiteInfoModelMain.map(): SiteInfoModel = SiteInfoModel(
     url = url,
     passwordIv = passwordIv,
     description = description,
+    categoryColor = categoryColor,
 )
 
 fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
@@ -19,4 +20,5 @@ fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
     url = url,
     passwordIv = passwordIv,
     description = description,
+    categoryColor = categoryColor,
 )
