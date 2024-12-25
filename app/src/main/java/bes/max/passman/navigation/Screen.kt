@@ -8,6 +8,7 @@ sealed class Screen(
     @StringRes val titleResId: Int? = null,
     @DrawableRes val iconResId: Int? = null
 ) {
-    object SitesScreen : Screen("sitesScreen")
-    object EditOrNewSiteScreen : Screen("editOrNewSiteScreen?{id}")
+    data object SitesScreen : Screen("sitesScreen")
+    data object EditOrNewSiteScreen : Screen("editOrNewSiteScreen?{id}")
+    data object CategoryScreen : Screen("categoryScreen")
 }

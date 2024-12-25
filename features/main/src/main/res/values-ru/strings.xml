@@ -13,7 +13,8 @@
     <string name="delete">Удалить</string>
     <string name="add">Добавить</string>
     <string name="hint_url">Введите адрес сайта</string>
-    <string name="hint_name">Введите наименование сайта</string>
+    <string name="hint_site_name">Введите наименование сайта</string>
     <string name="hint_sites_filter">Поиск</string>
     <string name="init_url">https://</string>
+    <string name="hint_name">Введите наименование</string>
 </resources>

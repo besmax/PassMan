@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -23,9 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.domain.models.FilterModel
 
+const val ADD_INDEX = Int.MAX_VALUE
+
 @Composable
 fun Categories(
     filters: List<FilterModel>,
+    addCategory: () -> Unit,
+    addCategoryTitle: String,
     modifier: Modifier = Modifier,
 ) {
     var selected by remember { mutableIntStateOf(-1) }
@@ -67,6 +72,29 @@ fun Categories(
             )
         }
 
+        FilterChip(
+            onClick = { addCategory() },
+            label = {
+                Text(
+                    text = addCategoryTitle,
+                    color = Color.Black,
+                )
+            },
+            selected = false,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add filter",
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            },
+            modifier = Modifier.defaultMinSize(minWidth = 36.dp),
+            colors = FilterChipDefaults.filterChipColors().copy(
+                containerColor = Color.White,
+                selectedContainerColor = Color.White,
+            )
+        )
+
     }
 }
 
@@ -80,5 +108,10 @@ private fun CategoriesPreview() {
         model.copy(name = "", color = Color.Red),
         model.copy(name = "filter4", color = Color.Green),
     )
-    Categories(filters)
+    Categories(
+        filters = filters,
+        addCategory = {},
+        addCategoryTitle = "Add"
+    )
+
 }

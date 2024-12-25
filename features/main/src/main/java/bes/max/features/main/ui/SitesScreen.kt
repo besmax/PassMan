@@ -59,6 +59,7 @@ import coil.request.ImageRequest
 fun SitesScreen(
     navigateToEdit: (Int) -> Unit,
     navigateToNew: () -> Unit,
+    navigateToCategory: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
@@ -96,6 +97,7 @@ fun SitesScreen(
                         navigateToEdit,
                         showPassword,
                         launchAuth,
+                        navigateToCategory
                     )
                 }
             }
@@ -109,13 +111,15 @@ fun ShowContent(
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
     SitesList(
         uiState.filteredSites,
         uiState.filters,
         onItemClick,
         showPassword,
-        launchAuth
+        launchAuth,
+        navigateToCategory
     )
 }
 
@@ -126,6 +130,7 @@ fun SitesList(
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
 
     Column(
@@ -142,6 +147,8 @@ fun SitesList(
 
         Categories(
             filters = filters,
+            addCategory = navigateToCategory,
+            addCategoryTitle = stringResource(R.string.add),
             modifier = Modifier,
         )
 

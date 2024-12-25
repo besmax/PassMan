@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import bes.max.features.main.ui.CategoryScreen
 import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SitesScreen
 
@@ -29,6 +30,11 @@ fun NavigationGraph(
                         Screen.EditOrNewSiteScreen.route
                     )
                 },
+                navigateToCategory = {
+                    navHostController.navigate(
+                        Screen.CategoryScreen.route
+                    )
+                },
                 launchAuth = launchAuth,
             )
         }
@@ -44,6 +50,12 @@ fun NavigationGraph(
             )
         ) {
             EditOrNewSiteScreen(navigateBack = { navHostController.popBackStack() }, launchAuth = launchAuth)
+        }
+
+        composable(
+            route = Screen.CategoryScreen.route
+        ) {
+            CategoryScreen(navigateBack = { navHostController.popBackStack() })
         }
     }
 }
