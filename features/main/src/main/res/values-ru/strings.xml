@@ -17,4 +17,6 @@
     <string name="hint_sites_filter">Поиск</string>
     <string name="init_url">https://</string>
     <string name="hint_name">Введите наименование</string>
+    <string name="categories">Категории</string>
+    <string name="categories_occupied">Все доступные категории уже добавлены</string>
 </resources>

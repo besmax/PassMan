@@ -1,11 +1,11 @@
 package bes.max.features.main.ui.common
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
@@ -19,12 +19,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.domain.models.FilterModel
 
-const val ADD_INDEX = Int.MAX_VALUE
+private const val NAME_LENGTH = 10
 
 @Composable
 fun Categories(
@@ -35,12 +36,14 @@ fun Categories(
 ) {
     var selected by remember { mutableIntStateOf(-1) }
 
-    Row(
+    LazyRow(
         modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        filters.forEachIndexed() { index, filter ->
+        itemsIndexed(
+            items = filters
+        ) { index, filter ->
             FilterChip(
                 onClick = {
                     selected = index
@@ -66,35 +69,36 @@ fun Categories(
                 },
                 modifier = Modifier.defaultMinSize(minWidth = 36.dp),
                 colors = FilterChipDefaults.filterChipColors().copy(
-                    containerColor = filter.color.copy(alpha = 0.3f),
-                    selectedContainerColor = filter.color,
+                    containerColor = filter.color,
+                    selectedContainerColor = filter.color.copy(alpha = 0.6f),
                 )
             )
         }
 
-        FilterChip(
-            onClick = { addCategory() },
-            label = {
-                Text(
-                    text = addCategoryTitle,
-                    color = Color.Black,
+        item {
+            FilterChip(
+                onClick = { addCategory() },
+                label = {
+                    Text(
+                        text = addCategoryTitle.take(NAME_LENGTH),
+                        color = Color.Black,
+                    )
+                },
+                selected = false,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add filter",
+                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                    )
+                },
+                modifier = Modifier.padding(start = 8.dp),
+                colors = FilterChipDefaults.filterChipColors().copy(
+                    containerColor = Color.White,
+                    selectedContainerColor = Color.White,
                 )
-            },
-            selected = false,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add filter",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            },
-            modifier = Modifier.defaultMinSize(minWidth = 36.dp),
-            colors = FilterChipDefaults.filterChipColors().copy(
-                containerColor = Color.White,
-                selectedContainerColor = Color.White,
             )
-        )
-
+        }
     }
 }
 

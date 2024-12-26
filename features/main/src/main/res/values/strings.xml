@@ -17,4 +17,6 @@
     <string name="hint_sites_filter">Search</string>
     <string name="init_url">https://</string>
     <string name="hint_name">Enter name</string>
+    <string name="categories">Categories</string>
+    <string name="categories_occupied">All available categories have already been added</string>
 </resources>
