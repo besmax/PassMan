@@ -104,23 +104,41 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (state.colors.isNotEmpty()) {
-            Colors(
-                colors = state.colors,
-                onSelect = { color -> selected = color }
-            )
+        AddSection(
+            colors = state.colors,
+            addCategory = { addCategory(selected) },
+            onSelect = { color -> selected = color },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            buttonEnabled = selected != -1
+        )
+    }
+}
 
-            Button(
-                onClick = { addCategory(selected) },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = stringResource(R.string.add))
-            }
-        } else {
-            Text(
-                text = stringResource(R.string.categories_occupied)
-            )
+@Composable
+private fun AddSection(
+    colors: List<Color>,
+    addCategory: () -> Unit,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    buttonEnabled: Boolean = true,
+) {
+    if (colors.isNotEmpty()) {
+        Colors(
+            colors = colors,
+            onSelect = onSelect
+        )
+
+        Button(
+            onClick = addCategory,
+            modifier = modifier,
+            enabled = buttonEnabled,
+        ) {
+            Text(text = stringResource(R.string.add))
         }
+    } else {
+        Text(
+            text = stringResource(R.string.categories_occupied)
+        )
     }
 }
 

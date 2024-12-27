@@ -46,8 +46,14 @@ fun Categories(
         ) { index, filter ->
             FilterChip(
                 onClick = {
-                    selected = index
-                    filter.filterAction(filter.color.toArgb())
+                    selected = if (selected == index) {
+                        filter.filterAction(-1)
+                        -1
+                    } else {
+                        filter.filterAction(filter.color.toArgb())
+                        index
+                    }
+
                 },
                 label = {
                     Text(
@@ -67,7 +73,9 @@ fun Categories(
                 } else {
                     null
                 },
-                modifier = Modifier.defaultMinSize(minWidth = 36.dp),
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 36.dp)
+                    .padding(end = 8.dp),
                 colors = FilterChipDefaults.filterChipColors().copy(
                     containerColor = filter.color,
                     selectedContainerColor = filter.color.copy(alpha = 0.6f),
@@ -92,7 +100,6 @@ fun Categories(
                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                     )
                 },
-                modifier = Modifier.padding(start = 8.dp),
                 colors = FilterChipDefaults.filterChipColors().copy(
                     containerColor = Color.White,
                     selectedContainerColor = Color.White,

@@ -54,13 +54,12 @@ class SitesViewModel @Inject constructor(
     private fun filterSites(color: Int? = null) {
         val currentState = uiState.value
         if (currentState is SitesScreenState.Content) {
-            if (color == null) {
+            if (color == null || color == -1) {
                 _uiState.postValue(currentState.copy(filteredSites = currentState.sites))
             } else {
                 _uiState.postValue(currentState.copy(
                     filteredSites = currentState.sites.filter { it.categoryColor == color }
-                )
-                )
+                ))
             }
         }
     }
