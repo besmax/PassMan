@@ -19,4 +19,6 @@
     <string name="hint_name">Введите наименование</string>
     <string name="categories">Категории</string>
     <string name="categories_occupied">Все доступные категории уже добавлены</string>
+    <string name="delete_category">Удалить категорию</string>
+    <string name="current_categories">Текущие категории</string>
 </resources>

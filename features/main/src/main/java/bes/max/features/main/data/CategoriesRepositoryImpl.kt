@@ -47,6 +47,10 @@ class CategoriesRepositoryImpl(
         categoryDbRepository.delete(model.map(), dispatcher)
     }
 
+    override suspend fun deleteByColor(color: Int, dispatcher: CoroutineDispatcher) {
+        categoryDbRepository.deleteByColor(color, dispatcher)
+    }
+
     override suspend fun getFilters(filterAction: (Int) -> Unit, dispatcher: CoroutineDispatcher): List<FilterModel> {
         val categories = getAll(dispatcher).flowOn(dispatcher).firstOrNull()
         return categories?.map { it.toFilter(filterAction) } ?: emptyList()

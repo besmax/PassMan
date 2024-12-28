@@ -45,4 +45,10 @@ class CategoryViewModel @Inject constructor(
             )
         }
     }
+
+    fun deleteCategory(color: Int) {
+        viewModelScope.launch {
+            categoryRepository.deleteByColor(color)
+        }
+    }
 }

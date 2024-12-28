@@ -1,6 +1,8 @@
 package bes.max.features.main.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,15 +10,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,18 +42,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupPositionProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
+import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.presentation.category.CategoryScreenState
 import bes.max.features.main.presentation.category.CategoryViewModel
-import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.ui.common.ShowLoading
 import bes.max.features.main.ui.common.ShowTitle
 import bes.max.features.main.ui.common.UserInput
-import bes.max.features.main.ui.util.categoryColors
 import bes.max.passman.features.main.R
+
+private const val CURRENT_CATEGORY_COLOR_SIZE = 24
 
 @Composable
 fun CategoryScreen(
@@ -72,7 +90,8 @@ fun CategoryScreen(
                     name
                 )
             },
-            navigateBack = navigateBack
+            navigateBack = navigateBack,
+            deleteCategory = categoryViewModel::deleteCategory
         )
 
         is CategoryScreenState.Loading -> ShowLoading()
@@ -86,6 +105,7 @@ private fun Content(
     changeName: (String) -> Unit,
     addCategory: (Int) -> Unit,
     navigateBack: () -> Unit,
+    deleteCategory: (Int) -> Unit,
 ) {
     var selected by remember { mutableIntStateOf(-1) }
 
@@ -110,6 +130,11 @@ private fun Content(
             onSelect = { color -> selected = color },
             modifier = Modifier.align(Alignment.CenterHorizontally),
             buttonEnabled = selected != -1
+        )
+
+        CurrentCategories(
+            categories = state.categories,
+            deleteCategory = deleteCategory
         )
     }
 }
@@ -199,5 +224,119 @@ private fun ColorItem(
             containerColor = color,
             selectedContainerColor = color,
         )
+    )
+}
+
+@Composable
+private fun CurrentCategories(
+    categories: List<CategoryModelMain>,
+    deleteCategory: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Text(
+        text = stringResource(R.string.current_categories),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, top = 16.dp, bottom = 8.dp),
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    ) {
+        items(
+            items = categories,
+            key = { model -> model.color.toArgb() }
+        ) { model ->
+            CurrentCategoryItem(
+                item = model,
+                deleteCategory = { color -> deleteCategory(color) },
+            )
+        }
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CurrentCategoryItem(
+    item: CategoryModelMain,
+    deleteCategory: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val tooltipState = rememberTooltipState()
+
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val deleteContentDescr = stringResource(R.string.delete_category)
+
+        Spacer(
+            modifier = Modifier
+                .size(CURRENT_CATEGORY_COLOR_SIZE.dp)
+                .background(
+                    color = item.color,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(all = 4.dp)
+        )
+
+        Text(
+            text = item.name,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        )
+
+        Spacer(modifier.weight(1f))
+
+        TooltipBox(
+            positionProvider = tooltipPositionProvider,
+            tooltip = {
+                Text(deleteContentDescr)
+            },
+            state = tooltipState,
+            modifier = Modifier
+        ) {
+            IconButton(
+                onClick = { deleteCategory(item.color.toArgb()) },
+                modifier = Modifier
+                    .padding(end = 16.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = deleteContentDescr
+                )
+            }
+        }
+    }
+
+}
+
+internal val tooltipPositionProvider = object : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize
+    ): IntOffset {
+        return IntOffset(anchorBounds.left, anchorBounds.top - popupContentSize.height)
+    }
+
+}
+
+@Composable
+@Preview
+private fun CurrentCategoryItemPreview() {
+    val item = CategoryModelMain("COLOR", Color.Yellow)
+    CurrentCategoryItem(
+        item = item,
+        deleteCategory = {},
     )
 }

@@ -18,4 +18,6 @@ interface CategoryDbRepository {
     suspend fun insert(model: CategoryModel, dispatcher: CoroutineDispatcher)
 
     suspend fun delete(model: CategoryModel, dispatcher: CoroutineDispatcher)
+
+    suspend fun deleteByColor(color: Int, dispatcher: CoroutineDispatcher)
 }

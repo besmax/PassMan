@@ -40,4 +40,8 @@ class CategoryDbRepositoryImpl(
     override suspend fun delete(model: CategoryModel, dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) { categoryDao.delete(model.map()) }
     }
+
+    override suspend fun deleteByColor(color: Int, dispatcher: CoroutineDispatcher) {
+        withContext(dispatcher) { categoryDao.delete(color) }
+    }
 }

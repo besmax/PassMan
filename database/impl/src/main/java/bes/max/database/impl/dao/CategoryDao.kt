@@ -30,4 +30,7 @@ interface CategoryDao {
 
     @Delete
     suspend fun delete(entity: CategoryEntity)
+
+    @Query("DELETE FROM category_table WHERE color=:color")
+    suspend fun delete(color: Int)
 }
