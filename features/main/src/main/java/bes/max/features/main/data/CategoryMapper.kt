@@ -19,5 +19,5 @@ fun CategoryModel.map(): CategoryModelMain = CategoryModelMain(
 fun CategoryModelMain.toFilter(filterAction: (Int) -> Unit): FilterModel = FilterModel(
     name = name,
     color = color,
-    filterAction = { filterAction(color.toArgb()) },
+    filterAction = { color -> filterAction(color) },
 )
