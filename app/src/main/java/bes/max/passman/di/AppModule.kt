@@ -13,7 +13,9 @@ import bes.max.database.impl.dao.SiteInfoDao
 import bes.max.database.impl.migration.MIGRATION_1_2
 import bes.max.database.impl.repositories.CategoryDbRepositoryImpl
 import bes.max.database.impl.repositories.SiteInfoDbRepositoryImpl
+import bes.max.features.main.data.CategoriesRepositoryImpl
 import bes.max.features.main.data.SiteInfoRepositoryImpl
+import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.passman.cipher.CipherImpl
 import dagger.Module
@@ -53,6 +55,11 @@ object AppModule {
     @Singleton
     fun provideSiteInfoRepository(siteInfoDbRepository: SiteInfoDbRepository): SiteInfoRepository =
         SiteInfoRepositoryImpl(siteInfoDbRepository)
+
+    @Provides
+    @Singleton
+    fun provideCategoriesRepository(categoryDbRepository: CategoryDbRepository): CategoriesRepository =
+        CategoriesRepositoryImpl(categoryDbRepository)
 
     @RequiresApi(Build.VERSION_CODES.R)
     @Provides

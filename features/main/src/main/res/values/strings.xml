@@ -13,7 +13,10 @@
     <string name="delete">Delete</string>
     <string name="add">Add</string>
     <string name="hint_url">Enter site web-address</string>
-    <string name="hint_name">Enter site name</string>
+    <string name="hint_site_name">Enter site name</string>
     <string name="hint_sites_filter">Search</string>
     <string name="init_url">https://</string>
+    <string name="hint_name">Enter name</string>
+    <string name="categories">Categories</string>
+    <string name="categories_occupied">All available categories have already been added</string>
 </resources>

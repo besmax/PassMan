@@ -124,7 +124,7 @@ fun ShowEdit(
         ShowTitle(title = stringResource(id = R.string.edit))
 
         UserInput(
-            hintRes = R.string.hint_name,
+            hintRes = R.string.hint_site_name,
             initialText = model.name,
             onValueChanged = changeName
         )
@@ -192,7 +192,7 @@ fun ShowNew(
         ShowTitle(title = stringResource(id = R.string.add))
 
         UserInput(
-            hintRes = R.string.hint_name,
+            hintRes = R.string.hint_site_name,
             onValueChanged = changeName,
         )
 

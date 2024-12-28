@@ -13,5 +13,6 @@ data class SiteInfoEntity(
     @ColumnInfo("url") val url: String,
     @ColumnInfo("password_iv") val passwordIv: String,
     @ColumnInfo("description") val description: String?,
-    @ColumnInfo("category_id") val categoryId: Int? = null,
+    @ColumnInfo("category") val category: Int?,
+
 )
