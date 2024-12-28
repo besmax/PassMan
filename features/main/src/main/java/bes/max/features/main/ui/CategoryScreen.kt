@@ -89,6 +89,7 @@ fun CategoryScreen(
                     (uiState as CategoryScreenState.Content).colors[colorIndex],
                     name
                 )
+                categoryViewModel.getCategories()
             },
             navigateBack = navigateBack,
             deleteCategory = categoryViewModel::deleteCategory
@@ -129,7 +130,8 @@ private fun Content(
             addCategory = { addCategory(selected) },
             onSelect = { color -> selected = color },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            buttonEnabled = selected != -1
+            buttonEnabled = selected != -1,
+            selected = selected
         )
 
         CurrentCategories(
@@ -144,17 +146,22 @@ private fun AddSection(
     colors: List<Color>,
     addCategory: () -> Unit,
     onSelect: (Int) -> Unit,
+    selected: Int,
     modifier: Modifier = Modifier,
     buttonEnabled: Boolean = true,
 ) {
     if (colors.isNotEmpty()) {
         Colors(
             colors = colors,
-            onSelect = onSelect
+            onSelect = onSelect,
+            selected = selected
         )
 
         Button(
-            onClick = addCategory,
+            onClick = {
+                addCategory()
+                onSelect(-1)
+            },
             modifier = modifier,
             enabled = buttonEnabled,
         ) {
@@ -171,9 +178,8 @@ private fun AddSection(
 private fun Colors(
     colors: List<Color>,
     onSelect: (Int) -> Unit,
+    selected: Int,
 ) {
-    var selected by remember { mutableIntStateOf(-1) }
-
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,7 +193,6 @@ private fun Colors(
                 color = item,
                 selected = selected,
                 onSelect = {
-                    selected = it
                     onSelect(it)
                 }
             )
