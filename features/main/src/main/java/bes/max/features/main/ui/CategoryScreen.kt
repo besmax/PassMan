@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -242,7 +245,7 @@ private fun CurrentCategories(
         text = stringResource(R.string.current_categories),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, top = 16.dp, bottom = 8.dp),
+            .padding(start = 16.dp, top = 16.dp),
         style = MaterialTheme.typography.titleMedium
     )
 
@@ -273,50 +276,62 @@ private fun CurrentCategoryItem(
 ) {
     val tooltipState = rememberTooltipState()
 
-
-    Row(
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
     ) {
-        val deleteContentDescr = stringResource(R.string.delete_category)
-
-        Spacer(
+        Row(
             modifier = Modifier
-                .size(CURRENT_CATEGORY_COLOR_SIZE.dp)
-                .background(
-                    color = item.color,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .padding(all = 4.dp)
-        )
-
-        Text(
-            text = item.name,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-        )
-
-        Spacer(modifier.weight(1f))
-
-        TooltipBox(
-            positionProvider = tooltipPositionProvider,
-            tooltip = {
-                Text(deleteContentDescr)
-            },
-            state = tooltipState,
-            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = { deleteCategory(item.color.toArgb()) },
+            val deleteContentDescr = stringResource(R.string.delete_category)
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Spacer(
                 modifier = Modifier
-                    .padding(end = 16.dp),
+                    .size(CURRENT_CATEGORY_COLOR_SIZE.dp)
+                    .background(
+                        color = item.color,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+            )
+
+            Text(
+                text = item.name,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier.weight(1f))
+
+            TooltipBox(
+                positionProvider = tooltipPositionProvider,
+                tooltip = {
+                    Text(deleteContentDescr)
+                },
+                state = tooltipState,
+                modifier = Modifier
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = deleteContentDescr
-                )
+                IconButton(
+                    onClick = { deleteCategory(item.color.toArgb()) },
+                    modifier = Modifier
+                        .padding(end = 16.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = deleteContentDescr
+                    )
+                }
             }
         }
     }
