@@ -9,7 +9,6 @@ import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.ui.util.categoryColors
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,15 +22,17 @@ class CategoryViewModel @Inject constructor(
 
     fun getCategories() {
         viewModelScope.launch {
-            val categories = categoryRepository.getAll().firstOrNull() ?: return@launch
-            val availableColors =
-                categoryColors.filter { color -> (categories.find { it.color == color } == null) }
-            _uiState.postValue(
-                CategoryScreenState.Content(
-                    categories = categories,
-                    colors = availableColors
+            categoryRepository.getAll().collect() { categories ->
+                val availableColors =
+                    categoryColors.filter { color -> (categories.find { it.color == color } == null) }
+                _uiState.postValue(
+                    CategoryScreenState.Content(
+                        categories = categories,
+                        colors = availableColors
+                    )
                 )
-            )
+            }
+
         }
     }
 

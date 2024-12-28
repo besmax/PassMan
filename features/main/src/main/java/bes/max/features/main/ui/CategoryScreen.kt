@@ -89,7 +89,6 @@ fun CategoryScreen(
                     (uiState as CategoryScreenState.Content).colors[colorIndex],
                     name
                 )
-                categoryViewModel.getCategories()
             },
             navigateBack = navigateBack,
             deleteCategory = categoryViewModel::deleteCategory
