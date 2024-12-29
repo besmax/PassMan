@@ -21,4 +21,5 @@
     <string name="categories_occupied">All available categories have already been added</string>
     <string name="delete_category">Delete category</string>
     <string name="current_categories">Current categories</string>
+    <string name="choose_category">Choose category</string>
 </resources>

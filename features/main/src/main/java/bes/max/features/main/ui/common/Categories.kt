@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.domain.models.FilterModel
 
-private const val NAME_LENGTH = 10
+const val CATEGORY_NAME_LENGTH = 10
 
 @Composable
 fun Categories(
@@ -57,7 +57,7 @@ fun Categories(
                 },
                 label = {
                     Text(
-                        text = filter.name ?: "",
+                        text = filter.name?.take(CATEGORY_NAME_LENGTH) ?: "",
                         color = Color.White,
                     )
                 },
@@ -88,7 +88,7 @@ fun Categories(
                 onClick = { addCategory() },
                 label = {
                     Text(
-                        text = addCategoryTitle.take(NAME_LENGTH),
+                        text = addCategoryTitle.take(CATEGORY_NAME_LENGTH),
                         color = Color.Black,
                     )
                 },

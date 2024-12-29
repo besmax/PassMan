@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.SiteInfoModelMain
+import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class EditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val siteInfoRepository: SiteInfoRepository,
-    private val cipher: CipherApi
+    private val cipher: CipherApi,
+    private val categoriesRepository: CategoriesRepository,
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Int>("id")
@@ -28,7 +30,8 @@ class EditViewModel @Inject constructor(
         if (id != -1) {
             getSiteModel(id!!)
         } else {
-            _uiState.value = EditScreenState.New
+            _uiState.value = EditScreenState.New()
+            getCategories()
         }
     }
 
@@ -37,6 +40,7 @@ class EditViewModel @Inject constructor(
             val model = siteInfoRepository.getById(id)
             if (model != null) {
                 _uiState.postValue(EditScreenState.Edit(model))
+                getCategories()
             } else {
                 _uiState.postValue(EditScreenState.Error)
             }
@@ -87,7 +91,7 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun add(name: String, url: String, password: String, comment: String?) {
+    fun add(name: String, url: String, password: String, comment: String?, categoryColor: Int?) {
         val encryptedData = cipher.encrypt(alias = name, textToEncrypt = password)
         viewModelScope.launch {
             siteInfoRepository.create(
@@ -97,7 +101,7 @@ class EditViewModel @Inject constructor(
                     url = url,
                     passwordIv = encryptedData.passwordIv,
                     description = if (comment?.isBlank() == true) null else comment,
-
+                    categoryColor = categoryColor,
                     )
             )
         }
@@ -106,6 +110,19 @@ class EditViewModel @Inject constructor(
     fun delete(model: SiteInfoModelMain) {
         viewModelScope.launch {
             siteInfoRepository.delete(model)
+        }
+    }
+
+    private fun getCategories() {
+        viewModelScope.launch {
+            categoriesRepository.getAll().collect() { categories ->
+                val currentState = uiState.value
+                if (currentState is EditScreenState.New) {
+                    _uiState.postValue(currentState.copy(categories = categories))
+                } else if (currentState is EditScreenState.Edit) {
+                    _uiState.postValue(currentState.copy(categories = categories))
+                }
+            }
         }
     }
 
