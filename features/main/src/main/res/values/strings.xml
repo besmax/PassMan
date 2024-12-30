@@ -22,4 +22,5 @@
     <string name="delete_category">Delete category</string>
     <string name="current_categories">Current categories</string>
     <string name="choose_category">Choose category</string>
+    <string name="no_categories">You have not added categories yet</string>
 </resources>

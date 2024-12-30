@@ -92,17 +92,17 @@ class EditViewModel @Inject constructor(
     }
 
     fun add(name: String, url: String, password: String, comment: String?, categoryColor: Int?) {
-        val encryptedData = cipher.encrypt(alias = name, textToEncrypt = password)
+        val encryptedData = cipher.encrypt(alias = name.trim(), textToEncrypt = password.trim())
         viewModelScope.launch {
             siteInfoRepository.create(
                 SiteInfoModelMain(
-                    name = name,
+                    name = name.trim(),
                     password = encryptedData.encryptedData,
-                    url = url,
+                    url = url.trim(),
                     passwordIv = encryptedData.passwordIv,
-                    description = if (comment?.isBlank() == true) null else comment,
+                    description = if (comment?.isBlank() == true) null else comment?.trim(),
                     categoryColor = categoryColor,
-                    )
+                )
             )
         }
     }

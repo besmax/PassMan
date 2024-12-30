@@ -22,5 +22,5 @@
     <string name="delete_category">Удалить категорию</string>
     <string name="current_categories">Текущие категории</string>
     <string name="choose_category">Выберите категорию</string>
-
+    <string name="no_categories">Вы ещё не добавили категории</string>
 </resources>

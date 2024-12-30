@@ -42,7 +42,7 @@ class CategoryViewModel @Inject constructor(
         viewModelScope.launch {
             categoryRepository.insert(
                 CategoryModelMain(
-                    name = name ?: "",
+                    name = name?.trim() ?: "",
                     color = color,
                 )
             )

@@ -92,6 +92,7 @@ fun CategoryScreen(
                     (uiState as CategoryScreenState.Content).colors[colorIndex],
                     name
                 )
+                name = ""
             },
             navigateBack = navigateBack,
             deleteCategory = categoryViewModel::deleteCategory
@@ -248,6 +249,16 @@ private fun CurrentCategories(
             .padding(start = 16.dp, top = 16.dp),
         style = MaterialTheme.typography.titleMedium
     )
+
+    if (categories.isEmpty()) {
+        Text(
+            text = stringResource(R.string.no_categories),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 4.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 
     LazyColumn(
         modifier = modifier
