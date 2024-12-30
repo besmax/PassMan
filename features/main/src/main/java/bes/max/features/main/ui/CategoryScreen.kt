@@ -74,7 +74,7 @@ fun CategoryScreen(
 
     val uiState by categoryViewModel.uiState.observeAsState()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val state by lifecycleOwner.lifecycle.currentStateAsState()
 
     LaunchedEffect(key1 = state) {
@@ -92,7 +92,6 @@ fun CategoryScreen(
                     (uiState as CategoryScreenState.Content).colors[colorIndex],
                     name
                 )
-                name = ""
             },
             navigateBack = navigateBack,
             deleteCategory = categoryViewModel::deleteCategory
