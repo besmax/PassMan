@@ -1,5 +1,6 @@
 package bes.max.features.main.data
 
+import bes.max.database.api.model.SiteInfoModel
 import bes.max.database.api.repositories.SiteInfoDbRepository
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.SiteInfoRepository
@@ -15,6 +16,10 @@ class SiteInfoRepositoryImpl(
 
     override suspend fun getById(id: Int): SiteInfoModelMain? =
         siteInfoDbRepository.getById(id, Dispatchers.IO)?.map()
+
+    override suspend fun getByCategory(category: Int): List<SiteInfoModelMain> =
+        siteInfoDbRepository.getByCategory(category, Dispatchers.IO).map { it.map() }
+
 
     override suspend fun create(model: SiteInfoModelMain) {
         siteInfoDbRepository.insert(model.map(), Dispatchers.IO)

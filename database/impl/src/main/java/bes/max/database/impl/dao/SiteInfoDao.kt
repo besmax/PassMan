@@ -28,6 +28,9 @@ interface SiteInfoDao {
     @Query("SELECT * FROM site_info_table WHERE id=:id")
     suspend fun getById(id: Int): SiteInfoEntity?
 
+    @Query("SELECT * FROM site_info_table WHERE category=:category")
+    suspend fun getByCategory(category: Int): List<SiteInfoEntity>
+
     @Delete
     suspend fun delete(entity: SiteInfoEntity)
 }

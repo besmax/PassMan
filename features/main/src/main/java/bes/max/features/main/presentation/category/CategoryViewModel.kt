@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
+import bes.max.features.main.domain.usecase.DeleteCategoryUseCase
 import bes.max.features.main.ui.util.categoryColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
     private val categoryRepository: CategoriesRepository,
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<CategoryScreenState>(CategoryScreenState.Loading)
@@ -49,7 +51,7 @@ class CategoryViewModel @Inject constructor(
 
     fun deleteCategory(color: Int) {
         viewModelScope.launch {
-            categoryRepository.deleteByColor(color)
+            deleteCategoryUseCase(color)
         }
     }
 }
