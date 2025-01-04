@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -23,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,21 +80,35 @@ private fun FolderItem(
     file: File,
     onItemClick: () -> Unit,
 ) {
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd.MM.yyyy, HH:mm", Locale.getDefault())
     val creationDate = dateFormat.format(Date(file.lastModified()))
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
             .clickable { onItemClick() }
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Icon(
-                imageVector = folderIcon,
-                contentDescription = stringResource(R.string.folder_explorer_item),
-                modifier = Modifier,
-            )
+        Row(
+            modifier = Modifier
+            .fillMaxWidth()
+                .padding(all = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+            ) {
+                Icon(
+                    imageVector = folderIcon,
+                    contentDescription = stringResource(R.string.folder_explorer_item),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             Column(
                 modifier = Modifier,
