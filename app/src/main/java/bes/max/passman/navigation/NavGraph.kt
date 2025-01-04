@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import bes.max.export.ui.FileExplorerScreen
 import bes.max.features.main.ui.CategoryScreen
 import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SitesScreen
@@ -15,7 +16,7 @@ fun NavigationGraph(
     navHostController: NavHostController,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
-    NavHost(navController = navHostController, startDestination = Screen.SitesScreen.route) {
+    NavHost(navController = navHostController, startDestination = Screen.FileExplorerScreen.route) {
         composable(route = Screen.SitesScreen.route) {
             SitesScreen(navigateToEdit = { id ->
                 navHostController.navigate(
@@ -56,6 +57,12 @@ fun NavigationGraph(
             route = Screen.CategoryScreen.route
         ) {
             CategoryScreen(navigateBack = { navHostController.popBackStack() })
+        }
+
+        composable(
+            route = Screen.FileExplorerScreen.route
+        ) {
+            FileExplorerScreen(navigateBack = { navHostController.popBackStack() })
         }
     }
 }

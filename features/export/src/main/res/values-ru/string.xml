@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_explorer_item">Папка в фаловом проводнике</string>
+    <string name="folder_explorer_item_date_count">%1$s | объектов: %2$d </string>
+</resources>
