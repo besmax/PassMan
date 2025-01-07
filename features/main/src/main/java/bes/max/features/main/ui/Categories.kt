@@ -1,4 +1,4 @@
-package bes.max.features.main.ui.common
+package bes.max.features.main.ui
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth

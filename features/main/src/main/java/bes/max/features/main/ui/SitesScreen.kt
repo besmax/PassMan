@@ -50,11 +50,10 @@ import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
-import bes.max.features.main.ui.common.Categories
-import bes.max.features.main.ui.common.LightGray
-import bes.max.features.main.ui.common.ShowLoading
-import bes.max.features.main.ui.common.ShowTitle
-import bes.max.features.main.ui.common.UserInput
+import bes.max.ui.common.LightGray
+import bes.max.ui.common.ShowLoading
+import bes.max.ui.common.ShowTitle
+import bes.max.ui.common.UserInput
 import bes.max.passman.features.main.R
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest

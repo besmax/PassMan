@@ -58,9 +58,9 @@ import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.presentation.category.CategoryScreenState
 import bes.max.features.main.presentation.category.CategoryViewModel
-import bes.max.features.main.ui.common.ShowLoading
-import bes.max.features.main.ui.common.ShowTitle
-import bes.max.features.main.ui.common.UserInput
+import bes.max.ui.common.ShowLoading
+import bes.max.ui.common.ShowTitle
+import bes.max.ui.common.UserInput
 import bes.max.passman.features.main.R
 
 private const val CURRENT_CATEGORY_COLOR_SIZE = 24

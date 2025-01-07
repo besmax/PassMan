@@ -1,4 +1,4 @@
-package bes.max.features.main.ui.common
+package bes.max.ui.common
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import bes.max.passman.features.main.R
+import bes.max.ui.R
 
 @Composable
 fun UserInput(

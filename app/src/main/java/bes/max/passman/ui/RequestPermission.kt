@@ -1,4 +1,4 @@
-package bes.max.export.ui
+package bes.max.passman.ui
 
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult

@@ -1,4 +1,4 @@
-package bes.max.features.main.ui.common
+package bes.max.ui.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

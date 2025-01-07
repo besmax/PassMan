@@ -51,11 +51,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.hilt)
+    debugImplementation(libs.ui.tooling)
     ksp(libs.hilt.compiler)
-
+    implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.compose)
 
     implementation(project(":cipher:api"))
+    implementation(project(":ui"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
