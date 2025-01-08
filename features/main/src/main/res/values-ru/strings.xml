@@ -23,4 +23,7 @@
     <string name="current_categories">Текущие категории</string>
     <string name="choose_category">Выберите категорию</string>
     <string name="no_categories">Вы ещё не добавили категории</string>
+    <string name="settings_item_import_descr">Элемент экрана настроек - импорт данных</string>
+    <string name="settings_item_import">Импорт данных с файла</string>
+    <string name="settings">Настройки</string>
 </resources>

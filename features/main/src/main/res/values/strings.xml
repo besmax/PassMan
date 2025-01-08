@@ -23,4 +23,7 @@
     <string name="current_categories">Current categories</string>
     <string name="choose_category">Choose category</string>
     <string name="no_categories">You have not added categories yet</string>
+    <string name="settings_item_import_descr">Settings item import</string>
+    <string name="settings_item_import">Import data from file</string>
+    <string name="settings">Settings</string>
 </resources>
