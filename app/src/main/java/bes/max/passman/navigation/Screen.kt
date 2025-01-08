@@ -12,4 +12,5 @@ sealed class Screen(
     data object EditOrNewSiteScreen : Screen("editOrNewSiteScreen?{id}")
     data object CategoryScreen : Screen("categoryScreen")
     data object FileExplorerScreen : Screen("fileProviderScreen")
+    data object SettingsScreen : Screen("settingsScreen")
 }

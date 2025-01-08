@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import bes.max.export.ui.FileExplorerScreen
 import bes.max.features.main.ui.CategoryScreen
 import bes.max.features.main.ui.EditOrNewSiteScreen
+import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen
 import bes.max.passman.ui.RequestPermission
 
@@ -36,6 +37,11 @@ fun NavigationGraph(
                 navigateToCategory = {
                     navHostController.navigate(
                         Screen.CategoryScreen.route
+                    )
+                },
+                navigateToSettings = {
+                    navHostController.navigate(
+                        Screen.SettingsScreen.route
                     )
                 },
                 launchAuth = launchAuth,
@@ -65,6 +71,12 @@ fun NavigationGraph(
             route = Screen.FileExplorerScreen.route
         ) {
             FileExplorerScreen(navigateBack = { navHostController.popBackStack() })
+        }
+
+        composable(
+            route = Screen.SettingsScreen.route
+        ) {
+            SettingsScreen(navigateBack = { navHostController.popBackStack() })
         }
     }
 }

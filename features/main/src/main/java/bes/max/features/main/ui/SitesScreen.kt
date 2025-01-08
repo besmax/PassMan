@@ -1,5 +1,7 @@
 package bes.max.features.main.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,14 +18,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,6 +57,7 @@ import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
+import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.ui.common.LightGray
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.ShowTitle
@@ -58,11 +66,13 @@ import bes.max.passman.features.main.R
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SitesScreen(
     navigateToEdit: (Int) -> Unit,
     navigateToNew: () -> Unit,
     navigateToCategory: () -> Unit,
+    navigateToSettings: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
@@ -83,6 +93,28 @@ fun SitesScreen(
 
     Scaffold(
         floatingActionButton = { FabAdd(navigateToNew) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.saved_passwords),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = navigateToSettings,
+
+                    ) {
+                        Icon(
+                            imageVector = settingsIcon,
+                            contentDescription = "Go to settings icon",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                }
+            )
+        },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
@@ -90,19 +122,24 @@ fun SitesScreen(
                     .padding(paddingValues)
             ) {
 
-                ShowTitle(title = stringResource(id = R.string.saved_passwords))
-
-                when (uiState) {
-                    is SitesScreenState.Empty -> ShowEmpty()
-                    is SitesScreenState.Loading -> ShowLoading()
-                    is SitesScreenState.Content -> ShowContent(
-                        uiState as SitesScreenState.Content,
-                        navigateToEdit,
-                        showPassword,
-                        launchAuth,
-                        navigateToCategory
-                    )
+                Crossfade(
+                    targetState = uiState,
+                    animationSpec = tween(durationMillis = 600),
+                    label = "Sites Screen States Changes"
+                ) { state ->
+                    when (state) {
+                        is SitesScreenState.Empty -> ShowEmpty()
+                        is SitesScreenState.Loading -> ShowLoading()
+                        is SitesScreenState.Content -> ShowContent(
+                            state,
+                            navigateToEdit,
+                            showPassword,
+                            launchAuth,
+                            navigateToCategory
+                        )
+                    }
                 }
+
             }
         }
     )
