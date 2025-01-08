@@ -172,16 +172,18 @@ fun ShowEdit(
             onValueChanged = changeComment
         )
 
-        Text(
-            text = stringResource(id = R.string.choose_category),
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
+        if (categories.isNotEmpty()) {
+            Text(
+                text = stringResource(id = R.string.choose_category),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
 
-        ChooseCategory(
-            categories = categories,
-            changeCategory = changeCategory,
-        )
+            ChooseCategory(
+                categories = categories,
+                changeCategory = changeCategory,
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -252,16 +254,18 @@ fun ShowNew(
             onValueChanged = changeComment,
         )
 
-        Text(
-            text = stringResource(id = R.string.choose_category),
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleMedium,
-        )
+        if (categories.isNotEmpty()) {
+            Text(
+                text = stringResource(id = R.string.choose_category),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleMedium,
+            )
 
-        ChooseCategory(
-            categories = categories,
-            changeCategory = changeCategory,
-        )
+            ChooseCategory(
+                categories = categories,
+                changeCategory = changeCategory,
+            )
+        }
 
         Button(
             onClick = {

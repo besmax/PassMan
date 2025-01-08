@@ -18,7 +18,7 @@ fun NavigationGraph(
     navHostController: NavHostController,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
-    NavHost(navController = navHostController, startDestination = Screen.FileExplorerScreen.route) {
+    NavHost(navController = navHostController, startDestination = Screen.SitesScreen.route) {
         composable(route = Screen.SitesScreen.route) {
             SitesScreen(navigateToEdit = { id ->
                 navHostController.navigate(
