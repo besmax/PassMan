@@ -31,7 +31,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 }
 
@@ -40,7 +40,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.compose.ui)
-    implementation(libs.compose.activity)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.compose.tooling)
     implementation(libs.compose.foundation)
     implementation(libs.compose.lifecycle)
@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.coil)
     implementation(libs.biometric.ktx)
+    implementation(libs.accompanist.permissions)
 
     implementation(project(":database:api"))
     implementation(project(":cipher:api"))

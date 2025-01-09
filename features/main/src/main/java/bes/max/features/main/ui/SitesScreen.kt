@@ -105,7 +105,7 @@ fun SitesScreen(
                     IconButton(
                         onClick = navigateToSettings,
 
-                    ) {
+                        ) {
                         Icon(
                             imageVector = settingsIcon,
                             contentDescription = "Go to settings icon",

@@ -21,14 +21,15 @@ fun NavigationGraph(
 ) {
     NavHost(navController = navHostController, startDestination = Screen.SitesScreen.route) {
         composable(route = Screen.SitesScreen.route) {
-            SitesScreen(navigateToEdit = { id ->
-                navHostController.navigate(
-                    Screen.EditOrNewSiteScreen.route.replace(
-                        "{id}",
-                        id.toString()
+            SitesScreen(
+                navigateToEdit = { id ->
+                    navHostController.navigate(
+                        Screen.EditOrNewSiteScreen.route.replace(
+                            "{id}",
+                            id.toString()
+                        )
                     )
-                )
-            },
+                },
                 navigateToNew = {
                     navHostController.navigate(
                         Screen.EditOrNewSiteScreen.route
@@ -58,7 +59,10 @@ fun NavigationGraph(
                 }
             )
         ) {
-            EditOrNewSiteScreen(navigateBack = { navHostController.popBackStack() }, launchAuth = launchAuth)
+            EditOrNewSiteScreen(
+                navigateBack = { navHostController.popBackStack() },
+                launchAuth = launchAuth
+            )
         }
 
         composable(
@@ -76,7 +80,10 @@ fun NavigationGraph(
         composable(
             route = Screen.SettingsScreen.route
         ) {
-            SettingsScreen(navigateBack = { navHostController.popBackStack() })
+            SettingsScreen(
+                navigateBack = { navHostController.popBackStack() },
+                navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
+            )
         }
     }
 }
