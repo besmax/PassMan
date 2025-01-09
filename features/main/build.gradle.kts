@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.biometric.ktx)
     implementation(libs.accompanist.permissions)
+    implementation(libs.kotlinx.serialization)
 
     implementation(project(":database:api"))
     implementation(project(":cipher:api"))

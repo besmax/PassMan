@@ -1,5 +1,8 @@
 package bes.max.database.api.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class SiteInfoModel(
     val id: Int = 0,
     val name: String,

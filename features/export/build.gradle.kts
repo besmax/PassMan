@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -55,9 +56,11 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.serialization)
 
     implementation(project(":cipher:api"))
     implementation(project(":ui"))
+    implementation(project(":database:api"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

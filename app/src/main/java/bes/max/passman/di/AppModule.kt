@@ -13,6 +13,12 @@ import bes.max.database.impl.dao.SiteInfoDao
 import bes.max.database.impl.migration.MIGRATION_1_2
 import bes.max.database.impl.repositories.CategoryDbRepositoryImpl
 import bes.max.database.impl.repositories.SiteInfoDbRepositoryImpl
+import bes.max.export.data.FileExportRepositoryImpl
+import bes.max.export.data.FileReaderImpl
+import bes.max.export.data.FileWriterImpl
+import bes.max.export.domain.FileExportRepository
+import bes.max.export.domain.FileReader
+import bes.max.export.domain.FileWriter
 import bes.max.features.main.data.CategoriesRepositoryImpl
 import bes.max.features.main.data.SiteInfoRepositoryImpl
 import bes.max.features.main.domain.repositories.CategoriesRepository
@@ -75,4 +81,30 @@ object AppModule {
             .addMigrations(MIGRATION_1_2)
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideFileWriter(@ApplicationContext context: Context): FileWriter =
+        FileWriterImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideFileReader(@ApplicationContext context: Context): FileReader =
+        FileReaderImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideFileReader(
+        fileReader: FileReader,
+        fileWriter: FileWriter,
+        categoryDbRepository: CategoryDbRepository,
+        siteInfoDbRepository: SiteInfoDbRepository,
+    ): FileExportRepository = FileExportRepositoryImpl(
+        fileReader,
+        fileWriter,
+        categoryDbRepository,
+        siteInfoDbRepository,
+    )
+
+
 }
