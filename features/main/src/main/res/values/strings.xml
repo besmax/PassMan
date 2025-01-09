@@ -25,5 +25,7 @@
     <string name="no_categories">You have not added categories yet</string>
     <string name="settings_item_import_descr">Settings item import</string>
     <string name="settings_item_import">Import data from file</string>
+    <string name="settings_item_export">Export data from file</string>
+    <string name="settings_item_export_descr">Settings item export</string>
     <string name="settings">Settings</string>
 </resources>

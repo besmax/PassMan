@@ -7,12 +7,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import bes.max.export.presentation.ExportViewModel
 import bes.max.export.ui.FileExplorerScreen
 import bes.max.features.main.ui.CategoryScreen
 import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen
-import bes.max.passman.ui.RequestPermission
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun NavigationGraph(
@@ -80,9 +81,13 @@ fun NavigationGraph(
         composable(
             route = Screen.SettingsScreen.route
         ) {
+            val exportViewModel: ExportViewModel = hiltViewModel()
+
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
                 navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
+                export = exportViewModel::export,
+                import = exportViewModel::import
             )
         }
     }

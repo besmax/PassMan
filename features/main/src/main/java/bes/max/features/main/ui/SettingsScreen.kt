@@ -1,5 +1,6 @@
 package bes.max.features.main.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import bes.max.features.main.presentation.edit.EditViewModel
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowTitle
@@ -30,6 +33,8 @@ import bes.max.ui.common.ShowTitle
 fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToFileExplorer: () -> Unit,
+    export: () -> Unit,
+    import: (Uri) -> Unit,
 ) {
 //    val context = LocalContext.current
 //    val multiplePermissionsState = rememberMultiplePermissionsState(getPermissions())
@@ -56,6 +61,7 @@ fun SettingsScreen(
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
+            import(fileUri)
             Log.e("TAAAAAAAG", "fileUri=$fileUri")
         }
     }
@@ -77,6 +83,15 @@ fun SettingsScreen(
             //{ requestPermissionsLauncher.launch(getPermissions().toTypedArray()) },
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_import_descr),
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SettingsItem(
+            text = stringResource(R.string.settings_item_export),
+            onItemClick = export,
+            icon = importIcon,
+            contentDescription = stringResource(R.string.settings_item_export_descr),
         )
     }
 }

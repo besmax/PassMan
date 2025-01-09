@@ -94,7 +94,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFileReader(
+    fun provideFileExportRepository(
         fileReader: FileReader,
         fileWriter: FileWriter,
         categoryDbRepository: CategoryDbRepository,

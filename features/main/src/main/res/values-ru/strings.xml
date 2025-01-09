@@ -26,4 +26,6 @@
     <string name="settings_item_import_descr">Элемент экрана настроек - импорт данных</string>
     <string name="settings_item_import">Импорт данных с файла</string>
     <string name="settings">Настройки</string>
+    <string name="settings_item_export">Экспорт" данных в файл</string>
+    <string name="settings_item_export_descr">Элемент экрана настроек - экспорт данных</string>
 </resources>

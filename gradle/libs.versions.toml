@@ -10,6 +10,7 @@ lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 kotlinx-serialization = "1.7.3"
+kotlinx-serialization_downgrade = "1.6.0"
 kotlin-immutable-collections = "0.3.7"
 room = "2.6.1"
 ksp = "1.9.22-1.0.16"
@@ -47,6 +48,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { module = "androidx.compose.material3:material3",  version.ref = "material3Android" }
 kotlin-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutable-collections" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization_downgrade = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization_downgrade" }
 
 # Dependency Injection
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }

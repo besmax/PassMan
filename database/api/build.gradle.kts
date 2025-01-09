@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -32,7 +32,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.downgrade)
 
     ksp(libs.androidx.room.compiler)
 }

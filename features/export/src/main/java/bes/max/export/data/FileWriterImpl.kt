@@ -4,6 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Environment
 import android.provider.MediaStore
+import bes.max.database.api.model.CategoryModel
+import bes.max.database.api.model.SiteInfoModel
 import bes.max.export.domain.FileWriter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -29,7 +31,21 @@ class FileWriterImpl(private val context: Context) : FileWriter {
                         val headerLine = headerDataEntry.buildHeader()
                         writer.write(headerLine)
                         writer.newLine()
-                        val data = Json.encodeToString(headerDataEntry.value)
+                        val data: String =
+                            when (headerDataEntry.key) {
+                                SiteInfoModel.Companion::class.java.name -> {
+                                    Json.encodeToString(headerDataEntry.value as List<SiteInfoModel>)
+                                }
+
+                                CategoryModel.Companion::class.java.name -> {
+                                    Json.encodeToString(headerDataEntry.value as List<CategoryModel>)
+                                }
+
+                                else -> {
+                                    error("Unknown model")
+                                }
+                            }
+
                         writer.write(data)
                     }
                 }
