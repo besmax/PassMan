@@ -1,9 +1,5 @@
 package bes.max.features.main.ui
 
-import android.Manifest
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,41 +20,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import bes.max.features.main.ui.icon.importIcon
-import bes.max.features.main.ui.permission.getPermissions
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowTitle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToFileExplorer: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val multiplePermissionsState = rememberMultiplePermissionsState(getPermissions())
-    val requestPermissionsLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if (permissions.all { it.value }) {
-            Log.e("TAAAAAAAG","permissions=${permissions.entries.joinToString("||") { "perm=${it.key} res=${it.value}" }}")
-            Log.e("TAAAAAAAG", "permissionsS=${permissions.size}")
-            navigateToFileExplorer()
-        } else {
-            Log.e("TAAAAAAAG", "DENIED")
-            val permanentlyDenied = permissions.any { !it.value && !multiplePermissionsState.shouldShowRationale }
-            if (permanentlyDenied) {
+//    val context = LocalContext.current
+//    val multiplePermissionsState = rememberMultiplePermissionsState(getPermissions())
+//    val requestPermissionsLauncher = rememberLauncherForActivityResult(
+//        ActivityResultContracts.RequestMultiplePermissions()
+//    ) { permissions ->
+//        if (permissions.all { it.value }) {
+//            Log.e("TAAAAAAAG","permissions=${permissions.entries.joinToString("||") { "perm=${it.key} res=${it.value}" }}")
+//            Log.e("TAAAAAAAG", "permissionsS=${permissions.size}")
+//            navigateToFileExplorer()
+//        } else {
+//            Log.e("TAAAAAAAG", "DENIED")
+//            val permanentlyDenied = permissions.any { !it.value && !multiplePermissionsState.shouldShowRationale }
+//            if (permanentlyDenied) {
+//
+//                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//                intent.data = Uri.fromParts("package", context.packageName, null)
+//                context.startActivity(intent)
+//            }
+//        }
+//    }
 
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.fromParts("package", context.packageName, null)
-                context.startActivity(intent)
-            }
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { fileUri ->
+        if (fileUri != null) {
+            Log.e("TAAAAAAAG", "fileUri=$fileUri")
         }
     }
 
@@ -75,7 +73,8 @@ fun SettingsScreen(
 
         SettingsItem(
             text = stringResource(R.string.settings_item_import),
-            onItemClick = { requestPermissionsLauncher.launch(getPermissions().toTypedArray()) },
+            onItemClick = { pickFileLauncher.launch("*/*") },
+            //{ requestPermissionsLauncher.launch(getPermissions().toTypedArray()) },
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_import_descr),
         )
