@@ -30,5 +30,5 @@
     <string name="settings_item_export_descr">Элемент экрана настроек - экспорт данных</string>
     <string name="close_import_code_dialog">Закрыть окно с кодом для импорта</string>
     <string name="import_code_descr">Будьте осторожны этот код - это единственная возможность импортировать данные, сохраните его или запомните</string>
-    <string name="import_code_placeholder">Ваш код для импорта: 1%$s</string>
+    <string name="import_code_placeholder">Ваш код для импорта: %1$s</string>
 </resources>

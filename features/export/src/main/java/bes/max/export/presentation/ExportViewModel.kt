@@ -22,12 +22,12 @@ class ExportViewModel @Inject constructor(
     fun export() {
         viewModelScope.launch {
             val importCode = fileExportRepository.export()
-            Log.e("TAAAAG", "importCode=$importCode")
+            Log.e("TAAAAG", " viewModel importCode=$importCode")
             _event.postValue(ExportEvent.ShowExportCodeEvent(importCode))
         }
     }
 
-    fun import(fileUri: Uri, code: String = "Tt8Q2/oGJ56mIXZaxrUzwolilkoClR9Q9uK7ZFJBd6w=") {
+    fun import(fileUri: Uri, code: String) {
         viewModelScope.launch {
             fileExportRepository.import(fileUri, code)
         }

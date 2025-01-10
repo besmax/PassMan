@@ -1,5 +1,6 @@
 package bes.max.features.main.ui
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -36,41 +37,24 @@ import bes.max.features.main.ui.icon.importIcon
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowTitle
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToFileExplorer: () -> Unit,
     export: () -> Unit,
-    import: (Uri) -> Unit,
-    importCode: String?
+    import: (Uri, String) -> Unit,
+    importCode: String?,
+    resetImportCode: () -> Unit,
 ) {
-//    val context = LocalContext.current
-//    val multiplePermissionsState = rememberMultiplePermissionsState(getPermissions())
-//    val requestPermissionsLauncher = rememberLauncherForActivityResult(
-//        ActivityResultContracts.RequestMultiplePermissions()
-//    ) { permissions ->
-//        if (permissions.all { it.value }) {
-//            Log.e("TAAAAAAAG","permissions=${permissions.entries.joinToString("||") { "perm=${it.key} res=${it.value}" }}")
-//            Log.e("TAAAAAAAG", "permissionsS=${permissions.size}")
-//            navigateToFileExplorer()
-//        } else {
-//            Log.e("TAAAAAAAG", "DENIED")
-//            val permanentlyDenied = permissions.any { !it.value && !multiplePermissionsState.shouldShowRationale }
-//            if (permanentlyDenied) {
-//
-//                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-//                intent.data = Uri.fromParts("package", context.packageName, null)
-//                context.startActivity(intent)
-//            }
-//        }
-//    }
-    var showCode by remember { mutableStateOf(importCode) }
+    Log.e("TAAAAG", " SettingsScreen importCode=$importCode")
+    var showCode = mutableStateOf(importCode)
     var inputCode by remember { mutableStateOf("") }
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            import(fileUri)
+            import(fileUri, inputCode)
         }
     }
 
@@ -90,7 +74,6 @@ fun SettingsScreen(
         SettingsItem(
             text = stringResource(R.string.settings_item_import),
             onItemClick = { pickFileLauncher.launch("text/csv") }, //for all types=*/*
-            //{ requestPermissionsLauncher.launch(getPermissions().toTypedArray()) },
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_import_descr),
         )
@@ -105,10 +88,10 @@ fun SettingsScreen(
         )
     }
 
-    if (showCode != null) {
+    if (showCode.value != null) {
         ShowImportCode(
-            code = showCode,
-            onClose = { showCode = null},
+            code = showCode.value,
+            onClose = resetImportCode,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
 
@@ -167,7 +150,7 @@ private fun ShowImportCode(
     if (code == null) return
 
     Card(
-        modifier = modifier
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         IconButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) {
             Icon(

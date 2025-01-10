@@ -1,10 +1,7 @@
 package bes.max.export.ui
 
-import android.Manifest
 import android.os.Environment
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,12 +45,9 @@ import bes.max.export.ui.icon.jsonFileIcon
 import bes.max.export.ui.icon.tablesFileIcon
 import bes.max.export.ui.icon.textFileIcon
 import bes.max.export.ui.icon.videoFileIcon
-import bes.max.export.ui.permission.check
-import bes.max.export.ui.permission.getPermissions
 import bes.max.export.util.getFormattedFileSize
 import bes.max.ui.common.ShowTitle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -83,7 +76,6 @@ fun FileExplorerScreen(
 //    }
 
     val homeDirectory = Environment.getExternalStorageDirectory().path
-    Log.e("TAAAAAAAG", "homeDirectory=$homeDirectory")
     var directory by remember { mutableStateOf(homeDirectory) }
     val files by remember {
         derivedStateOf {

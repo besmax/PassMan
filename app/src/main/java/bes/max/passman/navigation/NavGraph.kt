@@ -2,8 +2,12 @@ package bes.max.passman.navigation
 
 import android.Manifest
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,7 +20,9 @@ import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.asFlow
 import bes.max.export.presentation.ExportEvent
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun NavigationGraph(
@@ -85,14 +91,18 @@ fun NavigationGraph(
             route = Screen.SettingsScreen.route
         ) {
             val exportViewModel: ExportViewModel = hiltViewModel()
-            val event by exportViewModel.event.observeAsState()
+            val code by exportViewModel.event.asFlow().map {
+                (it as? ExportEvent.ShowExportCodeEvent)?.code
+            }.collectAsState(null)
+            var importCode by remember { mutableStateOf(code) }
 
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
                 navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
                 export = exportViewModel::export,
                 import = exportViewModel::import,
-                importCode = (event as? ExportEvent.ShowExportCodeEvent)?.code
+                importCode = importCode,
+                resetImportCode = { importCode = null },
             )
         }
     }
