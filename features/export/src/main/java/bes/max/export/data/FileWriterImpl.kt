@@ -28,20 +28,20 @@ class FileWriterImpl(
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
 
-        val exportedCode = cipher.getExportCode()
-
-        contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+        val exportedCode = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
             ?.let { uri ->
                 val file = contentResolver.openOutputStream(uri)
-                file?.bufferedWriter()?.use { writer ->
+                val code = file?.bufferedWriter()?.use { writer ->
                     val data = convertDataToString(headerDataMap)
-                    val encryptedData = cipher.encrypt(EXPORT_ALIAS, data)
+                    val (encryptedData, exportedCode) = cipher.encryptExportData(data)
                     writer.write(encryptedData.passwordIv)
                     writer.newLine()
                     writer.write(encryptedData.encryptedData)
+                    exportedCode
                 }
+                code
             }
-        return exportedCode
+        return exportedCode ?: error("Can not write data")
     }
 
     private fun convertDataToString(headerDataMap: Map<String, List<Any>>) = buildString {

@@ -21,8 +21,7 @@ class FileReaderImpl(private val context: Context, private val cipher: CipherApi
                 val remainingContent = lines.drop(1).joinToString("\n")
                 firstLine to remainingContent
             }
-            cipher.restoreExportKey(exportCode)
-            val fileContent = cipher.decrypt(EXPORT_ALIAS, fileContentEncrypted, passwordIv)
+            val fileContent = cipher.decryptExportData(fileContentEncrypted, exportCode, passwordIv)
             convertToMap(fileContent)
         } ?: emptyMap()
     }

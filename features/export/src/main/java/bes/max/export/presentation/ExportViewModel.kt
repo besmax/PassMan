@@ -1,6 +1,7 @@
 package bes.max.export.presentation
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,11 +22,12 @@ class ExportViewModel @Inject constructor(
     fun export() {
         viewModelScope.launch {
             val importCode = fileExportRepository.export()
+            Log.e("TAAAAG", "importCode=$importCode")
             _event.postValue(ExportEvent.ShowExportCodeEvent(importCode))
         }
     }
 
-    fun import(fileUri: Uri, code: String) {
+    fun import(fileUri: Uri, code: String = "Tt8Q2/oGJ56mIXZaxrUzwolilkoClR9Q9uK7ZFJBd6w=") {
         viewModelScope.launch {
             fileExportRepository.import(fileUri, code)
         }

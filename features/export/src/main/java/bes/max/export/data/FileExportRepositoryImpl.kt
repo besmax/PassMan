@@ -28,7 +28,8 @@ class FileExportRepositoryImpl(
                 var header = CategoryModel.Companion::class.java.name
                 if (categories != null) put(header, categories as List<Any>)
 
-                val siteInfoModels = decryptPasswords(siteInfoDbRepository.getAll(dispatcher).firstOrNull())
+                val siteInfoModels =
+                    decryptPasswords(siteInfoDbRepository.getAll(dispatcher).firstOrNull())
                 header = SiteInfoModel.Companion::class.java.name
                 if (siteInfoModels.isNotEmpty()) put(header, siteInfoModels as List<Any>)
             }
@@ -36,12 +37,18 @@ class FileExportRepositoryImpl(
         }
 
 
-    override suspend fun import(uri: Uri, code: String,  dispatcher: CoroutineDispatcher) {
+    override suspend fun import(uri: Uri, code: String, dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) {
             fileReader.readData(uri, code).forEach { dataEntry ->
                 when (dataEntry.key) {
                     SiteInfoModel.Companion::class.java.name -> {
-                        val list = dataEntry.value as List<SiteInfoModel>
+                        val list = (dataEntry.value as List<SiteInfoModel>).map {
+                            val encrypted = cipher.encrypt(it.name, it.password)
+                            it.copy(
+                                password = encrypted.encryptedData,
+                                passwordIv = encrypted.passwordIv,
+                            )
+                        }
                         siteInfoDbRepository.insertAll(list, dispatcher)
                     }
 
@@ -61,7 +68,7 @@ class FileExportRepositoryImpl(
     private suspend fun decryptPasswords(list: List<SiteInfoModel>?): List<SiteInfoModel> {
         if (list == null) return emptyList()
 
-        return list.map { it.copy(password = cipher.decrypt(it.name, it.password, it.passwordIv),) }
+        return list.map { it.copy(password = cipher.decrypt(it.name, it.password, it.passwordIv)) }
     }
 
 }

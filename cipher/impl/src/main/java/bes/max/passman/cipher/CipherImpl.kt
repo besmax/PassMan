@@ -73,45 +73,46 @@ object CipherImpl : CipherApi {
         return decryptedBytes.decodeToString()
     }
 
-    override fun getExportCode(): String {
-        val key = getKey(EXPORT_ALIAS)
+    private fun getExportCode(key: SecretKey): String {
+        val keyBytes = key.encoded ?: throw IllegalStateException("Key encoding is null")
+        return Base64.encodeToString(keyBytes, Base64.DEFAULT)
+    }
+
+    private fun restoreExportKey(exportCode: String): SecretKey {
+        val keyBytes = Base64.decode(exportCode, Base64.DEFAULT)
+        val key = javax.crypto.spec.SecretKeySpec(keyBytes, ALGORITHM)
+        return key
+    }
+
+    override fun encryptExportData(textToEncrypt: String): Pair<EncryptedData, String> {
+        val key = generateSoftwareKey()
+        val encryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
+            init(Cipher.ENCRYPT_MODE, key)
+        }
+        val bytesToEncrypt = textToEncrypt.encodeToByteArray()
+        val encryptedBytes = encryptCipher.doFinal(bytesToEncrypt)
+        val initVector = encryptCipher.iv
+        val initVectorAsString = Base64.encodeToString(initVector, Base64.DEFAULT)
+        val encryptedStr = Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
+        return EncryptedData(encryptedStr, initVectorAsString) to getExportCode(key)
+    }
+
+    override fun decryptExportData(encryptedData: String, exportCode: String, initVector: String): String {
+        val key = restoreExportKey(exportCode)
+        val decryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
+            init(
+                Cipher.DECRYPT_MODE,
+                key,
+                IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+            )
+        }
+        val decryptedBytes = decryptCipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT))
+        return decryptedBytes.decodeToString()
+    }
+
+    private fun generateSoftwareKey(): SecretKey {
         val keyGenerator = KeyGenerator.getInstance(ALGORITHM)
-        keyGenerator.init(key.encoded.size * 8)
-        val wrappingKey = keyGenerator.generateKey()
-        val cipher = Cipher.getInstance(ALGORITHM)
-        cipher.init(Cipher.WRAP_MODE, wrappingKey)
-        val wrappedKeyBytes = cipher.wrap(key)
-        val wrappingKeyBytes = wrappingKey.encoded
-        val combinedBytes = wrappingKeyBytes + wrappedKeyBytes
-        return Base64.encodeToString(combinedBytes, Base64.DEFAULT)
-    }
-
-    override fun restoreExportKey(exportCode: String) {
-        val combinedBytes = Base64.decode(exportCode, Base64.DEFAULT)
-        val wrappingKeySize = 32
-        val wrappingKeyBytes = combinedBytes.copyOfRange(0, wrappingKeySize)
-        val wrappedKeyBytes = combinedBytes.copyOfRange(wrappingKeySize, combinedBytes.size)
-        val wrappingKey = javax.crypto.spec.SecretKeySpec(wrappingKeyBytes, ALGORITHM)
-        val key = unwrapSecretKey(wrappingKey, wrappedKeyBytes)
-        importKeyIntoKeyStore(key)
-    }
-
-    private fun unwrapSecretKey(wrappingKey: SecretKey, wrappedKey: ByteArray): SecretKey {
-        val cipher = Cipher.getInstance(ALGORITHM)
-        cipher.init(Cipher.UNWRAP_MODE, wrappingKey)
-        return cipher.unwrap(wrappedKey, ALGORITHM, Cipher.SECRET_KEY) as SecretKey
-    }
-
-    private fun importKeyIntoKeyStore(secretKey: SecretKey, alias: String = EXPORT_ALIAS,) {
-        val keyEntry = KeyStore.SecretKeyEntry(secretKey)
-        val keyProtection = KeyProtection.Builder(
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-        )
-            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            .setUserAuthenticationRequired(false)
-            .build()
-
-        keyStore.setEntry(alias, keyEntry, keyProtection)
+        keyGenerator.init(256)
+        return keyGenerator.generateKey()
     }
 }

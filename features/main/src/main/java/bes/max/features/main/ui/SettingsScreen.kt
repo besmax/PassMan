@@ -41,7 +41,7 @@ fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToFileExplorer: () -> Unit,
     export: () -> Unit,
-    import: (Uri, String) -> Unit,
+    import: (Uri) -> Unit,
     importCode: String?
 ) {
 //    val context = LocalContext.current
@@ -70,7 +70,7 @@ fun SettingsScreen(
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            import(fileUri, inputCode)
+            import(fileUri)
         }
     }
 
