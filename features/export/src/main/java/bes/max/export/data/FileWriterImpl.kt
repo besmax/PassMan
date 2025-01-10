@@ -27,29 +27,32 @@ class FileWriterImpl(private val context: Context) : FileWriter {
             ?.let { uri ->
                 val file = contentResolver.openOutputStream(uri)
                 file?.bufferedWriter()?.use { writer ->
-                    headerDataMap.entries.forEach { headerDataEntry ->
+                    headerDataMap.entries.forEachIndexed { index, headerDataEntry ->
                         val headerLine = headerDataEntry.buildHeader()
                         writer.write(headerLine)
                         writer.newLine()
-                        val data: String =
-                            when (headerDataEntry.key) {
-                                SiteInfoModel.Companion::class.java.name -> {
-                                    Json.encodeToString(headerDataEntry.value as List<SiteInfoModel>)
-                                }
-
-                                CategoryModel.Companion::class.java.name -> {
-                                    Json.encodeToString(headerDataEntry.value as List<CategoryModel>)
-                                }
-
-                                else -> {
-                                    error("Unknown model")
-                                }
-                            }
-
+                        val data = parseByHeader(headerDataEntry.key, headerDataEntry.value)
                         writer.write(data)
+                        if (index != headerDataMap.size - 1) writer.newLine()
                     }
                 }
             }
+    }
+
+    private fun parseByHeader(header: String, data: List<Any>): String {
+        return when (header) {
+            SiteInfoModel.Companion::class.java.name -> {
+                Json.encodeToString(data as List<SiteInfoModel>)
+            }
+
+            CategoryModel.Companion::class.java.name -> {
+                Json.encodeToString(data as List<CategoryModel>)
+            }
+
+            else -> {
+                error("Unknown model")
+            }
+        }
     }
 
     private fun <T> Map.Entry<String, List<T>>.buildHeader() = buildString {

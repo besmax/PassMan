@@ -22,13 +22,13 @@ class FileReaderImpl(private val context: Context) : FileReader {
 
                 if (inputStream != null) {
                     val reader = BufferedReader(InputStreamReader(inputStream))
-                    var line: String
+                    var line: String? = reader.readLine()
 
-
-                    while ((reader.readLine().also { line = it }) != null) {
+                    while (line != null) {
                         val (header, dataSize) = line.split(HEADER_SEPARATOR)
                         val list = readList(header, reader.readLine())
                         put(header, list)
+                        line = reader.readLine()
                     }
                     inputStream.close()
                 }
@@ -46,7 +46,7 @@ class FileReaderImpl(private val context: Context) : FileReader {
             }
 
             CategoryModel.Companion::class.java.name -> {
-                Json.decodeFromString<List<SiteInfoModel>>(list)
+                Json.decodeFromString<List<CategoryModel>>(list)
             }
 
             else -> {
