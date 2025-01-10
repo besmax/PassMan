@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,17 +15,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import bes.max.features.main.presentation.edit.EditViewModel
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowTitle
@@ -34,7 +41,8 @@ fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToFileExplorer: () -> Unit,
     export: () -> Unit,
-    import: (Uri) -> Unit,
+    import: (Uri, String) -> Unit,
+    importCode: String?
 ) {
 //    val context = LocalContext.current
 //    val multiplePermissionsState = rememberMultiplePermissionsState(getPermissions())
@@ -56,18 +64,20 @@ fun SettingsScreen(
 //            }
 //        }
 //    }
-
+    var showCode by remember { mutableStateOf(importCode) }
+    var inputCode by remember { mutableStateOf("") }
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            import(fileUri)
-            Log.e("TAAAAAAAG", "fileUri=$fileUri")
+            import(fileUri, inputCode)
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
         ShowTitle(
@@ -92,6 +102,16 @@ fun SettingsScreen(
             onItemClick = export,
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_export_descr),
+        )
+    }
+
+    if (showCode != null) {
+        ShowImportCode(
+            code = showCode,
+            onClose = { showCode = null},
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+
         )
     }
 }
@@ -135,5 +155,39 @@ private fun SettingsItem(
             )
         }
 
+    }
+}
+
+@Composable
+private fun ShowImportCode(
+    code: String?,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (code == null) return
+
+    Card(
+        modifier = modifier
+    ) {
+        IconButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(R.string.site)
+            )
+        }
+
+        Column() {
+            Text(
+                text = stringResource(R.string.import_code_placeholder, code),
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.import_code_descr),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }

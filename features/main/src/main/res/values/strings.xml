@@ -28,4 +28,8 @@
     <string name="settings_item_export">Export data from file</string>
     <string name="settings_item_export_descr">Settings item export</string>
     <string name="settings">Settings</string>
+    <string name="close_import_code_dialog">Close import code dialog</string>
+    <string name="import_code_descr">Be careful this code is only way to import data, save or remember it </string>
+    <string name="import_code_placeholder">Your import code: 1%$s</string>
+
 </resources>

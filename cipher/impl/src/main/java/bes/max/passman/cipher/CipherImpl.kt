@@ -7,6 +7,7 @@ import android.security.keystore.KeyProtection
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import bes.max.cipher.api.CipherApi
+import bes.max.cipher.api.EXPORT_ALIAS
 import bes.max.cipher.model.EncryptedData
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -18,7 +19,6 @@ private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
 private const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
 private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
-const val EXPORT_ALIAS = "export alias"
 
 @RequiresApi(Build.VERSION_CODES.R)
 object CipherImpl : CipherApi {

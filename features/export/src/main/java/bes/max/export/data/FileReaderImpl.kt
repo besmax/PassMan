@@ -2,41 +2,43 @@ package bes.max.export.data
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
+import bes.max.cipher.api.CipherApi
+import bes.max.cipher.api.EXPORT_ALIAS
 import bes.max.database.api.model.CategoryModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.export.domain.FileReader
 import kotlinx.serialization.json.Json
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 
 private const val TAG = "FileReaderImpl"
 
-class FileReaderImpl(private val context: Context) : FileReader {
+class FileReaderImpl(private val context: Context, private val cipher: CipherApi) : FileReader {
 
-    override fun readData(fileUri: Uri): Map<String, List<Any>> {
-        return buildMap<String, List<Any>> {
-            try {
-                val inputStream = context.contentResolver.openInputStream(fileUri)
+    override fun readData(fileUri: Uri, exportCode: String): Map<String, List<Any>> {
+        return context.contentResolver.openInputStream(fileUri)?.use { inputStream ->
+            val (passwordIv, fileContentEncrypted) = inputStream.bufferedReader().use { reader ->
+                val lines = reader.readLines()
+                val firstLine = lines.firstOrNull() ?: ""
+                val remainingContent = lines.drop(1).joinToString("\n")
+                firstLine to remainingContent
+            }
+            cipher.restoreExportKey(exportCode)
+            val fileContent = cipher.decrypt(EXPORT_ALIAS, fileContentEncrypted, passwordIv)
+            convertToMap(fileContent)
+        } ?: emptyMap()
+    }
 
-                if (inputStream != null) {
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    var line: String? = reader.readLine()
-
-                    while (line != null) {
-                        val (header, dataSize) = line.split(HEADER_SEPARATOR)
-                        val list = readList(header, reader.readLine())
-                        put(header, list)
-                        line = reader.readLine()
-                    }
-                    inputStream.close()
+    private fun convertToMap(data: String): Map<String, List<Any>> = buildMap {
+        data.lineSequence().iterator().let { iterator ->
+            while (iterator.hasNext()) {
+                val headerLine = iterator.next()
+                val (header, dataSize) = headerLine.split(HEADER_SEPARATOR)
+                if (iterator.hasNext()) {
+                    val dataLine = iterator.next()
+                    val list = readList(header, dataLine)
+                    put(header, list)
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, "Can not readData from file with: $e")
             }
         }
-
     }
 
     private fun readList(header: String, list: String): List<Any> {

@@ -2,6 +2,8 @@ package bes.max.passman.navigation
 
 import android.Manifest
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,6 +16,7 @@ import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import bes.max.export.presentation.ExportEvent
 
 @Composable
 fun NavigationGraph(
@@ -82,12 +85,14 @@ fun NavigationGraph(
             route = Screen.SettingsScreen.route
         ) {
             val exportViewModel: ExportViewModel = hiltViewModel()
+            val event by exportViewModel.event.observeAsState()
 
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
                 navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
                 export = exportViewModel::export,
-                import = exportViewModel::import
+                import = exportViewModel::import,
+                importCode = (event as? ExportEvent.ShowExportCodeEvent)?.code
             )
         }
     }

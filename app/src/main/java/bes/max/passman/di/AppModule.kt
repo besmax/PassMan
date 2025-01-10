@@ -84,13 +84,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFileWriter(@ApplicationContext context: Context): FileWriter =
-        FileWriterImpl(context)
+    fun provideFileWriter(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileWriter =
+        FileWriterImpl(context, cipherApi)
 
     @Provides
     @Singleton
-    fun provideFileReader(@ApplicationContext context: Context): FileReader =
-        FileReaderImpl(context)
+    fun provideFileReader(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileReader =
+        FileReaderImpl(context, cipherApi)
 
     @Provides
     @Singleton

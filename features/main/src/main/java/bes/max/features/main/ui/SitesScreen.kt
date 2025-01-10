@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,11 +56,10 @@ import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.settingsIcon
+import bes.max.passman.features.main.R
 import bes.max.ui.common.LightGray
 import bes.max.ui.common.ShowLoading
-import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
-import bes.max.passman.features.main.R
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 

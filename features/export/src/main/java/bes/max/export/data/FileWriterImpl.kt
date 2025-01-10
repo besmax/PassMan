@@ -4,6 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Environment
 import android.provider.MediaStore
+import bes.max.cipher.api.CipherApi
+import bes.max.cipher.api.EXPORT_ALIAS
 import bes.max.database.api.model.CategoryModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.export.domain.FileWriter
@@ -13,9 +15,12 @@ import kotlinx.serialization.json.Json
 const val DEFAULT_NAME = "passman_backup.csv"
 const val HEADER_SEPARATOR = "|||"
 
-class FileWriterImpl(private val context: Context) : FileWriter {
+class FileWriterImpl(
+    private val context: Context,
+    private val cipher: CipherApi,
+    ) : FileWriter {
 
-    override fun writeData(headerDataMap: Map<String, List<Any>>) {
+    override fun writeData(headerDataMap: Map<String, List<Any>>): String {
         val contentResolver = context.contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, DEFAULT_NAME)
@@ -23,20 +28,31 @@ class FileWriterImpl(private val context: Context) : FileWriter {
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
 
+        val exportedCode = cipher.getExportCode()
+
         contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
             ?.let { uri ->
                 val file = contentResolver.openOutputStream(uri)
                 file?.bufferedWriter()?.use { writer ->
-                    headerDataMap.entries.forEachIndexed { index, headerDataEntry ->
-                        val headerLine = headerDataEntry.buildHeader()
-                        writer.write(headerLine)
-                        writer.newLine()
-                        val data = parseByHeader(headerDataEntry.key, headerDataEntry.value)
-                        writer.write(data)
-                        if (index != headerDataMap.size - 1) writer.newLine()
-                    }
+                    val data = convertDataToString(headerDataMap)
+                    val encryptedData = cipher.encrypt(EXPORT_ALIAS, data)
+                    writer.write(encryptedData.passwordIv)
+                    writer.newLine()
+                    writer.write(encryptedData.encryptedData)
                 }
             }
+        return exportedCode
+    }
+
+    private fun convertDataToString(headerDataMap: Map<String, List<Any>>) = buildString {
+        headerDataMap.entries.forEachIndexed { index, headerDataEntry ->
+            val headerLine = headerDataEntry.buildHeader()
+            append(headerLine)
+            append(System.lineSeparator())
+            val data = parseByHeader(headerDataEntry.key, headerDataEntry.value)
+            append(data)
+            if (index != headerDataMap.size - 1) append(System.lineSeparator())
+        }
     }
 
     private fun parseByHeader(header: String, data: List<Any>): String {

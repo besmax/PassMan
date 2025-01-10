@@ -2,6 +2,7 @@ package bes.max.export.domain
 
 interface FileWriter {
 
-    fun writeData(headerDataMap: Map<String, List<Any>>)
+    /** Write data to csv file in Environment.DIRECTORY_DOWNLOADS and return code for importing data */
+    fun writeData(headerDataMap: Map<String, List<Any>>): String
 
 }

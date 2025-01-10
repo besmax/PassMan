@@ -6,8 +6,8 @@ import kotlinx.coroutines.Dispatchers
 
 interface FileExportRepository {
 
-    suspend fun export(dispatcher: CoroutineDispatcher = Dispatchers.IO)
+    suspend fun export(dispatcher: CoroutineDispatcher = Dispatchers.IO): String
 
-    suspend fun import(uri: Uri, dispatcher: CoroutineDispatcher = Dispatchers.IO)
+    suspend fun import(uri: Uri, code: String, dispatcher: CoroutineDispatcher = Dispatchers.IO)
 
 }

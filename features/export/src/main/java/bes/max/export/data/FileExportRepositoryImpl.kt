@@ -21,7 +21,7 @@ class FileExportRepositoryImpl(
     private val cipher: CipherApi,
 ) : FileExportRepository {
 
-    override suspend fun export(dispatcher: CoroutineDispatcher) {
+    override suspend fun export(dispatcher: CoroutineDispatcher): String =
         withContext(dispatcher) {
             val map = buildMap<String, List<Any>> {
                 val categories = categoryDbRepository.getAll(dispatcher).firstOrNull()
@@ -32,13 +32,13 @@ class FileExportRepositoryImpl(
                 header = SiteInfoModel.Companion::class.java.name
                 if (siteInfoModels.isNotEmpty()) put(header, siteInfoModels as List<Any>)
             }
-            fileWriter.writeData(map)
+            return@withContext fileWriter.writeData(map)
         }
-    }
 
-    override suspend fun import(uri: Uri, dispatcher: CoroutineDispatcher) {
+
+    override suspend fun import(uri: Uri, code: String,  dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) {
-            fileReader.readData(uri).forEach { dataEntry ->
+            fileReader.readData(uri, code).forEach { dataEntry ->
                 when (dataEntry.key) {
                     SiteInfoModel.Companion::class.java.name -> {
                         val list = dataEntry.value as List<SiteInfoModel>
