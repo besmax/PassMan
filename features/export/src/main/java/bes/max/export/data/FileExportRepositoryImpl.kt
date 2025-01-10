@@ -1,6 +1,7 @@
 package bes.max.export.data
 
 import android.net.Uri
+import bes.max.cipher.api.CipherApi
 import bes.max.database.api.model.CategoryModel
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.database.api.repositories.CategoryDbRepository
@@ -17,6 +18,7 @@ class FileExportRepositoryImpl(
     private val fileWriter: FileWriter,
     private val categoryDbRepository: CategoryDbRepository,
     private val siteInfoDbRepository: SiteInfoDbRepository,
+    private val cipher: CipherApi,
 ) : FileExportRepository {
 
     override suspend fun export(dispatcher: CoroutineDispatcher) {
@@ -26,9 +28,9 @@ class FileExportRepositoryImpl(
                 var header = CategoryModel.Companion::class.java.name
                 if (categories != null) put(header, categories as List<Any>)
 
-                val siteInfoModels = siteInfoDbRepository.getAll(dispatcher).firstOrNull()
+                val siteInfoModels = decryptPasswords(siteInfoDbRepository.getAll(dispatcher).firstOrNull())
                 header = SiteInfoModel.Companion::class.java.name
-                if (siteInfoModels != null) put(header, siteInfoModels as List<Any>)
+                if (siteInfoModels.isNotEmpty()) put(header, siteInfoModels as List<Any>)
             }
             fileWriter.writeData(map)
         }
@@ -54,6 +56,12 @@ class FileExportRepositoryImpl(
                 }
             }
         }
+    }
+
+    private suspend fun decryptPasswords(list: List<SiteInfoModel>?): List<SiteInfoModel> {
+        if (list == null) return emptyList()
+
+        return list.map { it.copy(password = cipher.decrypt(it.name, it.password, it.passwordIv),) }
     }
 
 }

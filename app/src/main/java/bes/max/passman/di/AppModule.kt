@@ -99,11 +99,13 @@ object AppModule {
         fileWriter: FileWriter,
         categoryDbRepository: CategoryDbRepository,
         siteInfoDbRepository: SiteInfoDbRepository,
+        cipherApi: CipherApi,
     ): FileExportRepository = FileExportRepositoryImpl(
         fileReader,
         fileWriter,
         categoryDbRepository,
         siteInfoDbRepository,
+        cipherApi
     )
 
 
