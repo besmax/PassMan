@@ -45,6 +45,8 @@ class FileExportRepositoryImpl(
                         val list = (dataEntry.value as List<SiteInfoModel>).map {
                             val encrypted = cipher.encrypt(it.name, it.password)
                             it.copy(
+                                id = -1,
+                                name = it.name + "_import",
                                 password = encrypted.encryptedData,
                                 passwordIv = encrypted.passwordIv,
                             )

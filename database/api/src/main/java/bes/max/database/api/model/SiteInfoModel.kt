@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SiteInfoModel(
-    val id: Int = 0,
+    val id: Int = -1,
     val name: String,
     val password: String,
     val url: String,

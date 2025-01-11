@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity("site_info_table")
 data class SiteInfoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Int? = null,
     @ColumnInfo("password") val password: String,
     @ColumnInfo("name") val name: String,
     @ColumnInfo("url") val url: String,
