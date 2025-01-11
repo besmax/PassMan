@@ -11,10 +11,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val TAG = "ExportViewModel"
+
 @HiltViewModel
 class ExportViewModel @Inject constructor(
     private val fileExportRepository: FileExportRepository,
 ) : ViewModel() {
+
+    private val _event = MutableLiveData<ExportEvent?>()
+    val event: LiveData<ExportEvent?> = _event
 
     private val _code = MutableLiveData<String?>()
     val code: LiveData<String?> = _code
@@ -23,17 +28,26 @@ class ExportViewModel @Inject constructor(
         viewModelScope.launch {
             val importCode = fileExportRepository.export()
             _code.postValue(importCode)
-            Log.e("TAAAAAAAAAG", "importCode=$importCode")
+            Log.e(TAG, "importCode=$importCode")
         }
     }
 
     fun import(fileUri: Uri, code: String) {
         viewModelScope.launch {
-            fileExportRepository.import(fileUri, code)
+            try {
+                fileExportRepository.import(fileUri, code)
+            } catch (e: IllegalArgumentException) {
+                _event.postValue(ExportEvent.WrongImportCodeEvent())
+                Log.e(TAG, "Fail import with e: $e")
+            }
         }
     }
 
     fun resetCode() {
         _code.postValue(null)
+    }
+
+    fun resetEvent() {
+        _event.postValue(null)
     }
 }

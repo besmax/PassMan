@@ -1,28 +1,22 @@
 package bes.max.passman.navigation
 
-import android.Manifest
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import bes.max.export.presentation.ExportEvent
 import bes.max.export.presentation.ExportViewModel
 import bes.max.export.ui.FileExplorerScreen
 import bes.max.features.main.ui.CategoryScreen
 import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.asFlow
-import bes.max.export.presentation.ExportEvent
-import kotlinx.coroutines.flow.map
 
 @Composable
 fun NavigationGraph(
@@ -92,6 +86,7 @@ fun NavigationGraph(
         ) {
             val exportViewModel: ExportViewModel = hiltViewModel()
             val code by exportViewModel.code.observeAsState()
+            val event by exportViewModel.event.observeAsState()
 
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
@@ -100,6 +95,12 @@ fun NavigationGraph(
                 import = exportViewModel::import,
                 importCode = code,
                 resetImportCode = exportViewModel::resetCode,
+                eventMessage = if (event is ExportEvent.WrongImportCodeEvent) {
+                    stringResource((event as ExportEvent.WrongImportCodeEvent).messageResId)
+                } else {
+                    null
+                },
+                resetEvent = exportViewModel::resetEvent
             )
         }
     }

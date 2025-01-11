@@ -7,4 +7,5 @@
     <string name="file_explorer_item_date_size" translatable="false">%1$s | %2$s</string>
     <string name="provide_permission">Need permission to continue</string>
     <string name="provide">provide</string>
+    <string name="wrong_import_code">Error, check import code, please</string>
 </resources>

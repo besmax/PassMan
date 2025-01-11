@@ -6,4 +6,5 @@
     <string name="folder_explorer_item_date_count">%1$s | объектов: %2$d </string>
     <string name="provide_permission">Для продолжения необходимо разрешение</string>
     <string name="provide">Предоставить</string>
+    <string name="wrong_import_code">Ошибка, пожалуйста, проверьте код для импорта</string>
 </resources>

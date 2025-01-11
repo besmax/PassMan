@@ -49,6 +49,8 @@ fun SettingsScreen(
     import: (Uri, String) -> Unit,
     importCode: String?,
     resetImportCode: () -> Unit,
+    eventMessage: String?,
+    resetEvent: () -> Unit,
 ) {
     var inputCode by remember { mutableStateOf("") }
     var showEnterCode by remember { mutableStateOf(false) }
@@ -106,6 +108,10 @@ fun SettingsScreen(
             },
             cancel = { showEnterCode = false }
         )
+    }
+
+    if (eventMessage != null) {
+
     }
 }
 
