@@ -31,5 +31,8 @@
     <string name="close_import_code_dialog">Close import code dialog</string>
     <string name="import_code_descr">Be careful this code is only way to import data, save or remember it </string>
     <string name="import_code_placeholder">Your import code: %1$s</string>
-
+    <string name="close">Close</string>
+    <string name="do_import">Import</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_import_code">Enter your import code</string>
 </resources>

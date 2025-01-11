@@ -39,6 +39,7 @@ fun UserInput(
     passwordInput: Boolean = false,
     showPassword: (() -> String)? = null,
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
+    maxLines: Int = 1,
 ) {
     var text by remember { mutableStateOf(initialText) }
     var passwordIsShown by remember { mutableStateOf(false) }
@@ -50,7 +51,7 @@ fun UserInput(
             onValueChanged?.invoke(it)
         },
         label = { Text(text = stringResource(id = hintRes)) },
-        maxLines = 1,
+        maxLines = maxLines,
         textStyle = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp

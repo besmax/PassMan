@@ -91,18 +91,15 @@ fun NavigationGraph(
             route = Screen.SettingsScreen.route
         ) {
             val exportViewModel: ExportViewModel = hiltViewModel()
-            val code by exportViewModel.event.asFlow().map {
-                (it as? ExportEvent.ShowExportCodeEvent)?.code
-            }.collectAsState(null)
-            var importCode by remember { mutableStateOf(code) }
+            val code by exportViewModel.code.observeAsState()
 
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
                 navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
                 export = exportViewModel::export,
                 import = exportViewModel::import,
-                importCode = importCode,
-                resetImportCode = { importCode = null },
+                importCode = code,
+                resetImportCode = exportViewModel::resetCode,
             )
         }
     }
