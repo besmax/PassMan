@@ -43,8 +43,11 @@ class FileExportRepositoryImpl(
                 when (dataEntry.key) {
                     SiteInfoModel.Companion::class.java.name -> {
                         val list = (dataEntry.value as List<SiteInfoModel>).map { model ->
-                            val encrypted = cipher.encrypt(model.name, model.password)
                             val haveSimilar = findSimilar(model, dispatcher)
+                            val encrypted = cipher.encrypt(
+                                if (haveSimilar) model.name + "_import" else model.name,
+                                model.password
+                            )
                             model.copy(
                                 id = -1,
                                 name = if (haveSimilar) model.name + "_import" else model.name,
