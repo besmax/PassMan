@@ -14,6 +14,8 @@ interface SiteInfoDbRepository {
 
     suspend fun getByCategory(category: Int, dispatcher: CoroutineDispatcher): List<SiteInfoModel>
 
+    suspend fun getByUrl(url: String, dispatcher: CoroutineDispatcher): List<SiteInfoModel>
+
     suspend fun insertAll(models: List<SiteInfoModel>, dispatcher: CoroutineDispatcher)
 
     suspend fun update(model: SiteInfoModel, dispatcher: CoroutineDispatcher)

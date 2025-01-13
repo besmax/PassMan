@@ -27,7 +27,7 @@ interface SiteInfoDao {
     suspend fun getByName(name: String): SiteInfoEntity?
 
     @Query("SELECT * FROM site_info_table WHERE name=:url")
-    suspend fun getByUrl(url: String): SiteInfoEntity?
+    suspend fun getByUrl(url: String): List<SiteInfoEntity>
 
     @Query("SELECT * FROM site_info_table WHERE id=:id")
     suspend fun getById(id: Int): SiteInfoEntity?
