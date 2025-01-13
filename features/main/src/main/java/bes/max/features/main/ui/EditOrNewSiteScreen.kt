@@ -27,6 +27,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +59,11 @@ fun EditOrNewSiteScreen(
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
-    var name by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var comment by remember { mutableStateOf<String?>(null) }
-    var newPassword by remember { mutableStateOf("") }
-    var categoryColor by remember { mutableStateOf<Int?>(null) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var url by rememberSaveable { mutableStateOf("") }
+    var comment by rememberSaveable { mutableStateOf<String?>(null) }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var categoryColor by rememberSaveable { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
     val isButtonEnabledForNew by remember {

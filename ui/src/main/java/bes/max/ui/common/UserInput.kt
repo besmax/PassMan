@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -41,8 +42,8 @@ fun UserInput(
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
     maxLines: Int = 1,
 ) {
-    var text by remember { mutableStateOf(initialText) }
-    var passwordIsShown by remember { mutableStateOf(false) }
+    var text by rememberSaveable() { mutableStateOf(initialText) }
+    var passwordIsShown by rememberSaveable { mutableStateOf(false) }
 
     TextField(
         value = text,
