@@ -344,7 +344,6 @@ fun FabAdd(addItem: () -> Unit) {
         modifier = Modifier
             .padding(end = 16.dp, bottom = 24.dp),
         shape = RoundedCornerShape(100.dp),
-        containerColor = LightGray,
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
