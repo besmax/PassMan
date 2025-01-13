@@ -93,6 +93,7 @@ fun EditOrNewSiteScreen(
                     url,
                     newPassword,
                     comment,
+                    categoryColor
                 )
                 navigateBack()
             },
@@ -192,6 +193,7 @@ fun ShowEdit(
             ChooseCategory(
                 categories = categories,
                 changeCategory = changeCategory,
+                categoryColor = model.categoryColor ?: -1,
             )
         }
 
@@ -304,9 +306,11 @@ fun ShowNew(
 private fun ChooseCategory(
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
+    categoryColor: Int = -1,
     modifier: Modifier = Modifier,
 ) {
-    var selected by remember { mutableIntStateOf(-1) }
+    val selectedIndex = categories.indexOfFirst { it.color.toArgb() == categoryColor }
+    var selected by remember { mutableIntStateOf(selectedIndex) }
 
     LazyRow(
         modifier

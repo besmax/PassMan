@@ -60,7 +60,8 @@ class EditViewModel @Inject constructor(
         name: String,
         url: String,
         password: String,
-        comment: String?
+        comment: String?,
+        categoryColor: Int?,
     ) {
         //model with  password which is not encrypted
         val partiallyUpdatedModel = if (password.isNotBlank()) {
@@ -70,6 +71,7 @@ class EditViewModel @Inject constructor(
                 url = url.ifBlank { model.url },
                 passwordIv = "",
                 description = if (comment.isNullOrBlank()) model.description else comment,
+                categoryColor = categoryColor,
             )
         } else {
             model.copy(
@@ -77,6 +79,7 @@ class EditViewModel @Inject constructor(
                 password = cipher.decrypt(model.name, model.password, model.passwordIv),
                 url = url.ifBlank { model.url },
                 description = if (comment.isNullOrBlank()) model.description else comment,
+                categoryColor = categoryColor,
             )
         }
         val encryptedData =
