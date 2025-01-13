@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.ui.icon.copyIcon
+import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
@@ -93,7 +94,7 @@ fun SettingsScreen(
         SettingsItem(
             text = stringResource(R.string.settings_item_export),
             onItemClick = export,
-            icon = importIcon,
+            icon = exportIcon,
             contentDescription = stringResource(R.string.settings_item_export_descr),
         )
     }
@@ -245,7 +246,7 @@ private fun EnterImportCode(
                     )
             ) {
                 UserInput(
-                    hintRes = R.string.enter_import_code,
+                    hintRes = R.string.import_code,
                     onValueChanged = { inputCode = it },
                     maxLines = 3,
                 )
@@ -257,14 +258,15 @@ private fun EnterImportCode(
                 cancel()
             }) {
                 Row {
-                    Text(
-                        text = stringResource(R.string.do_import),
-                        textAlign = TextAlign.Center
-                    )
-
                     Icon(
                         imageVector = importIcon,
                         contentDescription = stringResource(R.string.do_import)
+                    )
+
+                    Text(
+                        text = stringResource(R.string.do_import),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
