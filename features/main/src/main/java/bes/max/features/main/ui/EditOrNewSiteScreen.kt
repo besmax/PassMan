@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -103,7 +105,8 @@ fun EditOrNewSiteScreen(
                 navigateBack()
             },
             categories = (uiState as EditScreenState.Edit).categories,
-            changeCategory = { categoryColor = it }
+            changeCategory = { categoryColor = it },
+            navigateBack = navigateBack,
         )
 
         is EditScreenState.New -> ShowNew(
@@ -119,7 +122,8 @@ fun EditOrNewSiteScreen(
             changeComment = { comment = it },
             showPassword = { newPassword },
             categories = (uiState as EditScreenState.New).categories,
-            changeCategory = { categoryColor = it }
+            changeCategory = { categoryColor = it },
+            navigateBack = navigateBack,
         )
     }
 }
@@ -136,15 +140,20 @@ fun ShowEdit(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     deleteItem: (SiteInfoModelMain) -> Unit,
     categories: List<CategoryModelMain>,
-    changeCategory: (Int?) -> Unit
+    changeCategory: (Int?) -> Unit,
+    navigateBack: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
-
-        ShowTitle(title = stringResource(id = R.string.edit))
+        ShowTitle(
+            title = stringResource(id = R.string.edit),
+            navigateBack = navigateBack,
+        )
 
         UserInput(
             hintRes = R.string.hint_site_name,
@@ -222,14 +231,20 @@ fun ShowNew(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     showPassword: () -> String,
     categories: List<CategoryModelMain>,
-    changeCategory: (Int?) -> Unit
+    changeCategory: (Int?) -> Unit,
+    navigateBack: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
-
-        ShowTitle(title = stringResource(id = R.string.add))
+        ShowTitle(
+            title = stringResource(id = R.string.add),
+            navigateBack = navigateBack,
+        )
 
         UserInput(
             hintRes = R.string.hint_site_name,

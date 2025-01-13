@@ -1,7 +1,6 @@
 package bes.max.export.ui
 
 import android.os.Environment
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,7 +91,7 @@ fun FileExplorerScreen(
     ) {
         ShowTitle(
             title = stringResource(R.string.choose_file),
-            goBack = navigateBack
+            navigateBack = navigateBack
         )
 
         Spacer(Modifier.width(8.dp))
