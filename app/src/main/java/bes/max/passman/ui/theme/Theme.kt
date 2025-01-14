@@ -3,14 +3,20 @@ package bes.max.passman.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+@Immutable
+data class ExtendedColorScheme(
+    val lightGray: ColorFamily,
+    val blueGray: ColorFamily,
+)
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -240,6 +246,96 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
+val extendedLight = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayLight,
+        onLightGrayLight,
+        lightGrayContainerLight,
+        onLightGrayContainerLight,
+    ),
+    blueGray = ColorFamily(
+        blueGrayLight,
+        onBlueGrayLight,
+        blueGrayContainerLight,
+        onBlueGrayContainerLight,
+    ),
+)
+
+val extendedDark = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayDark,
+        onLightGrayDark,
+        lightGrayContainerDark,
+        onLightGrayContainerDark,
+    ),
+    blueGray = ColorFamily(
+        blueGrayDark,
+        onBlueGrayDark,
+        blueGrayContainerDark,
+        onBlueGrayContainerDark,
+    ),
+)
+
+val extendedLightMediumContrast = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayLightMediumContrast,
+        onLightGrayLightMediumContrast,
+        lightGrayContainerLightMediumContrast,
+        onLightGrayContainerLightMediumContrast,
+    ),
+    blueGray = ColorFamily(
+        blueGrayLightMediumContrast,
+        onBlueGrayLightMediumContrast,
+        blueGrayContainerLightMediumContrast,
+        onBlueGrayContainerLightMediumContrast,
+    ),
+)
+
+val extendedLightHighContrast = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayLightHighContrast,
+        onLightGrayLightHighContrast,
+        lightGrayContainerLightHighContrast,
+        onLightGrayContainerLightHighContrast,
+    ),
+    blueGray = ColorFamily(
+        blueGrayLightHighContrast,
+        onBlueGrayLightHighContrast,
+        blueGrayContainerLightHighContrast,
+        onBlueGrayContainerLightHighContrast,
+    ),
+)
+
+val extendedDarkMediumContrast = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayDarkMediumContrast,
+        onLightGrayDarkMediumContrast,
+        lightGrayContainerDarkMediumContrast,
+        onLightGrayContainerDarkMediumContrast,
+    ),
+    blueGray = ColorFamily(
+        blueGrayDarkMediumContrast,
+        onBlueGrayDarkMediumContrast,
+        blueGrayContainerDarkMediumContrast,
+        onBlueGrayContainerDarkMediumContrast,
+    ),
+)
+
+val extendedDarkHighContrast = ExtendedColorScheme(
+    lightGray = ColorFamily(
+        lightGrayDarkHighContrast,
+        onLightGrayDarkHighContrast,
+        lightGrayContainerDarkHighContrast,
+        onLightGrayContainerDarkHighContrast,
+    ),
+    blueGray = ColorFamily(
+        blueGrayDarkHighContrast,
+        onBlueGrayDarkHighContrast,
+        blueGrayContainerDarkHighContrast,
+        onBlueGrayContainerDarkHighContrast,
+    ),
+)
+
 @Immutable
 data class ColorFamily(
     val color: Color,
@@ -274,3 +370,4 @@ fun PassManTheme(
         content = content
     )
 }
+

@@ -26,6 +26,20 @@ class SiteInfoDbRepositoryImpl(
         return withContext(dispatcher) { siteInfoDao.getById(id)?.map() }
     }
 
+    override suspend fun getByCategory(
+        category: Int,
+        dispatcher: CoroutineDispatcher
+    ): List<SiteInfoModel> {
+        return withContext(dispatcher) { siteInfoDao.getByCategory(category).map { it.map() } }
+    }
+
+    override suspend fun getByUrl(
+        url: String,
+        dispatcher: CoroutineDispatcher
+    ): List<SiteInfoModel> {
+        return withContext(dispatcher) { siteInfoDao.getByUrl(url).map { it.map() } }
+    }
+
     override suspend fun insertAll(models: List<SiteInfoModel>, dispatcher: CoroutineDispatcher) {
         withContext(dispatcher) {
             siteInfoDao.insertAll(models.map { it.map() })

@@ -5,11 +5,23 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import bes.max.cipher.api.CipherApi
+import bes.max.database.api.repositories.CategoryDbRepository
 import bes.max.database.api.repositories.SiteInfoDbRepository
 import bes.max.database.impl.AppDatabase
+import bes.max.database.impl.dao.CategoryDao
 import bes.max.database.impl.dao.SiteInfoDao
+import bes.max.database.impl.migration.MIGRATION_1_2
+import bes.max.database.impl.repositories.CategoryDbRepositoryImpl
 import bes.max.database.impl.repositories.SiteInfoDbRepositoryImpl
+import bes.max.export.data.FileExportRepositoryImpl
+import bes.max.export.data.FileReaderImpl
+import bes.max.export.data.FileWriterImpl
+import bes.max.export.domain.FileExportRepository
+import bes.max.export.domain.FileReader
+import bes.max.export.domain.FileWriter
+import bes.max.features.main.data.CategoriesRepositoryImpl
 import bes.max.features.main.data.SiteInfoRepositoryImpl
+import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.passman.cipher.CipherImpl
 import dagger.Module
@@ -32,13 +44,28 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCategoryDao(database: AppDatabase): CategoryDao =
+        database.categoryDao()
+
+    @Provides
+    @Singleton
     fun provideSiteInfoDbRepository(dao: SiteInfoDao): SiteInfoDbRepository =
         SiteInfoDbRepositoryImpl(dao)
 
     @Provides
     @Singleton
+    fun provideCategoryDbRepository(dao: CategoryDao): CategoryDbRepository =
+        CategoryDbRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
     fun provideSiteInfoRepository(siteInfoDbRepository: SiteInfoDbRepository): SiteInfoRepository =
         SiteInfoRepositoryImpl(siteInfoDbRepository)
+
+    @Provides
+    @Singleton
+    fun provideCategoriesRepository(categoryDbRepository: CategoryDbRepository): CategoriesRepository =
+        CategoriesRepositoryImpl(categoryDbRepository)
 
     @RequiresApi(Build.VERSION_CODES.R)
     @Provides
@@ -51,7 +78,35 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideFileWriter(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileWriter =
+        FileWriterImpl(context, cipherApi)
+
+    @Provides
+    @Singleton
+    fun provideFileReader(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileReader =
+        FileReaderImpl(context, cipherApi)
+
+    @Provides
+    @Singleton
+    fun provideFileExportRepository(
+        fileReader: FileReader,
+        fileWriter: FileWriter,
+        categoryDbRepository: CategoryDbRepository,
+        siteInfoDbRepository: SiteInfoDbRepository,
+        cipherApi: CipherApi,
+    ): FileExportRepository = FileExportRepositoryImpl(
+        fileReader,
+        fileWriter,
+        categoryDbRepository,
+        siteInfoDbRepository,
+        cipherApi
+    )
+
+
 }

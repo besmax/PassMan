@@ -1,6 +1,9 @@
 package bes.max.features.main.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +21,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,28 +40,35 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
+import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
-import bes.max.features.main.ui.common.ShowLoading
-import bes.max.features.main.ui.common.ShowTitle
-import bes.max.features.main.ui.common.UserInput
+import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.passman.features.main.R
+import bes.max.ui.common.LightGray
+import bes.max.ui.common.ShowLoading
+import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SitesScreen(
     navigateToEdit: (Int) -> Unit,
     navigateToNew: () -> Unit,
+    navigateToCategory: () -> Unit,
+    navigateToSettings: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
 ) {
@@ -64,7 +78,7 @@ fun SitesScreen(
         sitesViewModel.showPassword(model)
     }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val state by lifecycleOwner.lifecycle.currentStateAsState()
 
     LaunchedEffect(key1 = state) {
@@ -75,6 +89,28 @@ fun SitesScreen(
 
     Scaffold(
         floatingActionButton = { FabAdd(navigateToNew) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.saved_passwords),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = navigateToSettings,
+
+                        ) {
+                        Icon(
+                            imageVector = settingsIcon,
+                            contentDescription = "Go to settings icon",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                }
+            )
+        },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
@@ -82,18 +118,24 @@ fun SitesScreen(
                     .padding(paddingValues)
             ) {
 
-                ShowTitle(title = stringResource(id = R.string.saved_passwords))
-
-                when (uiState) {
-                    is SitesScreenState.Empty -> ShowEmpty(messageResId = R.string.no_sites)
-                    is SitesScreenState.Loading -> ShowLoading()
-                    is SitesScreenState.Content -> ShowContent(
-                        uiState as SitesScreenState.Content,
-                        navigateToEdit,
-                        showPassword,
-                        launchAuth,
-                    )
+                Crossfade(
+                    targetState = uiState,
+                    animationSpec = tween(durationMillis = 600),
+                    label = "Sites Screen States Changes"
+                ) { state ->
+                    when (state) {
+                        is SitesScreenState.Empty -> ShowEmpty()
+                        is SitesScreenState.Loading -> ShowLoading()
+                        is SitesScreenState.Content -> ShowContent(
+                            state,
+                            navigateToEdit,
+                            showPassword,
+                            launchAuth,
+                            navigateToCategory
+                        )
+                    }
                 }
+
             }
         }
     )
@@ -105,57 +147,59 @@ fun ShowContent(
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
-    SitesList(uiState.sites, onItemClick, showPassword, launchAuth)
+    SitesList(
+        uiState.filteredSites,
+        uiState.filters,
+        onItemClick,
+        showPassword,
+        launchAuth,
+        navigateToCategory
+    )
 }
 
 @Composable
 fun SitesList(
     list: List<SiteInfoModelMain>,
+    filters: List<FilterModel>,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
         var filterText by rememberSaveable {
             mutableStateOf("")
         }
+        UserInput(
+            hintRes = R.string.hint_sites_filter,
+            initialText = filterText,
+            onValueChanged = { filterText = it }
+        )
 
-        Scaffold(
-            bottomBar = {
-                UserInput(
-                    hintRes = R.string.hint_sites_filter,
-                    initialText = filterText,
-                    onValueChanged = { filterText = it },
-                )
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(bottom = 12.dp, top = 8.dp)
-                    .padding(paddingValues)
-            ) {
-                val filteredList =
-                    if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
-                    else list
+        Categories(
+            filters = filters,
+            addCategory = navigateToCategory,
+            addCategoryTitle = stringResource(R.string.add),
+            modifier = Modifier,
+        )
 
-                // Show not found after filter
-                if (filteredList.isEmpty()) {
-                    item {
-                        ShowEmpty(messageResId = R.string.filter_no_sites)
-                    }
-                }
-
-                items(
-                    items = filteredList,
-                    key = { model -> model.id }
-                ) { model ->
-                    SiteListItem(model, onItemClick, showPassword, launchAuth)
-                }
+        LazyColumn(
+            modifier = Modifier
+                .padding(bottom = 12.dp, top = 8.dp)
+        ) {
+            val filteredList =
+                if (filterText.isNotBlank()) list.filter { it.url.contains(filterText) }
+                else list
+            items(
+                items = filteredList,
+                key = { model -> model.id }
+            ) { model ->
+                SiteListItem(model, onItemClick, showPassword, launchAuth)
             }
         }
     }
@@ -173,6 +217,9 @@ fun SiteListItem(
         mutableStateOf(false)
     }
     Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp)
@@ -210,11 +257,30 @@ fun SiteListItem(
             Spacer(modifier = Modifier.width(16.dp))
 
             Row {
-                Text(text = stringResource(id = R.string.site))
+                Text(text = stringResource(id = R.string.name))
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(text = model.name)
+
+                if (model.categoryColor != null) {
+
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = Color(model.categoryColor),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    )
+                }
+
             }
 
             Spacer(modifier = Modifier.width(24.dp))
@@ -262,15 +328,12 @@ fun SiteListItem(
 }
 
 @Composable
-fun ShowEmpty(
-    messageResId: Int,
-) {
+fun ShowEmpty() {
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(id = messageResId))
+        Text(text = stringResource(id = R.string.no_sites))
     }
 }
 
@@ -287,4 +350,23 @@ fun FabAdd(addItem: () -> Unit) {
             contentDescription = "Add icon",
         )
     }
+}
+
+@Preview
+@Composable
+private fun SiteListItemPreview() {
+    val model = SiteInfoModelMain(
+        name = "NAME",
+        password = "123234",
+        passwordIv = "",
+        url = "www.ww.w.v",
+        description = null,
+        categoryColor = Color.Red.toArgb()
+    )
+    SiteListItem(
+        model = model,
+        onItemClick = {},
+        showPassword = { "" },
+        launchAuth = { _, _ -> },
+    )
 }
