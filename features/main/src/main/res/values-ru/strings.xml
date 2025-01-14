@@ -2,6 +2,7 @@
     <string name="refresh">Обновить</string>
     <string name="error">Ошибка, попробуйте ещё раз </string>
     <string name="site">Сайт:</string>
+    <string name="name">Имя:</string>
     <string name="link">Ссылка:</string>
     <string name="password">Пароль:</string>
     <string name="comment">Коментарий:</string>
@@ -12,7 +13,7 @@
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>
     <string name="add">Добавить</string>
-    <string name="hint_url">Введите адрес сайта</string>
+    <string name="hint_url">Введите веб-адрес</string>
     <string name="hint_site_name">Введите наименование сайта</string>
     <string name="hint_sites_filter">Поиск</string>
     <string name="init_url">https://</string>

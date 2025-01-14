@@ -157,7 +157,7 @@ fun ShowEdit(
         )
 
         UserInput(
-            hintRes = R.string.hint_site_name,
+            hintRes = R.string.hint_name,
             initialText = model.name,
             onValueChanged = changeName
         )
@@ -249,7 +249,7 @@ fun ShowNew(
         )
 
         UserInput(
-            hintRes = R.string.hint_site_name,
+            hintRes = R.string.hint_name,
             onValueChanged = changeName,
         )
 

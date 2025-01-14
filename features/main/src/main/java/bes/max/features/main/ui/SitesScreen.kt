@@ -257,7 +257,7 @@ fun SiteListItem(
             Spacer(modifier = Modifier.width(16.dp))
 
             Row {
-                Text(text = stringResource(id = R.string.site))
+                Text(text = stringResource(id = R.string.name))
 
                 Spacer(modifier = Modifier.width(8.dp))
 
