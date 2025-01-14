@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -27,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,11 +43,10 @@ import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.edit.EditScreenState
 import bes.max.features.main.presentation.edit.EditViewModel
-import bes.max.features.main.ui.common.CATEGORY_NAME_LENGTH
-import bes.max.features.main.ui.common.ShowError
-import bes.max.features.main.ui.common.ShowLoading
-import bes.max.features.main.ui.common.ShowTitle
-import bes.max.features.main.ui.common.UserInput
+import bes.max.ui.common.ShowError
+import bes.max.ui.common.ShowLoading
+import bes.max.ui.common.ShowTitle
+import bes.max.ui.common.UserInput
 import bes.max.passman.features.main.R
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
@@ -59,11 +61,11 @@ fun EditOrNewSiteScreen(
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
-    var name by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var comment by remember { mutableStateOf<String?>(null) }
-    var newPassword by remember { mutableStateOf("") }
-    var categoryColor by remember { mutableStateOf<Int?>(null) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var url by rememberSaveable { mutableStateOf("") }
+    var comment by rememberSaveable { mutableStateOf<String?>(null) }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var categoryColor by rememberSaveable { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
     val isButtonEnabledForNew by remember {
@@ -91,6 +93,7 @@ fun EditOrNewSiteScreen(
                     url,
                     newPassword,
                     comment,
+                    categoryColor
                 )
                 navigateBack()
             },
@@ -103,7 +106,8 @@ fun EditOrNewSiteScreen(
                 navigateBack()
             },
             categories = (uiState as EditScreenState.Edit).categories,
-            changeCategory = { categoryColor = it }
+            changeCategory = { categoryColor = it },
+            navigateBack = navigateBack,
         )
 
         is EditScreenState.New -> ShowNew(
@@ -119,7 +123,8 @@ fun EditOrNewSiteScreen(
             changeComment = { comment = it },
             showPassword = { newPassword },
             categories = (uiState as EditScreenState.New).categories,
-            changeCategory = { categoryColor = it }
+            changeCategory = { categoryColor = it },
+            navigateBack = navigateBack,
         )
     }
 }
@@ -136,26 +141,33 @@ fun ShowEdit(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     deleteItem: (SiteInfoModelMain) -> Unit,
     categories: List<CategoryModelMain>,
-    changeCategory: (Int?) -> Unit
+    changeCategory: (Int?) -> Unit,
+    navigateBack: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
-
-        ShowTitle(title = stringResource(id = R.string.edit))
+        ShowTitle(
+            title = stringResource(id = R.string.edit),
+            navigateBack = navigateBack,
+        )
 
         UserInput(
-            hintRes = R.string.hint_site_name,
+            hintRes = R.string.hint_name,
             initialText = model.name,
-            onValueChanged = changeName
+            onValueChanged = changeName,
+            maxLines = 3,
         )
 
         UserInput(
             hintRes = R.string.hint_url,
             initialText = model.url,
-            onValueChanged = changeUrl
+            onValueChanged = changeUrl,
+            maxLines = 3,
         )
 
         UserInput(
@@ -170,19 +182,23 @@ fun ShowEdit(
         UserInput(
             hintRes = R.string.comment,
             initialText = model.description ?: "",
-            onValueChanged = changeComment
+            onValueChanged = changeComment,
+            maxLines = 10,
         )
 
-        Text(
-            text = stringResource(id = R.string.choose_category),
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
+        if (categories.isNotEmpty()) {
+            Text(
+                text = stringResource(id = R.string.choose_category),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
 
-        ChooseCategory(
-            categories = categories,
-            changeCategory = changeCategory,
-        )
+            ChooseCategory(
+                categories = categories,
+                changeCategory = changeCategory,
+                categoryColor = model.categoryColor ?: -1,
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -220,24 +236,32 @@ fun ShowNew(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     showPassword: () -> String,
     categories: List<CategoryModelMain>,
-    changeCategory: (Int?) -> Unit
+    changeCategory: (Int?) -> Unit,
+    navigateBack: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
-
-        ShowTitle(title = stringResource(id = R.string.add))
+        ShowTitle(
+            title = stringResource(id = R.string.add),
+            navigateBack = navigateBack,
+        )
 
         UserInput(
-            hintRes = R.string.hint_site_name,
+            hintRes = R.string.hint_name,
             onValueChanged = changeName,
+            maxLines = 3,
         )
 
         UserInput(
             hintRes = R.string.hint_url,
             initialText = stringResource(id = R.string.init_url),
             onValueChanged = changeUrl,
+            maxLines = 3,
         )
 
         UserInput(
@@ -251,18 +275,21 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.comment,
             onValueChanged = changeComment,
+            maxLines = 10,
         )
 
-        Text(
-            text = stringResource(id = R.string.choose_category),
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.titleMedium,
-        )
+        if (categories.isNotEmpty()) {
+            Text(
+                text = stringResource(id = R.string.choose_category),
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleMedium,
+            )
 
-        ChooseCategory(
-            categories = categories,
-            changeCategory = changeCategory,
-        )
+            ChooseCategory(
+                categories = categories,
+                changeCategory = changeCategory,
+            )
+        }
 
         Button(
             onClick = {
@@ -285,9 +312,11 @@ fun ShowNew(
 private fun ChooseCategory(
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
+    categoryColor: Int = -1,
     modifier: Modifier = Modifier,
 ) {
-    var selected by remember { mutableIntStateOf(-1) }
+    val selectedIndex = categories.indexOfFirst { it.color.toArgb() == categoryColor }
+    var selected by remember { mutableIntStateOf(selectedIndex) }
 
     LazyRow(
         modifier

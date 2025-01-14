@@ -1,4 +1,4 @@
-package bes.max.features.main.ui.common
+package bes.max.ui.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,15 +22,16 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ShowTitle(
     title: String,
-    goBack: (() -> Unit)? = null
+    navigateBack: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
-            .clickable { goBack?.invoke() }
+            .clickable { navigateBack?.invoke() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (goBack != null) {
+        if (navigateBack != null) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Go back icon",
@@ -53,6 +55,6 @@ fun ShowTitle(
 private fun TitlePreview() {
     ShowTitle(
         title = "Title",
-        goBack = { }
+        navigateBack = { }
     )
 }

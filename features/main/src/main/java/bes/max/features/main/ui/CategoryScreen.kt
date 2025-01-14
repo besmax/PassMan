@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -58,9 +57,9 @@ import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.presentation.category.CategoryScreenState
 import bes.max.features.main.presentation.category.CategoryViewModel
-import bes.max.features.main.ui.common.ShowLoading
-import bes.max.features.main.ui.common.ShowTitle
-import bes.max.features.main.ui.common.UserInput
+import bes.max.ui.common.ShowLoading
+import bes.max.ui.common.ShowTitle
+import bes.max.ui.common.UserInput
 import bes.max.passman.features.main.R
 
 private const val CURRENT_CATEGORY_COLOR_SIZE = 24
@@ -117,7 +116,7 @@ private fun Content(
     ) {
         ShowTitle(
             title = stringResource(R.string.categories),
-            goBack = navigateBack,
+            navigateBack = navigateBack,
         )
 
         UserInput(

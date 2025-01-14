@@ -3,9 +3,11 @@ package bes.max.passman.cipher
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.security.keystore.KeyProtection
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import bes.max.cipher.api.CipherApi
+import bes.max.cipher.api.EXPORT_ALIAS
 import bes.max.cipher.model.EncryptedData
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -71,4 +73,46 @@ object CipherImpl : CipherApi {
         return decryptedBytes.decodeToString()
     }
 
+    private fun getExportCode(key: SecretKey): String {
+        val keyBytes = key.encoded ?: throw IllegalStateException("Key encoding is null")
+        return Base64.encodeToString(keyBytes, Base64.DEFAULT)
+    }
+
+    private fun restoreExportKey(exportCode: String): SecretKey {
+        val keyBytes = Base64.decode(exportCode, Base64.DEFAULT)
+        val key = javax.crypto.spec.SecretKeySpec(keyBytes, ALGORITHM)
+        return key
+    }
+
+    override fun encryptExportData(textToEncrypt: String): Pair<EncryptedData, String> {
+        val key = generateSoftwareKey()
+        val encryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
+            init(Cipher.ENCRYPT_MODE, key)
+        }
+        val bytesToEncrypt = textToEncrypt.encodeToByteArray()
+        val encryptedBytes = encryptCipher.doFinal(bytesToEncrypt)
+        val initVector = encryptCipher.iv
+        val initVectorAsString = Base64.encodeToString(initVector, Base64.DEFAULT)
+        val encryptedStr = Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
+        return EncryptedData(encryptedStr, initVectorAsString) to getExportCode(key)
+    }
+
+    override fun decryptExportData(encryptedData: String, exportCode: String, initVector: String): String {
+        val key = restoreExportKey(exportCode)
+        val decryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
+            init(
+                Cipher.DECRYPT_MODE,
+                key,
+                IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+            )
+        }
+        val decryptedBytes = decryptCipher.doFinal(Base64.decode(encryptedData, Base64.DEFAULT))
+        return decryptedBytes.decodeToString()
+    }
+
+    private fun generateSoftwareKey(): SecretKey {
+        val keyGenerator = KeyGenerator.getInstance(ALGORITHM)
+        keyGenerator.init(256)
+        return keyGenerator.generateKey()
+    }
 }

@@ -1,7 +1,7 @@
 package bes.max.features.main.domain.models
 
 data class SiteInfoModelMain(
-    val id: Int = 0,
+    val id: Int = -1,
     val name: String,
     val password: String,
     val url: String,

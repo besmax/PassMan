@@ -6,7 +6,7 @@ import bes.max.database.impl.entities.CategoryEntity
 import bes.max.database.impl.entities.SiteInfoEntity
 
 fun SiteInfoEntity.map(): SiteInfoModel = SiteInfoModel(
-    id = id,
+    id = id ?: -1,
     name = name,
     url = url,
     password = password,
@@ -17,7 +17,7 @@ fun SiteInfoEntity.map(): SiteInfoModel = SiteInfoModel(
 
 
 fun SiteInfoModel.map(): SiteInfoEntity = SiteInfoEntity(
-    id = id,
+    id = if (id < 0) null else id,
     name = name,
     url = url,
     password = password,

@@ -22,12 +22,18 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import bes.max.passman.navigation.NavigationGraph
 import bes.max.passman.ui.theme.PassManTheme
+import bes.max.passman.util.PermissionHandler
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private var cancellationSignal: CancellationSignal? = null
+
+    @Inject
+    lateinit var permissionHandler: PermissionHandler
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +42,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setLightStatusBarIconsColor()
+
+       checkPermissions()
 
         setContent {
             PassManTheme {
@@ -56,6 +64,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun checkPermissions() {
+        permissionHandler.checkPermissions(this)
     }
 
     private fun authenticationCallback(
@@ -181,4 +193,5 @@ class MainActivity : ComponentActivity() {
     private fun setLightStatusBarIconsColor() {
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
     }
+
 }

@@ -1,4 +1,4 @@
-package bes.max.features.main.ui.common
+package bes.max.ui.common
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -29,7 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import bes.max.passman.features.main.R
+import bes.max.ui.R
 
 @Composable
 fun UserInput(
@@ -39,9 +40,10 @@ fun UserInput(
     passwordInput: Boolean = false,
     showPassword: (() -> String)? = null,
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
+    maxLines: Int = 1,
 ) {
-    var text by remember { mutableStateOf(initialText) }
-    var passwordIsShown by remember { mutableStateOf(false) }
+    var text by rememberSaveable() { mutableStateOf(initialText) }
+    var passwordIsShown by rememberSaveable { mutableStateOf(false) }
 
     TextField(
         value = text,
@@ -50,7 +52,7 @@ fun UserInput(
             onValueChanged?.invoke(it)
         },
         label = { Text(text = stringResource(id = hintRes)) },
-        maxLines = 1,
+        maxLines = maxLines,
         textStyle = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp

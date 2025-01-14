@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "bes.max.passman"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -49,7 +49,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -63,13 +63,14 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.compose.livedata)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
+    implementation(libs.hilt.nav.compose)
     implementation(libs.compose.navigation)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
@@ -81,6 +82,7 @@ dependencies {
     implementation(project(":cipher:api"))
     implementation(project(":cipher:impl"))
     implementation(project(":features:main"))
+    implementation(project(":features:export"))
 
 
     testImplementation(libs.junit)

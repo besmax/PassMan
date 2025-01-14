@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,7 +32,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 }
 
@@ -40,7 +41,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.compose.ui)
-    implementation(libs.compose.activity)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.compose.tooling)
     implementation(libs.compose.foundation)
     implementation(libs.compose.lifecycle)
@@ -52,9 +53,12 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.coil)
     implementation(libs.biometric.ktx)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.kotlinx.serialization)
 
     implementation(project(":database:api"))
     implementation(project(":cipher:api"))
+    implementation(project(":ui"))
 
     testImplementation(libs.junit)
 
