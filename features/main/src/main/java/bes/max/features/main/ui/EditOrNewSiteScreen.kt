@@ -159,13 +159,15 @@ fun ShowEdit(
         UserInput(
             hintRes = R.string.hint_name,
             initialText = model.name,
-            onValueChanged = changeName
+            onValueChanged = changeName,
+            maxLines = 3,
         )
 
         UserInput(
             hintRes = R.string.hint_url,
             initialText = model.url,
-            onValueChanged = changeUrl
+            onValueChanged = changeUrl,
+            maxLines = 3,
         )
 
         UserInput(
@@ -180,7 +182,8 @@ fun ShowEdit(
         UserInput(
             hintRes = R.string.comment,
             initialText = model.description ?: "",
-            onValueChanged = changeComment
+            onValueChanged = changeComment,
+            maxLines = 10,
         )
 
         if (categories.isNotEmpty()) {
@@ -251,12 +254,14 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.hint_name,
             onValueChanged = changeName,
+            maxLines = 3,
         )
 
         UserInput(
             hintRes = R.string.hint_url,
             initialText = stringResource(id = R.string.init_url),
             onValueChanged = changeUrl,
+            maxLines = 3,
         )
 
         UserInput(
@@ -270,6 +275,7 @@ fun ShowNew(
         UserInput(
             hintRes = R.string.comment,
             onValueChanged = changeComment,
+            maxLines = 10,
         )
 
         if (categories.isNotEmpty()) {
