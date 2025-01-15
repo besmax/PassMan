@@ -90,7 +90,6 @@ fun NavigationGraph(
 
             SettingsScreen(
                 navigateBack = { navHostController.popBackStack() },
-                navigateToFileExplorer = { navHostController.navigate(Screen.FileExplorerScreen.route) },
                 export = exportViewModel::export,
                 import = exportViewModel::import,
                 importCode = code,
@@ -100,7 +99,8 @@ fun NavigationGraph(
                 } else {
                     null
                 },
-                resetEvent = exportViewModel::resetEvent
+                resetEvent = exportViewModel::resetEvent,
+
             )
         }
     }

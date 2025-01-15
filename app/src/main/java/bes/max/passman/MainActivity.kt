@@ -13,13 +13,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
+import bes.max.features.main.domain.repositories.SettingsRepository
 import bes.max.passman.navigation.NavigationGraph
 import bes.max.passman.ui.theme.PassManTheme
 import bes.max.passman.util.PermissionHandler
@@ -34,6 +38,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var permissionHandler: PermissionHandler
 
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +50,16 @@ class MainActivity : ComponentActivity() {
 
         setLightStatusBarIconsColor()
 
-       checkPermissions()
+        checkPermissions()
 
         setContent {
-            PassManTheme {
+
+            val darkTheme by settingsRepository.isNightModeActive()
+                .collectAsState(initial = isSystemInDarkTheme())
+
+            PassManTheme(
+                darkTheme = darkTheme
+            ) {
                 val navController = rememberNavController()
                 Scaffold { paddingValues ->
                     Box(
