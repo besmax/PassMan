@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +24,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,11 +40,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
+import bes.max.features.main.ui.icon.darkModeIcon
 import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
+import bes.max.ui.common.Information
 import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
 
@@ -49,15 +56,15 @@ import bes.max.ui.common.UserInput
 @Composable
 fun SettingsScreen(
     navigateBack: () -> Unit,
-    navigateToFileExplorer: () -> Unit,
     export: () -> Unit,
     import: (Uri, String) -> Unit,
     importCode: String?,
     resetImportCode: () -> Unit,
     eventMessage: String?,
     resetEvent: () -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    var inputCode by remember { mutableStateOf("") }
+    val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -97,6 +104,26 @@ fun SettingsScreen(
             icon = exportIcon,
             contentDescription = stringResource(R.string.settings_item_export_descr),
         )
+
+        Spacer(Modifier.height(8.dp))
+
+        SwitchSettingsItem(
+            text = stringResource(R.string.dark_mode),
+            onSwitchClick = settingsViewModel::toggleDarkMode,
+            checked = isNightModeActive,
+            icon = darkModeIcon,
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        ShowMessageEvent(
+            eventMessage = eventMessage,
+            onDismiss = resetEvent,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(Modifier.weight(1f))
     }
 
     if (importCode != null) {
@@ -115,9 +142,6 @@ fun SettingsScreen(
         )
     }
 
-    if (eventMessage != null) {
-
-    }
 }
 
 @Composable
@@ -156,6 +180,47 @@ private fun SettingsItem(
                 imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = contentDescription,
                 modifier = Modifier,
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun SwitchSettingsItem(
+    text: String,
+    onSwitchClick: (Boolean) -> Unit,
+    checked: Boolean,
+    icon: ImageVector,
+    contentDescription: String? = null,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = text
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Switch(
+                checked = checked,
+                onCheckedChange = { onSwitchClick(it) }
             )
         }
 
@@ -288,4 +353,22 @@ private fun EnterImportCode(
             }
         },
     )
+}
+
+@Composable
+private fun ShowMessageEvent(
+    eventMessage: String?,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Crossfade(eventMessage, label = "ShowMessageEvent") { message ->
+        if (message != null) {
+            Information(
+                title = stringResource(R.string.wrong_import_code),
+                text = stringResource(R.string.try_again),
+                modifier = modifier,
+                onDismiss = onDismiss
+            )
+        }
+    }
 }

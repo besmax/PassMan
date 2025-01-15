@@ -39,7 +39,6 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.compose.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.tooling)
@@ -48,6 +47,7 @@ dependencies {
     implementation(libs.compose.livedata)
     implementation(libs.androidx.material3)
     implementation(libs.hilt)
+    implementation(libs.androidx.datastore.preferences)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.nav.compose)
     implementation(libs.lifecycle.viewmodel)

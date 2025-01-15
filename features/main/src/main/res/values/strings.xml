@@ -39,5 +39,7 @@
     <string name="import_code">Import code</string>
     <string name="copy_import_code">Copy your import code</string>
     <string name="copy">Copy</string>
-
+    <string name="dark_mode">Dark mode</string>
+    <string name="wrong_import_code">Wrong import code</string>
+    <string name="try_again">Try again</string>
 </resources>

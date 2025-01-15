@@ -45,6 +45,7 @@ fun Information(
     text: String? = null,
     modifier: Modifier,
     duration: Long = 3_000,
+    onDismiss: (() -> Unit)? = null,
     content: (@Composable () -> Unit)? = null
 ) {
     val density = LocalDensity.current
@@ -53,6 +54,7 @@ fun Information(
 
     LaunchedEffect(Unit) {
         delay(duration)
+        onDismiss?.invoke()
         visible = false
     }
 

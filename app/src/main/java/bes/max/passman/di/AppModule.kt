@@ -3,6 +3,9 @@ package bes.max.passman.di
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import bes.max.cipher.api.CipherApi
 import bes.max.database.api.repositories.CategoryDbRepository
@@ -20,8 +23,10 @@ import bes.max.export.domain.FileExportRepository
 import bes.max.export.domain.FileReader
 import bes.max.export.domain.FileWriter
 import bes.max.features.main.data.CategoriesRepositoryImpl
+import bes.max.features.main.data.SettingsRepositoryImpl
 import bes.max.features.main.data.SiteInfoRepositoryImpl
 import bes.max.features.main.domain.repositories.CategoriesRepository
+import bes.max.features.main.domain.repositories.SettingsRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.passman.cipher.CipherImpl
 import dagger.Module
@@ -32,6 +37,11 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 private const val DATABASE_NAME = "appdatabase.db"
+private const val SETTINGS_PREFERENCES = "settings_preferences"
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = SETTINGS_PREFERENCES
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -84,12 +94,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFileWriter(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileWriter =
+    fun provideFileWriter(
+        @ApplicationContext context: Context,
+        cipherApi: CipherApi,
+    ): FileWriter =
         FileWriterImpl(context, cipherApi)
 
     @Provides
     @Singleton
-    fun provideFileReader(@ApplicationContext context: Context,  cipherApi: CipherApi,): FileReader =
+    fun provideFileReader(
+        @ApplicationContext context: Context,
+        cipherApi: CipherApi,
+    ): FileReader =
         FileReaderImpl(context, cipherApi)
 
     @Provides
@@ -108,5 +124,17 @@ object AppModule {
         cipherApi
     )
 
+    @Provides
+    @Singleton
+    fun provideSettingsDataStore(@ApplicationContext appContext: Context) =
+        appContext.dataStore
 
+    @Provides
+    @Singleton
+    fun provideSettingsRepository(
+        @ApplicationContext appContext: Context,
+        dataStore: DataStore<Preferences>
+    ): SettingsRepository {
+        return SettingsRepositoryImpl(appContext, dataStore)
+    }
 }
