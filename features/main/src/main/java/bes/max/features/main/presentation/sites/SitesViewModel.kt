@@ -1,5 +1,6 @@
 package bes.max.features.main.presentation.sites
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,12 +9,15 @@ import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
+import bes.max.features.main.ui.util.copyTextToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SitesViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val siteInfoRepository: SiteInfoRepository,
     private val cipher: CipherApi,
     private val categoriesRepository: CategoriesRepository,
@@ -70,6 +74,15 @@ class SitesViewModel @Inject constructor(
             encryptedData = model.password,
             initVector = model.passwordIv
         )
+    }
+
+    fun copyPasswordToClipboard(model: SiteInfoModelMain) {
+        val decryptPassword = cipher.decrypt(
+            alias = model.name,
+            encryptedData = model.password,
+            initVector = model.passwordIv
+        )
+        appContext.copyTextToClipboard(decryptPassword)
     }
 
 }

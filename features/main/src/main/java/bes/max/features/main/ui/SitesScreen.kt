@@ -54,7 +54,9 @@ import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
+import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.settingsIcon
+import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
 import bes.max.ui.common.LightGray
 import bes.max.ui.common.ShowLoading
@@ -76,6 +78,9 @@ fun SitesScreen(
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
+    }
+    val copyPasswordToClipboard = { model: SiteInfoModelMain ->
+        sitesViewModel.copyPasswordToClipboard(model)
     }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -131,7 +136,8 @@ fun SitesScreen(
                             navigateToEdit,
                             showPassword,
                             launchAuth,
-                            navigateToCategory
+                            navigateToCategory,
+                            copyPasswordToClipboard
                         )
                     }
                 }
@@ -148,6 +154,7 @@ fun ShowContent(
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
+    copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
 ) {
     SitesList(
         uiState.filteredSites,
@@ -155,7 +162,8 @@ fun ShowContent(
         onItemClick,
         showPassword,
         launchAuth,
-        navigateToCategory
+        navigateToCategory,
+        copyPasswordToClipboard
     )
 }
 
@@ -167,6 +175,7 @@ fun SitesList(
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
+    copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
 ) {
 
     Column(
@@ -199,7 +208,7 @@ fun SitesList(
                 items = filteredList,
                 key = { model -> model.id }
             ) { model ->
-                SiteListItem(model, onItemClick, showPassword, launchAuth)
+                SiteListItem(model, onItemClick, showPassword, copyPasswordToClipboard, launchAuth)
             }
         }
     }
@@ -210,12 +219,16 @@ fun SiteListItem(
     model: SiteInfoModelMain,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
+    copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
 ) {
 
     var isPasswordVisible by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val context = LocalContext.current
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -234,8 +247,6 @@ fun SiteListItem(
                 .fillMaxWidth()
                 .padding(start = 8.dp, top = 8.dp, end = 8.dp)
         ) {
-
-            val context = LocalContext.current
             key(model) {
                 Image(
                     rememberAsyncImagePainter(
@@ -308,6 +319,18 @@ fun SiteListItem(
             )
 
             Icon(
+                imageVector = copyIcon,
+                contentDescription = "Copy password icon",
+                modifier = Modifier
+                    .clickable {
+                        launchAuth({ copyPasswordToClipboard(model) }, {})
+                    }
+                    .size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
                 painter = painterResource(
                     id = if (isPasswordVisible) (R.drawable.hide_icon)
                     else R.drawable.show_icon
@@ -367,6 +390,8 @@ private fun SiteListItemPreview() {
         model = model,
         onItemClick = {},
         showPassword = { "" },
+        copyPasswordToClipboard = {},
         launchAuth = { _, _ -> },
+
     )
 }
