@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +42,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import bes.max.features.main.presentation.settings.SettingsViewModel
-import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.darkModeIcon
 import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
+import bes.max.ui.common.Information
 import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
 
@@ -112,6 +113,17 @@ fun SettingsScreen(
             checked = isNightModeActive,
             icon = darkModeIcon,
         )
+
+        Spacer(Modifier.weight(1f))
+
+        ShowMessageEvent(
+            eventMessage = eventMessage,
+            onDismiss = resetEvent,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(Modifier.weight(1f))
     }
 
     if (importCode != null) {
@@ -130,9 +142,6 @@ fun SettingsScreen(
         )
     }
 
-    if (eventMessage != null) {
-
-    }
 }
 
 @Composable
@@ -344,4 +353,22 @@ private fun EnterImportCode(
             }
         },
     )
+}
+
+@Composable
+private fun ShowMessageEvent(
+    eventMessage: String?,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Crossfade(eventMessage, label = "ShowMessageEvent") { message ->
+        if (message != null) {
+            Information(
+                title = stringResource(R.string.wrong_import_code),
+                text = stringResource(R.string.try_again),
+                modifier = modifier,
+                onDismiss = onDismiss
+            )
+        }
+    }
 }

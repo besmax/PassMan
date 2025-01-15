@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.export.domain.FileExportRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,7 +37,7 @@ class ExportViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 fileExportRepository.import(fileUri, code)
-            } catch (e: IllegalArgumentException) {
+            } catch (e: Exception) {
                 _event.postValue(ExportEvent.WrongImportCodeEvent())
                 Log.e(TAG, "Fail import with e: $e")
             }

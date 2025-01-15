@@ -40,4 +40,6 @@
     <string name="copy_import_code">Копировать код для импорта</string>
     <string name="copy">Копировать</string>
     <string name="dark_mode">Тёмный режим</string>
+    <string name="wrong_import_code">Неверный код для импорта</string>
+    <string name="try_again">Попробуйте ещё раз</string>
 </resources>
