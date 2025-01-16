@@ -77,8 +77,8 @@ fun UserInput(
                 Icon(
                     painter = painterResource(
                         id =
-                        if (passwordIsShown) R.drawable.show_icon
-                        else R.drawable.hide_icon
+                        if (passwordIsShown) R.drawable.hide_icon
+                        else R.drawable.show_icon
                     ),
                     contentDescription = "show/hide password icon",
                     modifier = Modifier
