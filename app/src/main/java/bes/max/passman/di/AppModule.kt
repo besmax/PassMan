@@ -141,9 +141,10 @@ object AppModule {
     @Singleton
     fun provideSettingsRepository(
         @ApplicationContext appContext: Context,
-        dataStore: DataStore<Preferences>
+        dataStore: DataStore<Preferences>,
+        pinCodeDataStore: DataStore<PinCodeModel>
     ): SettingsRepository {
-        return SettingsRepositoryImpl(appContext, dataStore)
+        return SettingsRepositoryImpl(appContext, dataStore, pinCodeDataStore)
     }
 
     @Singleton

@@ -1,5 +1,6 @@
 package bes.max.features.main.presentation.settings
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,7 +38,7 @@ class SettingsViewModel @Inject constructor(
             initialValue = null
         )
 
-    private val _event = MutableLiveData<SettingsEvent>()
+    private val _event = MutableLiveData<SettingsEvent>(SettingsEvent.Default)
     val event: LiveData<SettingsEvent> = _event
 
     fun toggleDarkMode(isActive: Boolean) {
@@ -49,7 +50,7 @@ class SettingsViewModel @Inject constructor(
     fun togglePinCodeUsing(use: Boolean) {
         viewModelScope.launch {
             if (use) {
-                _event.postValue(SettingsEvent.TurnOnPinCode)
+                _event.postValue(SettingsEvent.TurnOnPinCode(::resetEvent, ::checkPinCode))
             } else {
                 settingsRepository.resetPinCode()
             }
@@ -57,16 +58,21 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun checkPinCode(pinCode: String) {
-        _event.postValue(SettingsEvent.ReCheckPinCode(pinCode))
+        Log.e("TAAAAAAAAAAAG", "checkPinCode")
+        _event.postValue(SettingsEvent.ReCheckPinCode(pinCode, { savePinCode(pinCode) }, ::resetEvent))
     }
 
-    fun savePinCode(pinCode: String) {
+    private fun savePinCode(pinCode: String) {
         viewModelScope.launch {
             val encrypted = cipher.encrypt(PIN_CODE_ALIAS, pinCode)
-
+            settingsRepository.setPinCode(
+                PinCodeModelMain(
+                    active = true,
+                    pinCode = encrypted.encryptedData,
+                    iv = encrypted.passwordIv
+                )
+            )
         }
-
-
     }
 
     fun showPinCode(): String {
@@ -80,6 +86,10 @@ class SettingsViewModel @Inject constructor(
         } else {
             ""
         }
+    }
+
+    fun resetEvent() {
+        _event.postValue(SettingsEvent.Default)
     }
 
 }

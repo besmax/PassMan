@@ -32,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.darkModeIcon
@@ -72,6 +74,8 @@ fun SettingsScreen(
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
+    val event by settingsViewModel.event.observeAsState()
+
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -137,7 +141,7 @@ fun SettingsScreen(
                 UserInput(
                     hintRes = R.string.pin_code,
                     initialText = pinCode.toString(),
-                    onValueChanged = {  },
+                    onValueChanged = { },
                     passwordInput = true,
                     showPassword = settingsViewModel::showPinCode,
                     launchBiometric = launchBiometric
@@ -173,6 +177,98 @@ fun SettingsScreen(
         )
     }
 
+    event?.let { PinCodeEvent(it) }
+
+}
+
+@Composable
+private fun PinCodeEvent(event: SettingsEvent) {
+    Crossfade(event, label = "ControlSettingsScreenEvent") { eventState ->
+        when (eventState) {
+            is SettingsEvent.ReCheckPinCode -> PinCodeInput(
+                cancel = eventState.resetEvent,
+                confirm = eventState.onSuccess,
+                lastInput = eventState.pinCode
+            )
+
+            is SettingsEvent.TurnOnPinCode -> PinCodeInput(
+                cancel = eventState.resetEvent,
+                check = eventState.checkPinCode
+            )
+
+            SettingsEvent.Default -> {}
+        }
+    }
+}
+
+@Composable
+private fun PinCodeInput(
+    cancel: () -> Unit,
+    confirm: (() -> Unit)? = null,
+    check: ((String) -> Unit)? = null,
+    lastInput: String? = null,
+) {
+    var pinCode by remember { mutableStateOf("") }
+    var wrongPinCode by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = cancel,
+        title = {
+            Text(
+                text = if (lastInput == null) stringResource(R.string.enter_pin_code)
+                else stringResource(R.string.repeat_pin_code),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Box(
+                Modifier
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            ) {
+                UserInput(
+                    hintRes = if (lastInput != null) R.string.repeat_pin_code else R.string.enter_pin_code,
+                    onValueChanged = { pinCode = it },
+                    maxLines = 1,
+                )
+                if (wrongPinCode) {
+                    Information(
+                        title = stringResource(R.string.wrong_pin_code),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (lastInput != null) {
+                    if (lastInput == pinCode) check?.invoke(pinCode)
+                    else wrongPinCode = true
+                } else {
+                    confirm?.invoke()
+                }
+            }) {
+                Text(
+                    text = stringResource(R.string.save),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = cancel) {
+                Text(
+                    text = stringResource(R.string.close),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    )
 }
 
 @Composable

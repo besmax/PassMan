@@ -44,5 +44,8 @@
     <string name="try_again">Попробуйте ещё раз</string>
     <string name="use_pin_code">Использовать пин-код</string>
     <string name="pin_code">Пин-код</string>
+    <string name="enter_pin_code">Введите пин-код</string>
+    <string name="repeat_pin_code">Повторите пин-код</string>
+    <string name="wrong_pin_code">Неправильный пин-код, попробуйте ещё раз</string>
 
 </resources>
