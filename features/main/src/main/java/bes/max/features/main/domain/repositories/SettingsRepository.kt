@@ -14,4 +14,6 @@ interface SettingsRepository {
 
     fun pinCodeIsUsed(): Flow<Boolean>
 
+    fun pinCode(): Flow<Int?>
+
 }

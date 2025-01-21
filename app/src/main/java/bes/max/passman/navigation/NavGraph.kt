@@ -100,7 +100,7 @@ fun NavigationGraph(
                     null
                 },
                 resetEvent = exportViewModel::resetEvent,
-
+                launchBiometric = launchAuth
             )
         }
     }

@@ -42,4 +42,7 @@
     <string name="dark_mode">Dark mode</string>
     <string name="wrong_import_code">Wrong import code</string>
     <string name="try_again">Try again</string>
+    <string name="use_pin_code">Use pin-code</string>
+    <string name="pin_code">Pin-code</string>
+
 </resources>

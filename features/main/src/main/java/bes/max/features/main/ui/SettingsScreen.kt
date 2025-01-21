@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
@@ -46,6 +48,8 @@ import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.darkModeIcon
 import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
+import bes.max.features.main.ui.icon.lockIcon
+import bes.max.features.main.ui.icon.lockOpenIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
 import bes.max.ui.common.Information
@@ -62,10 +66,12 @@ fun SettingsScreen(
     resetImportCode: () -> Unit,
     eventMessage: String?,
     resetEvent: () -> Unit,
+    launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
     val isPinCodeUsed by settingsViewModel.isPinCodeUsed.collectAsState()
+    val pinCode by settingsViewModel.pinCode.collectAsState()
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -77,8 +83,12 @@ fun SettingsScreen(
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -114,6 +124,26 @@ fun SettingsScreen(
             checked = isNightModeActive,
             icon = darkModeIcon,
         )
+
+        Spacer(Modifier.height(8.dp))
+
+        SwitchSettingsItem(
+            text = stringResource(R.string.use_pin_code),
+            onSwitchClick = settingsViewModel::togglePinCodeUsing,
+            checked = isPinCodeUsed,
+            icon = if (isPinCodeUsed) lockIcon else lockOpenIcon,
+        ) {
+            if (pinCode != null) {
+                UserInput(
+                    hintRes = R.string.pin_code,
+                    initialText = pinCode.toString(),
+                    onValueChanged = {  },
+                    passwordInput = true,
+                    showPassword = {  },
+                    launchBiometric = launchBiometric
+                )
+            }
+        }
 
         Spacer(Modifier.weight(1f))
 
@@ -194,6 +224,7 @@ private fun SwitchSettingsItem(
     checked: Boolean,
     icon: ImageVector,
     contentDescription: String? = null,
+    additionalContent: (@Composable () -> Unit)? = null
 ) {
     Card(
         modifier = Modifier

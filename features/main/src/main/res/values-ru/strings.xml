@@ -42,4 +42,7 @@
     <string name="dark_mode">Тёмный режим</string>
     <string name="wrong_import_code">Неверный код для импорта</string>
     <string name="try_again">Попробуйте ещё раз</string>
+    <string name="use_pin_code">Использовать пин-код</string>
+    <string name="pin_code">Пин-код</string>
+
 </resources>

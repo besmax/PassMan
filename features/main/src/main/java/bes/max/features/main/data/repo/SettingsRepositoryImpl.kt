@@ -53,7 +53,7 @@ class SettingsRepositoryImpl(
     }
 
     override fun pinCodeIsUsed(): Flow<Boolean> {
-       return preferencesDataStore.data
+        return preferencesDataStore.data
             .catch { exception ->
                 Log.e(
                     TAG,
@@ -62,6 +62,19 @@ class SettingsRepositoryImpl(
             }
             .map { preferences ->
                 preferences[PIN_CODE_PREFERENCES_KEY] != null
+            }
+    }
+
+    override fun pinCode(): Flow<Int?> {
+        return preferencesDataStore.data
+            .catch { exception ->
+                Log.e(
+                    TAG,
+                    "Error during getting DataStore: $exception"
+                )
+            }
+            .map { preferences ->
+                preferences[PIN_CODE_PREFERENCES_KEY]
             }
     }
 
