@@ -22,9 +22,9 @@ import bes.max.export.data.FileWriterImpl
 import bes.max.export.domain.FileExportRepository
 import bes.max.export.domain.FileReader
 import bes.max.export.domain.FileWriter
-import bes.max.features.main.data.CategoriesRepositoryImpl
-import bes.max.features.main.data.SettingsRepositoryImpl
-import bes.max.features.main.data.SiteInfoRepositoryImpl
+import bes.max.features.main.data.repo.CategoriesRepositoryImpl
+import bes.max.features.main.data.repo.SettingsRepositoryImpl
+import bes.max.features.main.data.repo.SiteInfoRepositoryImpl
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SettingsRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository

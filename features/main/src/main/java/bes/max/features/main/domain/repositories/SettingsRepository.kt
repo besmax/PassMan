@@ -8,4 +8,10 @@ interface SettingsRepository {
 
     suspend fun setIsNightModeActive(isNightModeActive: Boolean)
 
+    suspend fun setPinCode(pinCode: Int)
+
+    suspend fun resetPinCode()
+
+    fun pinCodeIsUsed(): Flow<Boolean>
+
 }

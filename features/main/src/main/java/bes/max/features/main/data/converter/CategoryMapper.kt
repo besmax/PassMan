@@ -1,4 +1,4 @@
-package bes.max.features.main.data
+package bes.max.features.main.data.converter
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb

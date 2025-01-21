@@ -65,6 +65,7 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
+    val isPinCodeUsed by settingsViewModel.isPinCodeUsed.collectAsState()
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(

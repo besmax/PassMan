@@ -21,6 +21,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = false
         )
 
+    val isPinCodeUsed = settingsRepository.pinCodeIsUsed()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = false
+        )
+
     fun toggleDarkMode(isActive: Boolean) {
         viewModelScope.launch {
             settingsRepository.setIsNightModeActive(isActive)
