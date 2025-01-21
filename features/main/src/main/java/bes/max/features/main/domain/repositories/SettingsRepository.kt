@@ -1,5 +1,6 @@
 package bes.max.features.main.domain.repositories
 
+import bes.max.features.main.domain.models.PinCodeModelMain
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -8,12 +9,12 @@ interface SettingsRepository {
 
     suspend fun setIsNightModeActive(isNightModeActive: Boolean)
 
-    suspend fun setPinCode(pinCode: Int)
+    suspend fun setPinCode(pinCode: PinCodeModelMain)
 
     suspend fun resetPinCode()
 
     fun pinCodeIsUsed(): Flow<Boolean>
 
-    fun pinCode(): Flow<Int?>
+    fun pinCode(): Flow<PinCodeModelMain>
 
 }

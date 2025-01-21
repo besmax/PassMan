@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.darkModeIcon
@@ -70,7 +71,6 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
-    val isPinCodeUsed by settingsViewModel.isPinCodeUsed.collectAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
@@ -130,16 +130,16 @@ fun SettingsScreen(
         SwitchSettingsItem(
             text = stringResource(R.string.use_pin_code),
             onSwitchClick = settingsViewModel::togglePinCodeUsing,
-            checked = isPinCodeUsed,
-            icon = if (isPinCodeUsed) lockIcon else lockOpenIcon,
+            checked = pinCode?.active == true,
+            icon = if (pinCode?.active == true) lockIcon else lockOpenIcon,
         ) {
-            if (pinCode != null) {
+            if (pinCode?.active == true) {
                 UserInput(
                     hintRes = R.string.pin_code,
                     initialText = pinCode.toString(),
                     onValueChanged = {  },
                     passwordInput = true,
-                    showPassword = {  },
+                    showPassword = settingsViewModel::showPinCode,
                     launchBiometric = launchBiometric
                 )
             }
