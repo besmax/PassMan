@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,13 +53,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
+import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.settingsIcon
-import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
-import bes.max.ui.common.LightGray
+import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
@@ -73,18 +74,44 @@ fun SitesScreen(
     navigateToSettings: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
+    val pinCode by settingsViewModel.pinCode.collectAsState()
     val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
     }
+
     val copyPasswordToClipboard = { model: SiteInfoModelMain ->
         sitesViewModel.copyPasswordToClipboard(model)
     }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val state by lifecycleOwner.lifecycle.currentStateAsState()
+
+    var showPinCodeInput by remember { mutableStateOf(false) }
+
+    var authOnSuccess by remember { mutableStateOf({ }) }
+    var authOnFail by remember { mutableStateOf({ }) }
+    var authFail by remember { mutableStateOf(false) }
+
+    val authentication: (() -> Unit, () -> Unit) -> Unit = { onSuccess, onFail ->
+        if (pinCode?.active == true) {
+            authOnSuccess = {
+                onSuccess()
+                showPinCodeInput = false
+            }
+            authOnFail = {
+                onFail()
+                authFail = true
+                showPinCodeInput = false
+            }
+            showPinCodeInput = true
+        } else {
+            launchAuth(onSuccess, onFail)
+        }
+    }
 
     LaunchedEffect(key1 = state) {
         if (state == Lifecycle.State.STARTED) run {
@@ -122,7 +149,6 @@ fun SitesScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
                 Crossfade(
                     targetState = uiState,
                     animationSpec = tween(durationMillis = 600),
@@ -135,13 +161,26 @@ fun SitesScreen(
                             state,
                             navigateToEdit,
                             showPassword,
-                            launchAuth,
+                            authentication,
                             navigateToCategory,
                             copyPasswordToClipboard
                         )
                     }
                 }
 
+                if (showPinCodeInput) {
+                    CheckPinCode(
+                        onSuccess = authOnSuccess,
+                        onFail = authOnFail,
+                        checkPinInput = settingsViewModel::checkInputPinCode
+                    )
+                }
+                if (authFail) {
+                    Information(
+                        title = stringResource(R.string.wrong_pin_code),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
     )
@@ -393,5 +432,5 @@ private fun SiteListItemPreview() {
         copyPasswordToClipboard = {},
         launchAuth = { _, _ -> },
 
-    )
+        )
 }

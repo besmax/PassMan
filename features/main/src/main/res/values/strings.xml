@@ -47,4 +47,5 @@
     <string name="enter_pin_code">Enter pin-code</string>
     <string name="repeat_pin_code">Repeat pin-code</string>
     <string name="wrong_pin_code">Wrong pin-code, try again</string>
+    <string name="enter">Enter</string>
 </resources>

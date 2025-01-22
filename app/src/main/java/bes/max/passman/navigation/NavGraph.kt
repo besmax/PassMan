@@ -14,6 +14,7 @@ import bes.max.export.presentation.ExportEvent
 import bes.max.export.presentation.ExportViewModel
 import bes.max.export.ui.FileExplorerScreen
 import bes.max.features.main.ui.CategoryScreen
+import bes.max.features.main.ui.CheckPinCode
 import bes.max.features.main.ui.EditOrNewSiteScreen
 import bes.max.features.main.ui.SettingsScreen
 import bes.max.features.main.ui.SitesScreen

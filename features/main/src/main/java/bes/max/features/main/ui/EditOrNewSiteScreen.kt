@@ -1,5 +1,7 @@
 package bes.max.features.main.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,11 +46,12 @@ import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.edit.EditScreenState
 import bes.max.features.main.presentation.edit.EditViewModel
+import bes.max.features.main.presentation.settings.SettingsViewModel
+import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowError
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
-import bes.max.passman.features.main.R
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import coil.memory.MemoryCache
@@ -57,7 +61,8 @@ import coil.memory.MemoryCache
 fun EditOrNewSiteScreen(
     navigateBack: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    editViewModel: EditViewModel = hiltViewModel()
+    editViewModel: EditViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
@@ -73,58 +78,93 @@ fun EditOrNewSiteScreen(
             (name != "" && url != "" && newPassword != "")
         }
     }
+    var showPinCodeInput by remember { mutableStateOf(false) }
+    val pinCode by settingsViewModel.pinCode.collectAsState()
+    var authOnSuccess by remember { mutableStateOf({ }) }
+    var authOnFail by remember { mutableStateOf({ }) }
+    var authFail by remember { mutableStateOf(false) }
 
-    when (uiState) {
-        is EditScreenState.Loading -> ShowLoading()
+    val authentication: (() -> Unit, () -> Unit) -> Unit = { onSuccess, onFail ->
+        if (pinCode?.active == true) {
+            authOnSuccess = {
+                onSuccess()
+                showPinCodeInput = false
+            }
+            authOnFail = {
+                onFail()
+                authFail = true
+                showPinCodeInput = false
+            }
+            showPinCodeInput = true
+        } else {
+            launchAuth(onSuccess, onFail)
+        }
+    }
+    Crossfade(
+        targetState = uiState,
+        animationSpec = tween(durationMillis = 600),
+        label = "Sites Screen States Changes"
+    ) { state ->
+        when (state) {
+            is EditScreenState.Loading -> ShowLoading()
 
-        is EditScreenState.Error -> ShowError(refresh = { })
+            is EditScreenState.Error -> ShowError(refresh = { })
 
-        is EditScreenState.Edit -> ShowEdit(
-            model = (uiState as EditScreenState.Edit).model,
-            changeName = { name = it },
-            changeUrl = { url = it },
-            changePassword = { newPassword = it },
-            changeComment = { comment = it },
-            showPassword = { model -> editViewModel.showPassword(model) },
-            doEdit = {
-                editViewModel.update(
-                    (uiState as EditScreenState.Edit).model,
-                    name,
-                    url,
-                    newPassword,
-                    comment,
-                    categoryColor
-                )
-                navigateBack()
-            },
-            launchBiometric = launchAuth,
-            deleteItem = { model ->
-                editViewModel.delete(model)
-                val imageLoader = context.imageLoader
-                imageLoader.diskCache?.remove(url)
-                imageLoader.memoryCache?.remove(MemoryCache.Key(url))
-                navigateBack()
-            },
-            categories = (uiState as EditScreenState.Edit).categories,
-            changeCategory = { categoryColor = it },
-            navigateBack = navigateBack,
-        )
+            is EditScreenState.Edit -> ShowEdit(
+                model = (uiState as EditScreenState.Edit).model,
+                changeName = { name = it },
+                changeUrl = { url = it },
+                changePassword = { newPassword = it },
+                changeComment = { comment = it },
+                showPassword = { model -> editViewModel.showPassword(model) },
+                doEdit = {
+                    editViewModel.update(
+                        state.model,
+                        name,
+                        url,
+                        newPassword,
+                        comment,
+                        categoryColor
+                    )
+                    navigateBack()
+                },
+                launchBiometric = authentication,
+                deleteItem = { model ->
+                    editViewModel.delete(model)
+                    val imageLoader = context.imageLoader
+                    imageLoader.diskCache?.remove(url)
+                    imageLoader.memoryCache?.remove(MemoryCache.Key(url))
+                    navigateBack()
+                },
+                categories = (uiState as EditScreenState.Edit).categories,
+                changeCategory = { categoryColor = it },
+                navigateBack = navigateBack,
+            )
 
-        is EditScreenState.New -> ShowNew(
-            changeName = { name = it },
-            changeUrl = { url = it },
-            changePassword = { newPassword = it },
-            create = {
-                editViewModel.add(name, url, newPassword, comment, categoryColor)
-                navigateBack()
-            },
-            isButtonEnabled = isButtonEnabledForNew,
-            launchBiometric = launchAuth,
-            changeComment = { comment = it },
-            showPassword = { newPassword },
-            categories = (uiState as EditScreenState.New).categories,
-            changeCategory = { categoryColor = it },
-            navigateBack = navigateBack,
+            is EditScreenState.New -> ShowNew(
+                changeName = { name = it },
+                changeUrl = { url = it },
+                changePassword = { newPassword = it },
+                create = {
+                    editViewModel.add(name, url, newPassword, comment, categoryColor)
+                    navigateBack()
+                },
+                isButtonEnabled = isButtonEnabledForNew,
+                launchBiometric = authentication,
+                changeComment = { comment = it },
+                showPassword = { newPassword },
+                categories = (uiState as EditScreenState.New).categories,
+                changeCategory = { categoryColor = it },
+                navigateBack = navigateBack,
+            )
+        }
+    }
+
+    if (showPinCodeInput) {
+        CheckPinCode(
+            onSuccess = authOnSuccess,
+            onFail = authOnFail,
+            checkPinInput = settingsViewModel::checkInputPinCode
         )
     }
 }

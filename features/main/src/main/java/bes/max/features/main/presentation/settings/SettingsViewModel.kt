@@ -93,6 +93,20 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun checkInputPinCode(input: String): Boolean {
+        val current = pinCode.value
+         val pinCode = if (current != null) {
+            cipher.decrypt(
+                alias = PIN_CODE_ALIAS,
+                encryptedData = current.pinCode,
+                initVector = current.iv
+            )
+        } else {
+            ""
+        }
+        return pinCode == input
+    }
+
     fun resetEvent() {
         _event.postValue(SettingsEvent.Default)
     }
