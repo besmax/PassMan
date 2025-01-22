@@ -238,8 +238,7 @@ private fun PinCodeInput(
                 if (lastInput != null) {
                     if (lastInput == pinCode) {
                         confirm?.invoke()
-                    }
-                    else {
+                    } else {
                         wrongPinCode = true
                     }
                 } else {
@@ -424,20 +423,11 @@ private fun EnterImportCode(
             )
         },
         text = {
-            Box(
-                Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            ) {
-                UserInput(
-                    hintRes = R.string.import_code,
-                    onValueChanged = { inputCode = it },
-                    maxLines = 3,
-                )
-            }
+            UserInput(
+                hintRes = R.string.import_code,
+                onValueChanged = { inputCode = it },
+                maxLines = 3,
+            )
         },
         confirmButton = {
             TextButton(onClick = {
