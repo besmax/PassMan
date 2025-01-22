@@ -2,6 +2,7 @@ package bes.max.features.main.ui
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -136,18 +137,7 @@ fun SettingsScreen(
             onSwitchClick = settingsViewModel::togglePinCodeUsing,
             checked = pinCode?.active == true,
             icon = if (pinCode?.active == true) lockIcon else lockOpenIcon,
-        ) {
-            if (pinCode?.active == true) {
-                UserInput(
-                    hintRes = R.string.pin_code,
-                    initialText = pinCode.toString(),
-                    onValueChanged = { },
-                    passwordInput = true,
-                    showPassword = settingsViewModel::showPinCode,
-                    launchBiometric = launchBiometric
-                )
-            }
-        }
+        )
 
         Spacer(Modifier.weight(1f))
 
@@ -246,10 +236,14 @@ private fun PinCodeInput(
         confirmButton = {
             TextButton(onClick = {
                 if (lastInput != null) {
-                    if (lastInput == pinCode) check?.invoke(pinCode)
-                    else wrongPinCode = true
+                    if (lastInput == pinCode) {
+                        confirm?.invoke()
+                    }
+                    else {
+                        wrongPinCode = true
+                    }
                 } else {
-                    confirm?.invoke()
+                    check?.invoke(pinCode.trim())
                 }
             }) {
                 Text(

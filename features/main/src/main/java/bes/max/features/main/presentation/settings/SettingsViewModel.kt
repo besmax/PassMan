@@ -1,15 +1,12 @@
 package bes.max.features.main.presentation.settings
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.PinCodeModelMain
-import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.SettingsRepository
-import bes.max.features.main.presentation.sites.SitesScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -58,8 +55,16 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun checkPinCode(pinCode: String) {
-        Log.e("TAAAAAAAAAAAG", "checkPinCode")
-        _event.postValue(SettingsEvent.ReCheckPinCode(pinCode, { savePinCode(pinCode) }, ::resetEvent))
+        _event.postValue(
+            SettingsEvent.ReCheckPinCode(
+                pinCode = pinCode,
+                onSuccess = {
+                    savePinCode(pinCode)
+                    resetEvent()
+                },
+                resetEvent = ::resetEvent
+            )
+        )
     }
 
     private fun savePinCode(pinCode: String) {
