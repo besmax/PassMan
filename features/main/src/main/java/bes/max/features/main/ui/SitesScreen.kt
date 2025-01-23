@@ -1,5 +1,6 @@
 package bes.max.features.main.ui
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,8 +39,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,6 +70,7 @@ import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +90,15 @@ fun SitesScreen(
         sitesViewModel.showPassword(model)
     }
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val wrongPinCodeText = stringResource(R.string.wrong_pin_code)
+    val copiedText = stringResource(R.string.copied)
+
     val copyPasswordToClipboard = { model: SiteInfoModelMain ->
+        scope.launch {
+            snackbarHostState.showSnackbar(copiedText)
+        }
         sitesViewModel.copyPasswordToClipboard(model)
     }
 
@@ -94,7 +109,6 @@ fun SitesScreen(
 
     var authOnSuccess by remember { mutableStateOf({ }) }
     var authOnFail by remember { mutableStateOf({ }) }
-    var authFail by remember { mutableStateOf(false) }
 
     val authentication: (() -> Unit, () -> Unit) -> Unit = { onSuccess, onFail ->
         if (pinCode?.active == true) {
@@ -104,7 +118,9 @@ fun SitesScreen(
             }
             authOnFail = {
                 onFail()
-                authFail = true
+                scope.launch {
+                    snackbarHostState.showSnackbar(wrongPinCodeText)
+                }
                 showPinCodeInput = false
             }
             showPinCodeInput = true
@@ -120,7 +136,12 @@ fun SitesScreen(
     }
 
     Scaffold(
-        floatingActionButton = { FabAdd(navigateToNew) },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            FabAdd(navigateToNew)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -173,12 +194,6 @@ fun SitesScreen(
                         onSuccess = authOnSuccess,
                         onFail = authOnFail,
                         checkPinInput = settingsViewModel::checkInputPinCode
-                    )
-                }
-                if (authFail) {
-                    Information(
-                        title = stringResource(R.string.wrong_pin_code),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
             }
@@ -404,7 +419,7 @@ fun FabAdd(addItem: () -> Unit) {
     FloatingActionButton(
         onClick = { addItem() },
         modifier = Modifier
-            .padding(end = 16.dp, bottom = 24.dp),
+            .padding(end = 16.dp, bottom = 80.dp),
         shape = RoundedCornerShape(100.dp),
     ) {
         Icon(

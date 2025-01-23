@@ -48,5 +48,6 @@
     <string name="repeat_pin_code">Повторите пин-код</string>
     <string name="wrong_pin_code">Неправильный пин-код, попробуйте ещё раз</string>
     <string name="enter">Ввести</string>
+    <string name="copied">Скопировано</string>
 
 </resources>
