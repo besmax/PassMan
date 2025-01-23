@@ -1,8 +1,6 @@
 package bes.max.features.main.ui
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import bes.max.passman.features.main.R
 import bes.max.ui.common.Information
 import bes.max.ui.common.UserInput
@@ -42,11 +39,6 @@ fun CheckPinCode(
         text = {
             Box(
                 Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        shape = RoundedCornerShape(8.dp)
-                    )
             ) {
                 UserInput(
                     hintRes = R.string.enter_pin_code,
