@@ -107,7 +107,7 @@ fun SettingsScreen(
 
         SettingsItem(
             text = stringResource(R.string.settings_item_import),
-            onItemClick = { pickFileLauncher.launch("text/csv") }, //for all types=*/*
+            onItemClick = { pickFileLauncher.launch("*/*") },
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_import_descr),
         )
