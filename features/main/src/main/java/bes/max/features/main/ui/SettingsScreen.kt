@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +60,7 @@ import bes.max.passman.features.main.R
 import bes.max.ui.common.Information
 import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -76,6 +78,8 @@ fun SettingsScreen(
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
     val event by settingsViewModel.event.observeAsState()
+
+    val scope = rememberCoroutineScope()
 
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
@@ -134,7 +138,18 @@ fun SettingsScreen(
 
         SwitchSettingsItem(
             text = stringResource(R.string.use_pin_code),
-            onSwitchClick = settingsViewModel::togglePinCodeUsing,
+            onSwitchClick = { use ->
+                scope.launch {
+                    if (settingsViewModel.haveRecords()) {
+                        launchBiometric(
+                            { settingsViewModel.togglePinCodeUsing(use) },
+                            {}
+                        )
+                    } else {
+                        settingsViewModel.togglePinCodeUsing(use)
+                    }
+                }
+            },
             checked = pinCode?.active == true,
             icon = if (pinCode?.active == true) lockIcon else lockOpenIcon,
         )

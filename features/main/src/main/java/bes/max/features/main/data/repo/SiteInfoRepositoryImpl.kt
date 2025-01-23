@@ -32,4 +32,8 @@ class SiteInfoRepositoryImpl(
     override suspend fun delete(model: SiteInfoModelMain) {
         siteInfoDbRepository.delete(model.map(), Dispatchers.IO)
     }
+
+    override suspend fun isNotEmpty(): Boolean {
+       return siteInfoDbRepository.isNotEmpty()
+    }
 }

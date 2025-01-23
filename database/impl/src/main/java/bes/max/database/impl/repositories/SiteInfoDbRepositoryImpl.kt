@@ -63,4 +63,8 @@ class SiteInfoDbRepositoryImpl(
             siteInfoDao.delete(model.map())
         }
     }
+
+    override suspend fun isNotEmpty(): Boolean {
+       return siteInfoDao.count() != 0
+    }
 }

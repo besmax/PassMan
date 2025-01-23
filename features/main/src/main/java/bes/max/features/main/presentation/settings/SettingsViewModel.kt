@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.PinCodeModelMain
 import bes.max.features.main.domain.repositories.SettingsRepository
+import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -19,6 +20,7 @@ private const val PIN_CODE_ALIAS = "pin_code_alias"
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val cipher: CipherApi,
+    private val siteInfoRepository: SiteInfoRepository,
 ) : ViewModel() {
 
     val isNighModeActive = settingsRepository.isNightModeActive()
@@ -105,6 +107,10 @@ class SettingsViewModel @Inject constructor(
             ""
         }
         return pinCode == input
+    }
+
+    suspend fun haveRecords(): Boolean {
+        return siteInfoRepository.isNotEmpty()
     }
 
     fun resetEvent() {
