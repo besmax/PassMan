@@ -85,4 +85,25 @@ class SitesViewModel @Inject constructor(
         appContext.copyTextToClipboard(decryptPassword)
     }
 
+    fun toggleItemSelection(id: Int) {
+        val current = _uiState.value
+        if (current is SitesScreenState.Content) {
+            _uiState.postValue(
+                current.copy(
+                    sites = current.sites.map {
+                        if (it.id == id) it.copy(isSelected = !it.isSelected) else it
+                    }
+                )
+            )
+        }
+    }
+
+    fun unselectAll() {
+        val current = _uiState.value
+        if (current is SitesScreenState.Content) {
+            _uiState.postValue(
+                current.copy(sites = current.sites.map { it.copy(isSelected = false) })
+            )
+        }
+    }
 }
