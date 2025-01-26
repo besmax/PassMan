@@ -56,11 +56,9 @@ import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.edit.EditScreenState
 import bes.max.features.main.presentation.edit.EditViewModel
 import bes.max.features.main.presentation.settings.SettingsViewModel
-import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowError
 import bes.max.ui.common.ShowLoading
-import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
@@ -125,11 +123,14 @@ fun EditOrNewSiteScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = R.string.settings),
+                        text = stringResource(
+                            id = if (uiState is EditScreenState.Edit) R.string.edit
+                            else R.string.add
+                        ),
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {  navigateBack() }
+                            .clickable { navigateBack() }
                     )
                 },
                 navigationIcon = {
@@ -327,7 +328,7 @@ fun ShowNew(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-         UserInput(
+        UserInput(
             hintRes = R.string.hint_name,
             onValueChanged = changeName,
             maxLines = 3,
