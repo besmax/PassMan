@@ -88,7 +88,7 @@ fun EditOrNewSiteScreen(
 
     val isButtonEnabledForNew by remember {
         derivedStateOf {
-            (name != "" && url != "" && newPassword != "")
+            (name != "" && newPassword != "")
         }
     }
     var showPinCodeInput by remember { mutableStateOf(false) }
