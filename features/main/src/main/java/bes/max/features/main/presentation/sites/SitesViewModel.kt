@@ -88,13 +88,16 @@ class SitesViewModel @Inject constructor(
     fun toggleItemSelection(id: Int) {
         val current = _uiState.value
         if (current is SitesScreenState.Content) {
-            _uiState.postValue(
-                current.copy(
-                    sites = current.sites.map {
-                        if (it.id == id) it.copy(isSelected = !it.isSelected) else it
-                    }
-                )
-            )
+            val filteredSites = current.filteredSites.map {
+                if (it.id == id) it.copy(isSelected = !it.isSelected)
+                else it
+            }
+            val sites = current.sites.map {
+                if (it.id == id) it.copy(isSelected = !it.isSelected)
+                else it
+            }
+            val selected = sites.count { it.isSelected }
+            _uiState.postValue(current.copy(filteredSites = filteredSites, sites=sites, selected = selected))
         }
     }
 
@@ -102,8 +105,23 @@ class SitesViewModel @Inject constructor(
         val current = _uiState.value
         if (current is SitesScreenState.Content) {
             _uiState.postValue(
-                current.copy(sites = current.sites.map { it.copy(isSelected = false) })
+                current.copy(
+                    sites = current.sites.map { it.copy(isSelected = false) },
+                    filteredSites = current.filteredSites.map { it.copy(isSelected = false) },
+                    selected = 0
+                )
             )
+        }
+    }
+
+    fun deleteSelected() {
+        viewModelScope.launch {
+            val current = _uiState.value
+            if (current is SitesScreenState.Content) {
+                current.sites.filter { it.isSelected }.forEach {
+                    siteInfoRepository.delete(it)
+                }
+            }
         }
     }
 }

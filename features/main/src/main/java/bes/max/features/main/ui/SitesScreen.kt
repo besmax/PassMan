@@ -1,20 +1,20 @@
 package bes.max.features.main.ui
 
-import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +43,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,11 +53,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,7 +69,6 @@ import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.passman.features.main.R
-import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
@@ -150,21 +148,52 @@ fun SitesScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(id = R.string.saved_passwords),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
+                    if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.chosen,
+                                (uiState as SitesScreenState.Content).selected.toString()
+                            ),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.saved_passwords),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
                 },
                 actions = {
-                    IconButton(
-                        onClick = navigateToSettings,
-
+                    if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
+                        IconButton(
+                            onClick = sitesViewModel::deleteSelected,
                         ) {
-                        Icon(
-                            imageVector = settingsIcon,
-                            contentDescription = "Go to settings icon",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                        )
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete chosen items icon",
+                                tint = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
+
+                        IconButton(
+                            onClick = sitesViewModel::unselectAll,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Unselect selected items icon",
+                                tint = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = navigateToSettings,
+                        ) {
+                            Icon(
+                                imageVector = settingsIcon,
+                                contentDescription = "Go to settings icon",
+                                tint = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
                     }
                 }
             )
@@ -184,12 +213,13 @@ fun SitesScreen(
                         is SitesScreenState.Empty -> ShowEmpty()
                         is SitesScreenState.Loading -> ShowLoading()
                         is SitesScreenState.Content -> ShowContent(
-                            state,
-                            navigateToEdit,
-                            showPassword,
-                            authentication,
-                            navigateToCategory,
-                            copyPasswordToClipboard
+                            uiState = state,
+                            onItemClick = navigateToEdit,
+                            showPassword = showPassword,
+                            launchAuth = authentication,
+                            navigateToCategory = navigateToCategory,
+                            copyPasswordToClipboard = copyPasswordToClipboard,
+                            onItemLongClick = sitesViewModel::toggleItemSelection
                         )
                     }
                 }
@@ -214,6 +244,7 @@ fun ShowContent(
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
+    onItemLongClick: (Int) -> Unit,
 ) {
     SitesList(
         uiState.filteredSites,
@@ -222,7 +253,8 @@ fun ShowContent(
         showPassword,
         launchAuth,
         navigateToCategory,
-        copyPasswordToClipboard
+        copyPasswordToClipboard,
+        onItemLongClick
     )
 }
 
@@ -235,8 +267,8 @@ fun SitesList(
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
+    onItemLongClick: (Int) -> Unit,
 ) {
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -267,12 +299,20 @@ fun SitesList(
                 items = filteredList,
                 key = { model -> model.id }
             ) { model ->
-                SiteListItem(model, onItemClick, showPassword, copyPasswordToClipboard, launchAuth)
+                SiteListItem(
+                    model,
+                    onItemClick,
+                    showPassword,
+                    copyPasswordToClipboard,
+                    launchAuth,
+                    onItemLongClick
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SiteListItem(
     model: SiteInfoModelMain,
@@ -280,6 +320,8 @@ fun SiteListItem(
     showPassword: (SiteInfoModelMain) -> String,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    onItemLongClick: (Int) -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
 
     var isPasswordVisible by rememberSaveable {
@@ -290,12 +332,18 @@ fun SiteListItem(
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = if (model.isSelected) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surfaceContainer,
         ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp)
-            .clickable { onItemClick(model.id) },
+            .combinedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = { onItemClick(model.id) },
+                onLongClick = { onItemLongClick(model.id) }
+            ),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -460,6 +508,6 @@ private fun SiteListItemPreview() {
         showPassword = { "" },
         copyPasswordToClipboard = {},
         launchAuth = { _, _ -> },
-
-        )
+        onItemLongClick = {}
+    )
 }

@@ -9,6 +9,7 @@ sealed interface SitesScreenState {
         val sites: List<SiteInfoModelMain>,
         val filteredSites: List<SiteInfoModelMain>,
         val filters: List<FilterModel> = emptyList(),
+        val selected: Int = 0,
     ) : SitesScreenState
 
     data object Empty : SitesScreenState
