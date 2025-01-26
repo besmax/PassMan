@@ -1,7 +1,7 @@
-package bes.max.features.main.data
+package bes.max.features.main.data.repo
 
-import bes.max.database.api.model.SiteInfoModel
 import bes.max.database.api.repositories.SiteInfoDbRepository
+import bes.max.features.main.data.converter.map
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import kotlinx.coroutines.Dispatchers
@@ -31,5 +31,9 @@ class SiteInfoRepositoryImpl(
 
     override suspend fun delete(model: SiteInfoModelMain) {
         siteInfoDbRepository.delete(model.map(), Dispatchers.IO)
+    }
+
+    override suspend fun isNotEmpty(): Boolean {
+       return siteInfoDbRepository.isNotEmpty()
     }
 }

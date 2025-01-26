@@ -1,7 +1,7 @@
 [versions]
 accompanistPermissions = "0.37.0"
 agp = "8.3.0"
-datastorePreferences = "1.1.1"
+datastore = "1.1.2"
 kotlin = "1.9.22"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -28,13 +28,18 @@ coil = "2.6.0"
 compose-navigation = "2.7.7"
 biometric = "1.2.0-alpha05"
 material = "1.12.0"
+protobuf = "0.9.4"
+protobuf-protoc= "3.25.3"
 ui-tooling = "1.7.6"
 datastoreCoreAndroid = "1.1.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-protoc" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf-protoc" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -81,4 +86,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+protobuf = {id = "com.google.protobuf", version.ref = "protobuf"}
+protobuf-protoc = {id = "com.google.protobuf:protoc", version.ref = "protobuf-protoc"}
+
 

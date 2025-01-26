@@ -42,4 +42,11 @@
     <string name="dark_mode">Dark mode</string>
     <string name="wrong_import_code">Wrong import code</string>
     <string name="try_again">Try again</string>
+    <string name="use_pin_code">Use pin-code</string>
+    <string name="pin_code">Pin-code</string>
+    <string name="enter_pin_code">Enter pin-code</string>
+    <string name="repeat_pin_code">Repeat pin-code</string>
+    <string name="wrong_pin_code">Wrong pin-code, try again</string>
+    <string name="enter">Enter</string>
+    <string name="copied">Copied</string>
 </resources>

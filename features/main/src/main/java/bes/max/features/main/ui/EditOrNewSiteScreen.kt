@@ -1,5 +1,8 @@
 package bes.max.features.main.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,20 +18,29 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,21 +55,23 @@ import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.edit.EditScreenState
 import bes.max.features.main.presentation.edit.EditViewModel
+import bes.max.features.main.presentation.settings.SettingsViewModel
+import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowError
 import bes.max.ui.common.ShowLoading
-import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
-import bes.max.passman.features.main.R
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import coil.memory.MemoryCache
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoilApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditOrNewSiteScreen(
     navigateBack: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    editViewModel: EditViewModel = hiltViewModel()
+    editViewModel: EditViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
@@ -68,65 +82,140 @@ fun EditOrNewSiteScreen(
     var categoryColor by rememberSaveable { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val wrongPinCodeText = stringResource(R.string.wrong_pin_code)
+
     val isButtonEnabledForNew by remember {
         derivedStateOf {
-            (name != "" && url != "" && newPassword != "")
+            (name != "" && newPassword != "")
+        }
+    }
+    var showPinCodeInput by remember { mutableStateOf(false) }
+    val pinCode by settingsViewModel.pinCode.collectAsState()
+    var authOnSuccess by remember { mutableStateOf({ }) }
+    var authOnFail by remember { mutableStateOf({ }) }
+
+    val authentication: (() -> Unit, () -> Unit) -> Unit = { onSuccess, onFail ->
+        if (pinCode?.active == true) {
+            authOnSuccess = {
+                onSuccess()
+                showPinCodeInput = false
+            }
+            authOnFail = {
+                onFail()
+                scope.launch {
+                    snackbarHostState.showSnackbar(wrongPinCodeText)
+                }
+                showPinCodeInput = false
+            }
+            showPinCodeInput = true
+        } else {
+            launchAuth(onSuccess, onFail)
         }
     }
 
-    when (uiState) {
-        is EditScreenState.Loading -> ShowLoading()
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(
+                            id = if (uiState is EditScreenState.Edit) R.string.edit
+                            else R.string.add
+                        ),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navigateBack() }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(navigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back icon",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                }
+            )
+        },
+        content = { paddingValues ->
+            Crossfade(
+                targetState = uiState,
+                animationSpec = tween(durationMillis = 600),
+                label = "Sites Screen States Changes",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) { state ->
+                when (state) {
+                    is EditScreenState.Loading -> ShowLoading()
 
-        is EditScreenState.Error -> ShowError(refresh = { })
+                    is EditScreenState.Error -> ShowError(refresh = { })
 
-        is EditScreenState.Edit -> ShowEdit(
-            model = (uiState as EditScreenState.Edit).model,
-            changeName = { name = it },
-            changeUrl = { url = it },
-            changePassword = { newPassword = it },
-            changeComment = { comment = it },
-            showPassword = { model -> editViewModel.showPassword(model) },
-            doEdit = {
-                editViewModel.update(
-                    (uiState as EditScreenState.Edit).model,
-                    name,
-                    url,
-                    newPassword,
-                    comment,
-                    categoryColor
+                    is EditScreenState.Edit -> ShowEdit(
+                        model = (uiState as EditScreenState.Edit).model,
+                        changeName = { name = it },
+                        changeUrl = { url = it },
+                        changePassword = { newPassword = it },
+                        changeComment = { comment = it },
+                        showPassword = { model -> editViewModel.showPassword(model) },
+                        doEdit = {
+                            editViewModel.update(
+                                state.model,
+                                name,
+                                url,
+                                newPassword,
+                                comment,
+                                categoryColor
+                            )
+                            navigateBack()
+                        },
+                        launchBiometric = authentication,
+                        deleteItem = { model ->
+                            editViewModel.delete(model)
+                            val imageLoader = context.imageLoader
+                            imageLoader.diskCache?.remove(url)
+                            imageLoader.memoryCache?.remove(MemoryCache.Key(url))
+                            navigateBack()
+                        },
+                        categories = (uiState as EditScreenState.Edit).categories,
+                        changeCategory = { categoryColor = it },
+                    )
+
+                    is EditScreenState.New -> ShowNew(
+                        changeName = { name = it },
+                        changeUrl = { url = it },
+                        changePassword = { newPassword = it },
+                        create = {
+                            editViewModel.add(name, url, newPassword, comment, categoryColor)
+                            navigateBack()
+                        },
+                        isButtonEnabled = isButtonEnabledForNew,
+                        launchBiometric = authentication,
+                        changeComment = { comment = it },
+                        showPassword = { newPassword },
+                        categories = (uiState as EditScreenState.New).categories,
+                        changeCategory = { categoryColor = it },
+                    )
+                }
+            }
+
+            if (showPinCodeInput) {
+                CheckPinCode(
+                    onSuccess = authOnSuccess,
+                    onFail = authOnFail,
+                    checkPinInput = settingsViewModel::checkInputPinCode
                 )
-                navigateBack()
-            },
-            launchBiometric = launchAuth,
-            deleteItem = { model ->
-                editViewModel.delete(model)
-                val imageLoader = context.imageLoader
-                imageLoader.diskCache?.remove(url)
-                imageLoader.memoryCache?.remove(MemoryCache.Key(url))
-                navigateBack()
-            },
-            categories = (uiState as EditScreenState.Edit).categories,
-            changeCategory = { categoryColor = it },
-            navigateBack = navigateBack,
-        )
+            }
+        }
+    )
 
-        is EditScreenState.New -> ShowNew(
-            changeName = { name = it },
-            changeUrl = { url = it },
-            changePassword = { newPassword = it },
-            create = {
-                editViewModel.add(name, url, newPassword, comment, categoryColor)
-                navigateBack()
-            },
-            isButtonEnabled = isButtonEnabledForNew,
-            launchBiometric = launchAuth,
-            changeComment = { comment = it },
-            showPassword = { newPassword },
-            categories = (uiState as EditScreenState.New).categories,
-            changeCategory = { categoryColor = it },
-            navigateBack = navigateBack,
-        )
-    }
 }
 
 @Composable
@@ -142,7 +231,6 @@ fun ShowEdit(
     deleteItem: (SiteInfoModelMain) -> Unit,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
-    navigateBack: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -151,11 +239,6 @@ fun ShowEdit(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        ShowTitle(
-            title = stringResource(id = R.string.edit),
-            navigateBack = navigateBack,
-        )
-
         UserInput(
             hintRes = R.string.hint_name,
             initialText = model.name,
@@ -237,7 +320,6 @@ fun ShowNew(
     showPassword: () -> String,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
-    navigateBack: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -246,11 +328,6 @@ fun ShowNew(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        ShowTitle(
-            title = stringResource(id = R.string.add),
-            navigateBack = navigateBack,
-        )
-
         UserInput(
             hintRes = R.string.hint_name,
             onValueChanged = changeName,

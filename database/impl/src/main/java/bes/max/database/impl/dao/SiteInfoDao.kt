@@ -37,4 +37,7 @@ interface SiteInfoDao {
 
     @Delete
     suspend fun delete(entity: SiteInfoEntity)
+
+    @Query("SELECT COUNT(*) FROM site_info_table")
+    suspend fun count(): Int
 }

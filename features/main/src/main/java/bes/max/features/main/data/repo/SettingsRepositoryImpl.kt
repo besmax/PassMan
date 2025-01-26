@@ -1,4 +1,4 @@
-package bes.max.features.main.data
+package bes.max.features.main.data.repo
 
 import android.content.Context
 import android.os.Build
@@ -7,7 +7,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import bes.max.features.main.data.datastore.map
+import bes.max.features.main.domain.models.PinCodeModelMain
 import bes.max.features.main.domain.repositories.SettingsRepository
+import bes.max.features.main.proto.PinCodeModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -17,7 +21,8 @@ private const val TAG = "SettingsRepositoryImpl"
 
 class SettingsRepositoryImpl(
     private val context: Context,
-    private val preferencesDataStore: DataStore<Preferences>
+    private val preferencesDataStore: DataStore<Preferences>,
+    private val pinCodeDataStore: DataStore<PinCodeModel>,
 ) : SettingsRepository {
     override fun isNightModeActive(): Flow<Boolean> {
         return preferencesDataStore.data
@@ -36,6 +41,32 @@ class SettingsRepositoryImpl(
         preferencesDataStore.edit { preferences ->
             preferences[DARK_THEME_PREFERENCES_KEY] = isNightModeActive
         }
+    }
+
+    override suspend fun setPinCode(pinCode: PinCodeModelMain) {
+        pinCodeDataStore.updateData {
+            it.toBuilder()
+                .setPincode(pinCode.pinCode)
+                .setActive(pinCode.active)
+                .setIv(pinCode.iv)
+                .build()
+        }
+    }
+
+    override suspend fun resetPinCode() {
+        pinCodeDataStore.updateData {
+            it.toBuilder()
+                .setActive(false)
+                .build()
+        }
+    }
+
+    override fun pinCodeIsUsed(): Flow<Boolean> {
+        return pinCodeDataStore.data.map { it.active }
+    }
+
+    override fun pinCode(): Flow<PinCodeModelMain> {
+        return pinCodeDataStore.data.map { it.map() }
     }
 
     private fun isNightModeActiveDefault(): Boolean {

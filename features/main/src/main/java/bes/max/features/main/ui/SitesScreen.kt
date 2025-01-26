@@ -1,16 +1,20 @@
 package bes.max.features.main.ui
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,24 +31,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,17 +64,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
+import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.settingsIcon
-import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
-import bes.max.ui.common.LightGray
+import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,18 +86,53 @@ fun SitesScreen(
     navigateToSettings: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     sitesViewModel: SitesViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
+    val pinCode by settingsViewModel.pinCode.collectAsState()
     val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
     }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val wrongPinCodeText = stringResource(R.string.wrong_pin_code)
+    val copiedText = stringResource(R.string.copied)
+
     val copyPasswordToClipboard = { model: SiteInfoModelMain ->
+        scope.launch {
+            snackbarHostState.showSnackbar(copiedText)
+        }
         sitesViewModel.copyPasswordToClipboard(model)
     }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val state by lifecycleOwner.lifecycle.currentStateAsState()
+
+    var showPinCodeInput by remember { mutableStateOf(false) }
+
+    var authOnSuccess by remember { mutableStateOf({ }) }
+    var authOnFail by remember { mutableStateOf({ }) }
+
+    val authentication: (() -> Unit, () -> Unit) -> Unit = { onSuccess, onFail ->
+        if (pinCode?.active == true) {
+            authOnSuccess = {
+                onSuccess()
+                showPinCodeInput = false
+            }
+            authOnFail = {
+                onFail()
+                scope.launch {
+                    snackbarHostState.showSnackbar(wrongPinCodeText)
+                }
+                showPinCodeInput = false
+            }
+            showPinCodeInput = true
+        } else {
+            launchAuth(onSuccess, onFail)
+        }
+    }
 
     LaunchedEffect(key1 = state) {
         if (state == Lifecycle.State.STARTED) run {
@@ -93,7 +141,12 @@ fun SitesScreen(
     }
 
     Scaffold(
-        floatingActionButton = { FabAdd(navigateToNew) },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            FabAdd(navigateToNew)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -122,7 +175,6 @@ fun SitesScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
                 Crossfade(
                     targetState = uiState,
                     animationSpec = tween(durationMillis = 600),
@@ -135,13 +187,20 @@ fun SitesScreen(
                             state,
                             navigateToEdit,
                             showPassword,
-                            launchAuth,
+                            authentication,
                             navigateToCategory,
                             copyPasswordToClipboard
                         )
                     }
                 }
 
+                if (showPinCodeInput) {
+                    CheckPinCode(
+                        onSuccess = authOnSuccess,
+                        onFail = authOnFail,
+                        checkPinInput = settingsViewModel::checkInputPinCode
+                    )
+                }
             }
         }
     )
@@ -352,10 +411,19 @@ fun SiteListItem(
 
 @Composable
 fun ShowEmpty() {
-    Box(
+    Column(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(R.drawable.nothing),
+            contentDescription = stringResource(id = R.string.no_sites),
+            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
         Text(text = stringResource(id = R.string.no_sites))
     }
 }
@@ -365,7 +433,7 @@ fun FabAdd(addItem: () -> Unit) {
     FloatingActionButton(
         onClick = { addItem() },
         modifier = Modifier
-            .padding(end = 16.dp, bottom = 24.dp),
+            .padding(end = 16.dp, bottom = 80.dp),
         shape = RoundedCornerShape(100.dp),
     ) {
         Icon(
@@ -393,5 +461,5 @@ private fun SiteListItemPreview() {
         copyPasswordToClipboard = {},
         launchAuth = { _, _ -> },
 
-    )
+        )
 }

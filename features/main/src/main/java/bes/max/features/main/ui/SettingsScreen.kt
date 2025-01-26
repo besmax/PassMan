@@ -2,6 +2,7 @@ package bes.max.features.main.ui
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
@@ -30,8 +33,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,16 +46,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.darkModeIcon
 import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
+import bes.max.features.main.ui.icon.lockIcon
+import bes.max.features.main.ui.icon.lockOpenIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
 import bes.max.ui.common.Information
 import bes.max.ui.common.ShowTitle
 import bes.max.ui.common.UserInput
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -62,9 +72,15 @@ fun SettingsScreen(
     resetImportCode: () -> Unit,
     eventMessage: String?,
     resetEvent: () -> Unit,
+    launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
+    val pinCode by settingsViewModel.pinCode.collectAsState()
+    val event by settingsViewModel.event.observeAsState()
+
+    val scope = rememberCoroutineScope()
+
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -76,8 +92,12 @@ fun SettingsScreen(
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -91,7 +111,7 @@ fun SettingsScreen(
 
         SettingsItem(
             text = stringResource(R.string.settings_item_import),
-            onItemClick = { pickFileLauncher.launch("text/csv") }, //for all types=*/*
+            onItemClick = { pickFileLauncher.launch("*/*") },
             icon = importIcon,
             contentDescription = stringResource(R.string.settings_item_import_descr),
         )
@@ -112,6 +132,26 @@ fun SettingsScreen(
             onSwitchClick = settingsViewModel::toggleDarkMode,
             checked = isNightModeActive,
             icon = darkModeIcon,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SwitchSettingsItem(
+            text = stringResource(R.string.use_pin_code),
+            onSwitchClick = { use ->
+                scope.launch {
+                    if (settingsViewModel.haveRecords()) {
+                        launchBiometric(
+                            { settingsViewModel.togglePinCodeUsing(use) },
+                            {}
+                        )
+                    } else {
+                        settingsViewModel.togglePinCodeUsing(use)
+                    }
+                }
+            },
+            checked = pinCode?.active == true,
+            icon = if (pinCode?.active == true) lockIcon else lockOpenIcon,
         )
 
         Spacer(Modifier.weight(1f))
@@ -142,6 +182,101 @@ fun SettingsScreen(
         )
     }
 
+    event?.let { PinCodeEvent(it) }
+
+}
+
+@Composable
+private fun PinCodeEvent(event: SettingsEvent) {
+    Crossfade(event, label = "ControlSettingsScreenEvent") { eventState ->
+        when (eventState) {
+            is SettingsEvent.ReCheckPinCode -> PinCodeInput(
+                cancel = eventState.resetEvent,
+                confirm = eventState.onSuccess,
+                lastInput = eventState.pinCode
+            )
+
+            is SettingsEvent.TurnOnPinCode -> PinCodeInput(
+                cancel = eventState.resetEvent,
+                check = eventState.checkPinCode
+            )
+
+            SettingsEvent.Default -> {}
+        }
+    }
+}
+
+@Composable
+private fun PinCodeInput(
+    cancel: () -> Unit,
+    confirm: (() -> Unit)? = null,
+    check: ((String) -> Unit)? = null,
+    lastInput: String? = null,
+) {
+    var pinCode by remember { mutableStateOf("") }
+    var wrongPinCode by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = cancel,
+        title = {
+            Text(
+                text = if (lastInput == null) stringResource(R.string.enter_pin_code)
+                else stringResource(R.string.repeat_pin_code),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Box(
+                Modifier
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            ) {
+                UserInput(
+                    hintRes = if (lastInput != null) R.string.repeat_pin_code else R.string.enter_pin_code,
+                    onValueChanged = { pinCode = it },
+                    maxLines = 1,
+                )
+                if (wrongPinCode) {
+                    Information(
+                        title = stringResource(R.string.wrong_pin_code),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (lastInput != null) {
+                    if (lastInput == pinCode) {
+                        confirm?.invoke()
+                    } else {
+                        wrongPinCode = true
+                    }
+                } else {
+                    check?.invoke(pinCode.trim())
+                }
+            }) {
+                Text(
+                    text = stringResource(R.string.save),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = cancel) {
+                Text(
+                    text = stringResource(R.string.close),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -193,6 +328,7 @@ private fun SwitchSettingsItem(
     checked: Boolean,
     icon: ImageVector,
     contentDescription: String? = null,
+    additionalContent: (@Composable () -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -302,20 +438,11 @@ private fun EnterImportCode(
             )
         },
         text = {
-            Box(
-                Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            ) {
-                UserInput(
-                    hintRes = R.string.import_code,
-                    onValueChanged = { inputCode = it },
-                    maxLines = 3,
-                )
-            }
+            UserInput(
+                hintRes = R.string.import_code,
+                onValueChanged = { inputCode = it },
+                maxLines = 3,
+            )
         },
         confirmButton = {
             TextButton(onClick = {

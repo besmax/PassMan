@@ -1,4 +1,4 @@
-package bes.max.features.main.data
+package bes.max.features.main.data.converter
 
 import bes.max.database.api.model.SiteInfoModel
 import bes.max.features.main.domain.models.SiteInfoModelMain

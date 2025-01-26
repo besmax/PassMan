@@ -1,6 +1,8 @@
-package bes.max.features.main.data
+package bes.max.features.main.data.repo
 
 import bes.max.database.api.repositories.CategoryDbRepository
+import bes.max.features.main.data.converter.map
+import bes.max.features.main.data.converter.toFilter
 import bes.max.features.main.domain.models.CategoryModelMain
 import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.repositories.CategoriesRepository
