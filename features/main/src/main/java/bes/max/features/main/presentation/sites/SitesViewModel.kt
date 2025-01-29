@@ -1,6 +1,9 @@
 package bes.max.features.main.presentation.sites
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +12,7 @@ import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
+import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.ui.util.copyTextToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,6 +29,9 @@ class SitesViewModel @Inject constructor(
 
     private val _uiState = MutableLiveData<SitesScreenState>(SitesScreenState.Loading)
     val uiState: LiveData<SitesScreenState> = _uiState
+
+    private val _event = MutableLiveData<SitesScreenEvent>()
+    val event: LiveData<SitesScreenEvent> = _event
 
     fun getSites() {
         _uiState.value = SitesScreenState.Loading
@@ -97,7 +104,13 @@ class SitesViewModel @Inject constructor(
                 else it
             }
             val selected = sites.count { it.isSelected }
-            _uiState.postValue(current.copy(filteredSites = filteredSites, sites=sites, selected = selected))
+            _uiState.postValue(
+                current.copy(
+                    filteredSites = filteredSites,
+                    sites = sites,
+                    selected = selected
+                )
+            )
         }
     }
 
@@ -123,5 +136,26 @@ class SitesViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun openUrlInBrowser(url: String) {
+        if (url.isBlank()) {
+            _event.postValue(SitesScreenEvent.WrongUrl())
+            return
+        }
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(url)
+        ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+
+        try {
+            startActivity(appContext, intent, null)
+        } catch (e: Exception) {
+            _event.postValue(SitesScreenEvent.WrongUrl())
+        }
+    }
+
+    fun resetEvent(){
+        _event.postValue(SitesScreenEvent.Default)
     }
 }

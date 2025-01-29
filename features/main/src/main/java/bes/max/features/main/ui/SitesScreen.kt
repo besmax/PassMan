@@ -64,11 +64,14 @@ import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.settings.SettingsViewModel
+import bes.max.features.main.presentation.sites.SitesScreenEvent
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
+import bes.max.features.main.ui.icon.globeIcon
 import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.passman.features.main.R
+import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
@@ -88,6 +91,7 @@ fun SitesScreen(
 ) {
 
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
+    val event by sitesViewModel.event.observeAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
     val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
@@ -97,6 +101,7 @@ fun SitesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val wrongPinCodeText = stringResource(R.string.wrong_pin_code)
     val copiedText = stringResource(R.string.copied)
+
 
     val copyPasswordToClipboard = { model: SiteInfoModelMain ->
         scope.launch {
@@ -166,7 +171,7 @@ fun SitesScreen(
                 actions = {
                     if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
                         IconButton(
-                            onClick = sitesViewModel::deleteSelected,
+                            onClick = { launchAuth(sitesViewModel::deleteSelected, {}) },
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -219,7 +224,9 @@ fun SitesScreen(
                             launchAuth = authentication,
                             navigateToCategory = navigateToCategory,
                             copyPasswordToClipboard = copyPasswordToClipboard,
-                            onItemLongClick = sitesViewModel::toggleItemSelection
+                            onItemLongClick = sitesViewModel::toggleItemSelection,
+                            isSelecting = state.selected != 0,
+                            openUrl = sitesViewModel::openUrlInBrowser
                         )
                     }
                 }
@@ -231,6 +238,13 @@ fun SitesScreen(
                         checkPinInput = settingsViewModel::checkInputPinCode
                     )
                 }
+
+                ShowEvent(
+                    event = event,
+                    onDismiss = sitesViewModel::resetEvent,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
             }
         }
     )
@@ -245,6 +259,8 @@ fun ShowContent(
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     onItemLongClick: (Int) -> Unit,
+    isSelecting: Boolean,
+    openUrl: (String) -> Unit,
 ) {
     SitesList(
         uiState.filteredSites,
@@ -254,7 +270,9 @@ fun ShowContent(
         launchAuth,
         navigateToCategory,
         copyPasswordToClipboard,
-        onItemLongClick
+        onItemLongClick,
+        isSelecting,
+        openUrl
     )
 }
 
@@ -268,6 +286,8 @@ fun SitesList(
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     onItemLongClick: (Int) -> Unit,
+    isSelecting: Boolean,
+    openUrl: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -305,7 +325,9 @@ fun SitesList(
                     showPassword,
                     copyPasswordToClipboard,
                     launchAuth,
-                    onItemLongClick
+                    onItemLongClick,
+                    isSelecting,
+                    openUrl
                 )
             }
         }
@@ -321,6 +343,8 @@ fun SiteListItem(
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     onItemLongClick: (Int) -> Unit,
+    isSelecting: Boolean,
+    openUrl: (String) -> Unit,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
 
@@ -341,7 +365,7 @@ fun SiteListItem(
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = { onItemClick(model.id) },
+                onClick = { if (isSelecting) onItemLongClick(model.id) else onItemClick(model.id) },
                 onLongClick = { onItemLongClick(model.id) }
             ),
         shape = RoundedCornerShape(12.dp),
@@ -426,6 +450,18 @@ fun SiteListItem(
             )
 
             Icon(
+                imageVector = globeIcon,
+                contentDescription = "Go to web-site icon",
+                modifier = Modifier
+                    .clickable {
+                        openUrl(model.url)
+                    }
+                    .size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
                 imageVector = copyIcon,
                 contentDescription = "Copy password icon",
                 modifier = Modifier
@@ -491,6 +527,25 @@ fun FabAdd(addItem: () -> Unit) {
     }
 }
 
+@Composable
+private fun ShowEvent(
+    event: SitesScreenEvent?,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Crossfade(event, label = "ShowMessageEvent") { ev ->
+        when (ev) {
+
+            is SitesScreenEvent.WrongUrl -> Information(
+                text = stringResource(ev.messageResId),
+                modifier = modifier,
+                onDismiss = onDismiss
+            )
+            else -> return@Crossfade
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun SiteListItemPreview() {
@@ -508,6 +563,8 @@ private fun SiteListItemPreview() {
         showPassword = { "" },
         copyPasswordToClipboard = {},
         launchAuth = { _, _ -> },
-        onItemLongClick = {}
+        onItemLongClick = {},
+        isSelecting = false,
+        openUrl = {},
     )
 }

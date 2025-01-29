@@ -50,4 +50,6 @@
     <string name="enter">Ввести</string>
     <string name="copied">Скопировано</string>
     <string name="chosen">Выбрано: %1$s</string>
+    <string name="failed_open_url">Неудалось открыть сайт, проверьте ссылку</string>
+
 </resources>
