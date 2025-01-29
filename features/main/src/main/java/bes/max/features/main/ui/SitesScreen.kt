@@ -50,6 +50,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
@@ -69,8 +71,10 @@ import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
 import bes.max.features.main.ui.icon.copyIcon
 import bes.max.features.main.ui.icon.globeIcon
+import bes.max.features.main.ui.icon.lockIcon
 import bes.max.features.main.ui.icon.settingsIcon
 import bes.max.passman.features.main.R
+import bes.max.ui.common.AnimatedBackground
 import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
@@ -209,11 +213,19 @@ fun SitesScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+
                 Crossfade(
                     targetState = uiState,
                     animationSpec = tween(durationMillis = 600),
                     label = "Sites Screen States Changes"
                 ) { state ->
+                    AnimatedBackground(
+                        animIcon = lockIcon,
+                        modifier = Modifier,
+                        backgroundColor = Color.Transparent,
+                        iconColor = Color.Gray,
+                        accelerationProgress = false,
+                    )
                     when (state) {
                         is SitesScreenState.Empty -> ShowEmpty()
                         is SitesScreenState.Loading -> ShowLoading()
@@ -533,9 +545,8 @@ private fun ShowEvent(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Crossfade(event, label = "ShowMessageEvent") { ev ->
+    Crossfade(event, label = "ShowEvent") { ev ->
         when (ev) {
-
             is SitesScreenEvent.WrongUrl -> Information(
                 text = stringResource(ev.messageResId),
                 modifier = modifier,
