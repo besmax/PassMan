@@ -21,7 +21,7 @@ class FileExportRepositoryImpl(
     private val cipher: CipherApi,
 ) : FileExportRepository {
 
-    override suspend fun export(dispatcher: CoroutineDispatcher): String =
+    override suspend fun export(dispatcher: CoroutineDispatcher): Pair<String, Uri> =
         withContext(dispatcher) {
             val map = buildMap<String, List<Any>> {
                 val categories = categoryDbRepository.getAll(dispatcher).firstOrNull()

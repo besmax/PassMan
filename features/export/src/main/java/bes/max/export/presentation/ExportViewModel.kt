@@ -22,14 +22,13 @@ class ExportViewModel @Inject constructor(
     private val _event = MutableLiveData<ExportEvent?>()
     val event: LiveData<ExportEvent?> = _event
 
-    private val _code = MutableLiveData<String?>()
-    val code: LiveData<String?> = _code
+    private val _code = MutableLiveData<Pair<String, Uri>?>()
+    val code: LiveData<Pair<String, Uri>?> = _code
 
     fun export() {
         viewModelScope.launch {
-            val importCode = fileExportRepository.export()
-            _code.postValue(importCode)
-            Log.e(TAG, "importCode=$importCode")
+            val codeAndUri = fileExportRepository.export()
+            _code.postValue(codeAndUri)
         }
     }
 
