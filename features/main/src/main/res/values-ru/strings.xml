@@ -13,6 +13,7 @@
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>
     <string name="add">Добавить</string>
+    <string name="add_category">Новая категория</string>
     <string name="hint_url">Введите веб-адрес</string>
     <string name="hint_site_name">Введите наименование сайта</string>
     <string name="hint_sites_filter">Поиск</string>

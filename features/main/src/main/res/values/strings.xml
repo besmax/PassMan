@@ -13,6 +13,7 @@
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
+    <string name="add_category">Add Category</string>
     <string name="hint_url">Enter web-address</string>
     <string name="hint_site_name">Enter name</string>
     <string name="hint_sites_filter">Search</string>

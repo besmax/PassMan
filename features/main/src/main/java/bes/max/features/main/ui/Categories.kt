@@ -88,7 +88,7 @@ fun Categories(
                 onClick = { addCategory() },
                 label = {
                     Text(
-                        text = addCategoryTitle.take(CATEGORY_NAME_LENGTH),
+                        text = addCategoryTitle,
                         color = Color.Black,
                     )
                 },

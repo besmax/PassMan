@@ -316,7 +316,7 @@ fun SitesList(
         Categories(
             filters = filters,
             addCategory = navigateToCategory,
-            addCategoryTitle = stringResource(R.string.add),
+            addCategoryTitle = stringResource(R.string.add_category),
             modifier = Modifier,
         )
 
