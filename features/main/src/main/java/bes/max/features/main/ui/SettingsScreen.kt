@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -411,6 +412,13 @@ private fun ShowImportCode(
                 )
 
                 TextButton(onClick = { shareFile(code.second) }) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = stringResource(R.string.close)
+                    )
+
+                    Spacer(Modifier.width(8.dp))
+
                     Text(
                         text = stringResource(R.string.share_file),
                         style = MaterialTheme.typography.titleMedium,
