@@ -30,8 +30,8 @@
     <string name="settings_item_export">Экспорт" данных в файл</string>
     <string name="settings_item_export_descr">Элемент экрана настроек - экспорт данных</string>
     <string name="close_import_code_dialog">Закрыть окно с кодом для импорта</string>
-    <string name="import_code_descr">Будьте осторожны этот код - это единственная возможность импортировать данные, сохраните его или запомните</string>
-    <string name="import_code_placeholder">Ваш код для импорта: %1$s</string>
+    <string name="import_code_descr">Будьте осторожны этот код - это единственная возможность импортировать данные, сохраните его или запомните. Ваш файл сохранён в папке Download как passman_backup.csv</string>
+    <string name="your_import_code">Ваш код для импорта:</string>
     <string name="close">Закрыть</string>
     <string name="do_import">Импорт</string>
     <string name="cancel">Отмена</string>
@@ -51,5 +51,7 @@
     <string name="copied">Скопировано</string>
     <string name="chosen">Выбрано: %1$s</string>
     <string name="failed_open_url">Неудалось открыть сайт, проверьте ссылку</string>
+    <string name="share_file">Поделиться файлом</string>
+    <string name="no_app_for_share_file">Нет подходящего приложения, чтобы поделиться на устройстве</string>
 
 </resources>

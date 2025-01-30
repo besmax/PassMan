@@ -2,7 +2,6 @@ package bes.max.features.main.ui
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -44,9 +43,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
@@ -68,7 +67,7 @@ fun SettingsScreen(
     navigateBack: () -> Unit,
     export: () -> Unit,
     import: (Uri, String) -> Unit,
-    importCode: String?,
+    importCodeAndUri: Pair<String, Uri>?,
     resetImportCode: () -> Unit,
     eventMessage: String?,
     resetEvent: () -> Unit,
@@ -164,12 +163,15 @@ fun SettingsScreen(
         )
 
         Spacer(Modifier.weight(1f))
+
+        event?.let { PinCodeEvent(it, Modifier.align(Alignment.CenterHorizontally)) }
     }
 
-    if (importCode != null) {
+    if (importCodeAndUri != null) {
         ShowImportCode(
-            code = importCode,
+            code = importCodeAndUri,
             onClose = resetImportCode,
+            shareFile = settingsViewModel::shareBackupFile
         )
     }
 
@@ -181,13 +183,13 @@ fun SettingsScreen(
             cancel = { showEnterCode = false }
         )
     }
-
-    event?.let { PinCodeEvent(it) }
-
 }
 
 @Composable
-private fun PinCodeEvent(event: SettingsEvent) {
+private fun PinCodeEvent(
+    event: SettingsEvent,
+    modifier: Modifier = Modifier
+) {
     Crossfade(event, label = "ControlSettingsScreenEvent") { eventState ->
         when (eventState) {
             is SettingsEvent.ReCheckPinCode -> PinCodeInput(
@@ -202,6 +204,12 @@ private fun PinCodeEvent(event: SettingsEvent) {
             )
 
             SettingsEvent.Default -> {}
+
+            is SettingsEvent.NoAppForSharing -> Information(
+                title = stringResource(eventState.messageResId),
+                modifier = modifier,
+                onDismiss = eventState.resetEvent
+            )
         }
     }
 }
@@ -365,8 +373,9 @@ private fun SwitchSettingsItem(
 
 @Composable
 private fun ShowImportCode(
-    code: String?,
+    code: Pair<String, Uri>?,
     onClose: () -> Unit,
+    shareFile: (Uri) -> Unit
 ) {
     if (code == null) return
     val context = LocalContext.current
@@ -374,18 +383,41 @@ private fun ShowImportCode(
     AlertDialog(
         onDismissRequest = onClose,
         title = {
-            Text(
-                text = stringResource(R.string.import_code_placeholder, code).trim(),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.your_import_code),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = code.first.trim(),
+                    modifier = Modifier
+                        .clickable { context.copyTextToClipboard(code.first) },
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
-            Text(
-                text = stringResource(R.string.import_code_descr),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.import_code_descr),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                TextButton(onClick = { shareFile(code.second) }) {
+                    Text(
+                        text = stringResource(R.string.share_file),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         },
         confirmButton = {
             TextButton(onClick = onClose) {
@@ -403,7 +435,7 @@ private fun ShowImportCode(
             }
         },
         dismissButton = {
-            TextButton(onClick = { context.copyTextToClipboard(code) }) {
+            TextButton(onClick = { context.copyTextToClipboard(code.first) }) {
                 Row {
                     Icon(
                         imageVector = copyIcon,

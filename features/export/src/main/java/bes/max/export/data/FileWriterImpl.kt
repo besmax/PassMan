@@ -2,6 +2,7 @@ package bes.max.export.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import bes.max.cipher.api.CipherApi
@@ -18,9 +19,9 @@ const val HEADER_SEPARATOR = "|||"
 class FileWriterImpl(
     private val context: Context,
     private val cipher: CipherApi,
-    ) : FileWriter {
+) : FileWriter {
 
-    override fun writeData(headerDataMap: Map<String, List<Any>>): String {
+    override fun writeData(headerDataMap: Map<String, List<Any>>): Pair<String, Uri> {
         val contentResolver = context.contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, DEFAULT_NAME)
@@ -28,19 +29,20 @@ class FileWriterImpl(
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
         }
 
-        val exportedCode = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-            ?.let { uri ->
-                val file = contentResolver.openOutputStream(uri)
-                val code = file?.bufferedWriter()?.use { writer ->
-                    val data = convertDataToString(headerDataMap)
-                    val (encryptedData, exportedCode) = cipher.encryptExportData(data)
-                    writer.write(encryptedData.passwordIv)
-                    writer.newLine()
-                    writer.write(encryptedData.encryptedData)
-                    exportedCode
+        val exportedCode =
+            contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                ?.let { uri ->
+                    val file = contentResolver.openOutputStream(uri)
+                    val code = file?.bufferedWriter()?.use { writer ->
+                        val data = convertDataToString(headerDataMap)
+                        val (encryptedData, exportedCode) = cipher.encryptExportData(data)
+                        writer.write(encryptedData.passwordIv)
+                        writer.newLine()
+                        writer.write(encryptedData.encryptedData)
+                        exportedCode
+                    } ?: error("Can not write data")
+                    code to uri
                 }
-                code
-            }
         return exportedCode ?: error("Can not write data")
     }
 
