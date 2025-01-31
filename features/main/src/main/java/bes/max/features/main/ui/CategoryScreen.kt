@@ -109,7 +109,7 @@ private fun Content(
     navigateBack: () -> Unit,
     deleteCategory: (Int) -> Unit,
 ) {
-    var selected by remember { mutableIntStateOf(-1) }
+    var selected by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier.fillMaxSize()
