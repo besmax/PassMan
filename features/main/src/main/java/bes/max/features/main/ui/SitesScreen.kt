@@ -97,6 +97,7 @@ fun SitesScreen(
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val event by sitesViewModel.event.observeAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
+    val isAnimBackgroundActive by settingsViewModel.isAnimBackgroundActive.collectAsState()
     val showPassword = { model: SiteInfoModelMain ->
         sitesViewModel.showPassword(model)
     }
@@ -219,13 +220,15 @@ fun SitesScreen(
                     animationSpec = tween(durationMillis = 600),
                     label = "Sites Screen States Changes"
                 ) { state ->
-                    AnimatedBackground(
-                        animIcon = lockIcon,
-                        modifier = Modifier,
-                        backgroundColor = Color.Transparent,
-                        iconColor = Color.Gray,
-                        accelerationProgress = false,
-                    )
+                   if (isAnimBackgroundActive) {
+                        AnimatedBackground(
+                            animIcon = lockIcon,
+                            modifier = Modifier,
+                            backgroundColor = Color.Transparent,
+                            iconColor = Color.Gray,
+                            accelerationProgress = false,
+                        )
+                    }
                     when (state) {
                         is SitesScreenState.Empty -> ShowEmpty()
                         is SitesScreenState.Loading -> ShowLoading()

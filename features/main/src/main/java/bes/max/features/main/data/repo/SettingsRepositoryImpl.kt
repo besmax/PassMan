@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 private val DARK_THEME_PREFERENCES_KEY = booleanPreferencesKey("dark_theme_preference_key")
+private val ANIM_BACKGROUND_PREFERENCES_KEY = booleanPreferencesKey("anim_background_preference_key")
 private const val TAG = "SettingsRepositoryImpl"
 
 class SettingsRepositoryImpl(
@@ -40,6 +41,25 @@ class SettingsRepositoryImpl(
     override suspend fun setIsNightModeActive(isNightModeActive: Boolean) {
         preferencesDataStore.edit { preferences ->
             preferences[DARK_THEME_PREFERENCES_KEY] = isNightModeActive
+        }
+    }
+
+    override fun isAnimBackgroundActive(): Flow<Boolean> {
+        return preferencesDataStore.data
+            .catch { exception ->
+                Log.e(
+                    TAG,
+                    "Error during getting DataStore: $exception"
+                )
+            }
+            .map { preferences ->
+                preferences[ANIM_BACKGROUND_PREFERENCES_KEY] ?: false
+            }
+    }
+
+    override suspend fun setIsAnimBackgroundActive(isAnimBackgroundActive: Boolean) {
+        preferencesDataStore.edit { preferences ->
+            preferences[ANIM_BACKGROUND_PREFERENCES_KEY] = isAnimBackgroundActive
         }
     }
 
