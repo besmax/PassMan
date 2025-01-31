@@ -11,11 +11,14 @@ import androidx.lifecycle.viewModelScope
 import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
+import bes.max.features.main.domain.repositories.SettingsRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.ui.util.copyTextToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +28,7 @@ class SitesViewModel @Inject constructor(
     private val siteInfoRepository: SiteInfoRepository,
     private val cipher: CipherApi,
     private val categoriesRepository: CategoriesRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<SitesScreenState>(SitesScreenState.Loading)
@@ -32,6 +36,13 @@ class SitesViewModel @Inject constructor(
 
     private val _event = MutableLiveData<SitesScreenEvent>()
     val event: LiveData<SitesScreenEvent> = _event
+
+    val isAnimBackgroundActive = settingsRepository.isAnimBackgroundActive()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = false
+        )
 
     fun getSites() {
         _uiState.value = SitesScreenState.Loading

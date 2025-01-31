@@ -54,5 +54,5 @@
     <string name="failed_open_url">Неудалось открыть сайт, проверьте ссылку</string>
     <string name="share_file">Поделиться файлом</string>
     <string name="no_app_for_share_file">Нет подходящего приложения, чтобы поделиться на устройстве</string>
-
+    <string name="anim_background">Анимированный фон</string>
 </resources>

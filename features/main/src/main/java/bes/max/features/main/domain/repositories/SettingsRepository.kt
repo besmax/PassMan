@@ -9,6 +9,10 @@ interface SettingsRepository {
 
     suspend fun setIsNightModeActive(isNightModeActive: Boolean)
 
+    fun isAnimBackgroundActive(): Flow<Boolean>
+
+    suspend fun setIsAnimBackgroundActive(isAnimBackgroundActive: Boolean)
+
     suspend fun setPinCode(pinCode: PinCodeModelMain)
 
     suspend fun resetPinCode()

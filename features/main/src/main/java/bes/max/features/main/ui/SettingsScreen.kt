@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -55,6 +56,8 @@ import bes.max.features.main.ui.icon.exportIcon
 import bes.max.features.main.ui.icon.importIcon
 import bes.max.features.main.ui.icon.lockIcon
 import bes.max.features.main.ui.icon.lockOpenIcon
+import bes.max.features.main.ui.icon.playIcon
+import bes.max.features.main.ui.icon.stopIcon
 import bes.max.features.main.ui.util.copyTextToClipboard
 import bes.max.passman.features.main.R
 import bes.max.ui.common.Information
@@ -76,6 +79,7 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
+    val isAnimBackgroundActive by settingsViewModel.isAnimBackgroundActive.collectAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
     val event by settingsViewModel.event.observeAsState()
 
@@ -132,6 +136,15 @@ fun SettingsScreen(
             onSwitchClick = settingsViewModel::toggleDarkMode,
             checked = isNightModeActive,
             icon = darkModeIcon,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SwitchSettingsItem(
+            text = stringResource(R.string.anim_background),
+            onSwitchClick = settingsViewModel::toggleAnimBackground,
+            checked = isAnimBackgroundActive,
+            icon = if (isAnimBackgroundActive) stopIcon else playIcon,
         )
 
         Spacer(Modifier.height(8.dp))

@@ -54,4 +54,5 @@
     <string name="failed_open_url">Failed open web-site, check URL</string>
     <string name="share_file">Share file</string>
     <string name="no_app_for_share_file">No suitable app for sharing on the device</string>
+    <string name="anim_background">Animated background</string>
 </resources>

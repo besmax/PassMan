@@ -39,6 +39,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = false
         )
 
+    val isAnimBackgroundActive = settingsRepository.isAnimBackgroundActive()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = false
+        )
+
     val pinCode = settingsRepository.pinCode()
         .stateIn(
             scope = viewModelScope,
@@ -142,6 +149,12 @@ class SettingsViewModel @Inject constructor(
             startActivity(appContext, chooser, null)
         } else {
             _event.postValue(SettingsEvent.NoAppForSharing(resetEvent = ::resetEvent))
+        }
+    }
+
+    fun toggleAnimBackground(active: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setIsAnimBackgroundActive(active)
         }
     }
 
