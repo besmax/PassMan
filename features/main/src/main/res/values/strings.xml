@@ -55,4 +55,15 @@
     <string name="share_file">Share file</string>
     <string name="no_app_for_share_file">No suitable app for sharing on the device</string>
     <string name="anim_background">Animated background</string>
+    <string name="go_to_web_site">Go to web-site icon</string>
+    <string name="copy_password_icon">Copy password icon</string>
+    <string name="show_password_icon">Show password icon</string>
+    <string name="delete_chosen_items_icon">Delete chosen items icon</string>
+    <string name="unselect_selected_items_icon">Unselect selected items icon</string>
+    <string name="go_to_settings_icon">Go to settings icon</string>
+    <string name="add_icon">Add icon</string>
+    <string name="chosen_color">Color is chosen</string>
+    <string name="go_back_icon">Go back icon</string>
+    <string name="chosen_filter">Filter is chosen</string>
+    <string name="add_filter">Add filter</string>
 </resources>

@@ -139,7 +139,7 @@ fun EditOrNewSiteScreen(
                     IconButton(navigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back icon",
+                            contentDescription = stringResource(R.string.go_back_icon),
                             tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }
@@ -432,7 +432,7 @@ private fun ChooseCategory(
                     {
                         Icon(
                             imageVector = Icons.Filled.Done,
-                            contentDescription = "Filter is chosen",
+                            contentDescription = stringResource(R.string.chosen_filter),
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                     }
@@ -462,7 +462,7 @@ private fun ChooseCategory(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Add filter",
+                        contentDescription = stringResource(R.string.add_filter),
                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                     )
                 },

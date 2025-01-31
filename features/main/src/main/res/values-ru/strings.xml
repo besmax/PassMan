@@ -55,4 +55,15 @@
     <string name="share_file">Поделиться файлом</string>
     <string name="no_app_for_share_file">Нет подходящего приложения, чтобы поделиться на устройстве</string>
     <string name="anim_background">Анимированный фон</string>
+    <string name="go_to_web_site">иконка перейти на веб-сайт </string>
+    <string name="copy_password_icon">Иконка копировать пароль</string>
+    <string name="show_password_icon">Иконка показать пароль</string>
+    <string name="delete_chosen_items_icon">Иконка удаления выбранных записей</string>
+    <string name="unselect_selected_items_icon">Иконка снять выделение записей</string>
+    <string name="go_to_settings_icon">Иконка перехода в настройки</string>
+    <string name="add_icon">Иконка добавить</string>
+    <string name="chosen_color">Выбранный цвет</string>
+    <string name="go_back_icon">Иконка назад</string>
+    <string name="chosen_filter">Выбранный фильтр</string>
+    <string name="add_filter">Добавить фильтр</string>
 </resources>

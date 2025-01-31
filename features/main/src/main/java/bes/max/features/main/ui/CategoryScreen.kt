@@ -218,7 +218,7 @@ private fun ColorItem(
             {
                 Icon(
                     imageVector = Icons.Filled.Done,
-                    contentDescription = "Color is chosen",
+                    contentDescription = stringResource(R.string.chosen_color),
                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                 )
             }

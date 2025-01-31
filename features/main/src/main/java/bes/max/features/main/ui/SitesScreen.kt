@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -77,7 +76,6 @@ import bes.max.ui.common.AnimatedBackground
 import bes.max.ui.common.Information
 import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
@@ -178,7 +176,7 @@ fun SitesScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete chosen items icon",
+                                contentDescription = stringResource(R.string.delete_chosen_items_icon),
                                 tint = MaterialTheme.colorScheme.onBackground,
                             )
                         }
@@ -188,7 +186,7 @@ fun SitesScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = "Unselect selected items icon",
+                                contentDescription = stringResource(R.string.unselect_selected_items_icon),
                                 tint = MaterialTheme.colorScheme.onBackground,
                             )
                         }
@@ -198,7 +196,7 @@ fun SitesScreen(
                         ) {
                             Icon(
                                 imageVector = settingsIcon,
-                                contentDescription = "Go to settings icon",
+                                contentDescription = stringResource(R.string.go_to_settings_icon),
                                 tint = MaterialTheme.colorScheme.onBackground,
                             )
                         }
@@ -464,7 +462,7 @@ fun SiteListItem(
 
             Icon(
                 imageVector = globeIcon,
-                contentDescription = "Go to web-site icon",
+                contentDescription = stringResource(R.string.go_to_web_site),
                 modifier = Modifier
                     .clickable {
                         openUrl(model.url)
@@ -476,7 +474,7 @@ fun SiteListItem(
 
             Icon(
                 imageVector = copyIcon,
-                contentDescription = "Copy password icon",
+                contentDescription = stringResource(R.string.copy_password_icon),
                 modifier = Modifier
                     .clickable {
                         launchAuth({ copyPasswordToClipboard(model) }, {})
@@ -491,7 +489,7 @@ fun SiteListItem(
                     id = if (isPasswordVisible) (R.drawable.hide_icon)
                     else R.drawable.show_icon
                 ),
-                contentDescription = "Show password icon",
+                contentDescription = stringResource(R.string.show_password_icon),
                 modifier = Modifier
                     .clickable {
                         if (isPasswordVisible) {
@@ -535,7 +533,7 @@ fun FabAdd(addItem: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
-            contentDescription = "Add icon",
+            contentDescription = stringResource(R.string.add),
         )
     }
 }
