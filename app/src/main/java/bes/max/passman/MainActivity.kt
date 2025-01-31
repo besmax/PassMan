@@ -47,8 +47,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-        setLightStatusBarIconsColor()
-
         checkPermissions()
 
         setContent {
@@ -200,9 +198,4 @@ class MainActivity : ComponentActivity() {
 
         return cancellationSignal as CancellationSignal
     }
-
-    private fun setLightStatusBarIconsColor() {
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-    }
-
 }

@@ -34,7 +34,7 @@ fun Categories(
     addCategoryTitle: String,
     modifier: Modifier = Modifier,
 ) {
-    var selected by remember { mutableIntStateOf(-1) }
+    var selected by remember { mutableIntStateOf(0) }
 
     LazyRow(
         modifier

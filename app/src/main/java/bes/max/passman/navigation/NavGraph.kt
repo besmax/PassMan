@@ -65,7 +65,8 @@ fun NavigationGraph(
         ) {
             EditOrNewSiteScreen(
                 navigateBack = { navHostController.popBackStack() },
-                launchAuth = launchAuth
+                launchAuth = launchAuth,
+                navigateToCategory = { navHostController.navigate(Screen.CategoryScreen.route) }
             )
         }
 

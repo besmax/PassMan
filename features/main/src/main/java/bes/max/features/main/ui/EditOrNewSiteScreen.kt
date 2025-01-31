@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 fun EditOrNewSiteScreen(
     navigateBack: () -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
+    navigateToCategory: () -> Unit,
     editViewModel: EditViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -186,6 +188,7 @@ fun EditOrNewSiteScreen(
                         },
                         categories = (uiState as EditScreenState.Edit).categories,
                         changeCategory = { categoryColor = it },
+                        navigateToCategory = navigateToCategory
                     )
 
                     is EditScreenState.New -> ShowNew(
@@ -202,6 +205,7 @@ fun EditOrNewSiteScreen(
                         showPassword = { newPassword },
                         categories = (uiState as EditScreenState.New).categories,
                         changeCategory = { categoryColor = it },
+                        navigateToCategory = navigateToCategory
                     )
                 }
             }
@@ -231,6 +235,7 @@ fun ShowEdit(
     deleteItem: (SiteInfoModelMain) -> Unit,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -269,19 +274,19 @@ fun ShowEdit(
             maxLines = 10,
         )
 
-        if (categories.isNotEmpty()) {
-            Text(
-                text = stringResource(id = R.string.choose_category),
-                modifier = Modifier.padding(start = 16.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
+        Text(
+            text = stringResource(id = R.string.choose_category),
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
-            ChooseCategory(
-                categories = categories,
-                changeCategory = changeCategory,
-                categoryColor = model.categoryColor ?: -1,
-            )
-        }
+        ChooseCategory(
+            categories = categories,
+            changeCategory = changeCategory,
+            categoryColor = model.categoryColor ?: -1,
+            addCategory = navigateToCategory,
+            addCategoryTitle = stringResource(R.string.add_category),
+        )
 
         Row(
             modifier = Modifier
@@ -320,6 +325,7 @@ fun ShowNew(
     showPassword: () -> String,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
+    navigateToCategory: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -355,18 +361,18 @@ fun ShowNew(
             maxLines = 10,
         )
 
-        if (categories.isNotEmpty()) {
-            Text(
-                text = stringResource(id = R.string.choose_category),
-                modifier = Modifier.padding(start = 16.dp),
-                style = MaterialTheme.typography.titleMedium,
-            )
+        Text(
+            text = stringResource(id = R.string.choose_category),
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.titleMedium,
+        )
 
-            ChooseCategory(
-                categories = categories,
-                changeCategory = changeCategory,
-            )
-        }
+        ChooseCategory(
+            categories = categories,
+            changeCategory = changeCategory,
+            addCategory = navigateToCategory,
+            addCategoryTitle = stringResource(R.string.add_category),
+        )
 
         Button(
             onClick = {
@@ -389,6 +395,8 @@ fun ShowNew(
 private fun ChooseCategory(
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
+    addCategory: () -> Unit,
+    addCategoryTitle: String,
     categoryColor: Int = -1,
     modifier: Modifier = Modifier,
 ) {
@@ -437,6 +445,30 @@ private fun ChooseCategory(
                 colors = FilterChipDefaults.filterChipColors().copy(
                     containerColor = category.color,
                     selectedContainerColor = category.color.copy(alpha = 0.6f),
+                )
+            )
+        }
+
+        item {
+            FilterChip(
+                onClick = { addCategory() },
+                label = {
+                    Text(
+                        text = addCategoryTitle,
+                        color = Color.Black,
+                    )
+                },
+                selected = false,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add filter",
+                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors().copy(
+                    containerColor = Color.White,
+                    selectedContainerColor = Color.White,
                 )
             )
         }
