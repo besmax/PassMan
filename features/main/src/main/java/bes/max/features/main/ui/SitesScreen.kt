@@ -78,6 +78,7 @@ import bes.max.ui.common.ShowLoading
 import bes.max.ui.common.UserInput
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -237,7 +238,8 @@ fun SitesScreen(
                             copyPasswordToClipboard = copyPasswordToClipboard,
                             onItemLongClick = sitesViewModel::toggleItemSelection,
                             isSelecting = state.selected != 0,
-                            openUrl = sitesViewModel::openUrlInBrowser
+                            openUrl = sitesViewModel::openUrlInBrowser,
+                            selectedCategory = state.selectedCategory,
                         )
                     }
                 }
@@ -272,6 +274,7 @@ fun ShowContent(
     onItemLongClick: (Int) -> Unit,
     isSelecting: Boolean,
     openUrl: (String) -> Unit,
+    selectedCategory: Int,
 ) {
     SitesList(
         uiState.filteredSites,
@@ -283,14 +286,15 @@ fun ShowContent(
         copyPasswordToClipboard,
         onItemLongClick,
         isSelecting,
-        openUrl
+        openUrl,
+        selectedCategory
     )
 }
 
 @Composable
 fun SitesList(
     list: List<SiteInfoModelMain>,
-    filters: List<FilterModel>,
+    filters: ImmutableList<FilterModel>,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
@@ -299,6 +303,7 @@ fun SitesList(
     onItemLongClick: (Int) -> Unit,
     isSelecting: Boolean,
     openUrl: (String) -> Unit,
+    selectedCategory: Int,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -316,6 +321,7 @@ fun SitesList(
             filters = filters,
             addCategory = navigateToCategory,
             addCategoryTitle = stringResource(R.string.add_category),
+            selected = selectedCategory,
             modifier = Modifier,
         )
 

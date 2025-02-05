@@ -3,6 +3,7 @@ package bes.max.features.main.presentation.sites
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,10 +14,10 @@ import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SettingsRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
-import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.ui.util.copyTextToClipboard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -68,7 +69,7 @@ class SitesViewModel @Inject constructor(
             val filters = categoriesRepository.getFilters(::filterSites)
             val currentState = uiState.value
             if (currentState is SitesScreenState.Content) {
-                _uiState.postValue(currentState.copy(filters = filters))
+                _uiState.postValue(currentState.copy(filters = filters.toImmutableList()))
             }
         }
     }
@@ -77,11 +78,21 @@ class SitesViewModel @Inject constructor(
         val currentState = uiState.value
         if (currentState is SitesScreenState.Content) {
             if (color == null || color == -1) {
-                _uiState.postValue(currentState.copy(filteredSites = currentState.sites))
+                _uiState.postValue(
+                    currentState.copy(
+                        filteredSites = currentState.sites,
+                        selectedCategory = -1
+                    )
+                )
             } else {
-                _uiState.postValue(currentState.copy(
-                    filteredSites = currentState.sites.filter { it.categoryColor == color }
-                ))
+                _uiState.postValue(
+                    currentState.copy(
+                        filteredSites = currentState.sites.filter { it.categoryColor == color },
+                        selectedCategory = currentState.filters.indexOfFirst {
+                            it.color.toArgb() == color
+                        },
+                    )
+                )
             }
         }
     }
@@ -166,7 +177,7 @@ class SitesViewModel @Inject constructor(
         }
     }
 
-    fun resetEvent(){
+    fun resetEvent() {
         _event.postValue(SitesScreenEvent.Default)
     }
 }

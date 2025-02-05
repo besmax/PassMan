@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.hilt)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
+    implementation(libs.kotlin.immutable.collections)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.nav.compose)
     implementation(libs.lifecycle.viewmodel)

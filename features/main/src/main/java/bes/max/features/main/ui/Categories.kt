@@ -14,46 +14,38 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bes.max.features.main.domain.models.FilterModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 const val CATEGORY_NAME_LENGTH = 10
 
 @Composable
 fun Categories(
-    filters: List<FilterModel>,
+    filters: ImmutableList<FilterModel>,
     addCategory: () -> Unit,
     addCategoryTitle: String,
+    selected: Int,
     modifier: Modifier = Modifier,
 ) {
-    var selected by remember { mutableIntStateOf(0) }
-
     LazyRow(
         modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         itemsIndexed(
-            items = filters
+            items = filters,
+            key = { _, filter -> filter.color.toArgb() },
         ) { index, filter ->
             FilterChip(
                 onClick = {
-                    selected = if (selected == index) {
-                        filter.filterAction(-1)
-                        -1
-                    } else {
-                        filter.filterAction(filter.color.toArgb())
-                        index
-                    }
-
+                    val unselect = selected == index
+                    filter.filterAction(if (unselect) -1 else filter.color.toArgb())
                 },
                 label = {
                     Text(
@@ -113,16 +105,17 @@ fun Categories(
 @Composable
 private fun CategoriesPreview() {
     val model = FilterModel("filter1", Color.Blue, { })
-    val filters = mutableListOf(
+    val filters = persistentListOf(
         model,
         model.copy(name = null, color = Color.Yellow),
         model.copy(name = "", color = Color.Red),
-        model.copy(name = "filter4", color = Color.Green),
+        model.copy(name = "filter4", color = Color.Green)
     )
     Categories(
         filters = filters,
         addCategory = {},
-        addCategoryTitle = "Add"
+        addCategoryTitle = "Add",
+        selected = 1
     )
 
 }
