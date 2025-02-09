@@ -12,7 +12,7 @@ import bes.max.database.impl.entities.SiteInfoEntity
         SiteInfoEntity::class,
         CategoryEntity::class,
     ],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
