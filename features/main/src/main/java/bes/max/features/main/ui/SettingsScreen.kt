@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -32,6 +31,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -48,6 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.presentation.settings.SettingsEvent
 import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.features.main.ui.icon.copyIcon
@@ -78,13 +80,22 @@ fun SettingsScreen(
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val state by lifecycleOwner.lifecycle.currentStateAsState()
+
+    LaunchedEffect(key1 = state) {
+        if (state == Lifecycle.State.RESUMED) run {
+            settingsViewModel.updateAutofillState()
+        }
+    }
+
     val isNightModeActive by settingsViewModel.isNighModeActive.collectAsState()
     val isAnimBackgroundActive by settingsViewModel.isAnimBackgroundActive.collectAsState()
     val pinCode by settingsViewModel.pinCode.collectAsState()
     val event by settingsViewModel.event.observeAsState()
+    val appSelectedAsAutoFillService by settingsViewModel.appSelectedAsAutoFillService.collectAsState()
 
     val scope = rememberCoroutineScope()
-
     var showEnterCode by remember { mutableStateOf(false) }
     var importFileUri by remember { mutableStateOf(Uri.parse("")) }
     val pickFileLauncher = rememberLauncherForActivityResult(

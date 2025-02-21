@@ -3,6 +3,8 @@ package bes.max.features.main.presentation.settings
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
+import android.view.autofill.AutofillManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
@@ -16,11 +18,13 @@ import bes.max.features.main.domain.repositories.SiteInfoRepository
 import bes.max.passman.features.main.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 private const val PIN_CODE_ALIAS = "pin_code_alias"
 
@@ -52,6 +56,9 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = null
         )
+
+    private val _appSelectedAsAutoFillService = MutableStateFlow<Boolean>(false)
+    val appSelectedAsAutoFillService = _appSelectedAsAutoFillService.asStateFlow()
 
     private val _event = MutableLiveData<SettingsEvent>(SettingsEvent.Default)
     val event: LiveData<SettingsEvent> = _event
@@ -142,9 +149,10 @@ class SettingsViewModel @Inject constructor(
             Intent.createChooser(this, null)
         }
 
-        val chooser = Intent.createChooser(intent, appContext.getString(R.string.share_file)).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
+        val chooser =
+            Intent.createChooser(intent, appContext.getString(R.string.share_file)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
         if (intent.resolveActivity(appContext.packageManager) != null) {
             startActivity(appContext, chooser, null)
         } else {
@@ -156,6 +164,23 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.setIsAnimBackgroundActive(active)
         }
+    }
+
+    fun updateAutofillState() {
+        val afm = appContext.getSystemService(AutofillManager::class.java)
+        val isSelected = afm.isAutofillSupported && afm.hasEnabledAutofillServices()
+        _appSelectedAsAutoFillService.update {
+            isSelected
+        }
+    }
+
+    fun openAutofillSettings() {
+        appContext.startActivity(
+            Intent(
+                Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE,
+                Uri.parse("package:${appContext.packageName}")
+            )
+        )
     }
 
 }
