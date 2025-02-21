@@ -6,11 +6,14 @@
         <service
             android:name=".PasswordAutofillService"
             android:exported="true"
-            android:label="Discounts Autofill Service"
+            android:label="Passwords Autofill Service"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE">
             <intent-filter>
                 <action android:name="android.service.autofill.AutofillService" />
             </intent-filter>
+            <meta-data
+                android:name="android.autofill"
+                android:resource="@xml/service_configuration" />
         </service>
     </application>
 </manifest>

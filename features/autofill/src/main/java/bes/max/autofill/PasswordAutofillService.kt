@@ -1,17 +1,34 @@
 package bes.max.autofill
 
+import android.R
 import android.app.assist.AssistStructure
+import android.os.Build
 import android.os.CancellationSignal
 import android.service.autofill.AutofillService
+import android.service.autofill.Dataset
+import android.service.autofill.Field
 import android.service.autofill.FillCallback
 import android.service.autofill.FillContext
 import android.service.autofill.FillRequest
+import android.service.autofill.FillResponse
+import android.service.autofill.Presentations
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
 import android.view.autofill.AutofillId
+import android.view.autofill.AutofillValue
+import android.widget.RemoteViews
+import bes.max.cipher.api.CipherApi
+import bes.max.database.api.repositories.SiteInfoDbRepository
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -21,7 +38,10 @@ class PasswordAutofillService : AutofillService() {
     lateinit var cipher: CipherApi
 
     @Inject
-    lateinit var siteInfoRepository: SiteInfoRepository
+    lateinit var siteInfoRepository: SiteInfoDbRepository
+
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
     override fun onFillRequest(
         request: FillRequest,
@@ -35,11 +55,70 @@ class PasswordAutofillService : AutofillService() {
         val autofillMap = mutableMapOf<Field, AutofillId>()
         parseStructure(structure, autofillMap)
 
+        if (autofillMap.containsKey(Field.PASSWORD)) {
+            serviceScope.launch {
+                val appPasswords = siteInfoRepository.getAll(Dispatchers.IO).firstOrNull()
+                appPasswords?.let { passwords ->
+                    val fillResponse: FillResponse = FillResponse.Builder()
+                        .apply {
+                            passwords.forEach { password ->
+                                val passwordPresentation =
+                                    RemoteViews(packageName, R.layout.simple_list_item_1).apply {
+                                        setTextViewText(
+                                            android.R.id.text1,
+                                            "Password for ${password.name}"
+                                        )
+                                    }
+                                val dataSetBuilder = Dataset.Builder()
+                                val autofillValue = AutofillValue.forText(
+                                    cipher.decrypt(
+                                        password.name,
+                                        password.password,
+                                        password.passwordIv
+                                    )
+                                )
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    dataSetBuilder.setField(
+                                        autofillMap[Field.PASSWORD]!!,
+                                        android.service.autofill.Field.Builder()
+                                            .setPresentations(
+                                                Presentations.Builder()
+                                                    .setMenuPresentation(passwordPresentation)
+                                                    .build()
+                                            )
+                                            .setValue(autofillValue)
+                                            .build()
+                                    )
+                                } else {
+                                    dataSetBuilder.setValue(
+                                        autofillMap[Field.PASSWORD]!!,
+                                        autofillValue,
+                                        passwordPresentation
+                                    )
+                                }
+                                addDataset(
+                                    dataSetBuilder.build()
+                                )
+                            }
+                        }
+                        .build()
 
+                    callback.onSuccess(fillResponse)
+                }
+            }
+
+        } else {
+            callback.onSuccess(null)
+        }
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
-        TODO("Not yet implemented")
+        // Not needed for now
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
 
     private fun parseStructure(

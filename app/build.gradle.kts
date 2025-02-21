@@ -83,6 +83,7 @@ dependencies {
     implementation(project(":cipher:impl"))
     implementation(project(":features:main"))
     implementation(project(":features:export"))
+    implementation(project(":features:autofill"))
 
 
     testImplementation(libs.junit)
