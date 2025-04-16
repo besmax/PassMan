@@ -116,7 +116,10 @@ fun UserInput(
                     Icon(
                         imageVector = Icons.Outlined.Clear,
                         contentDescription = "Clear text",
-                        modifier = Modifier.clickable { text = "" }
+                        modifier = Modifier.clickable {
+                            text = ""
+                            onValueChanged?.invoke(text)
+                        }
                     )
                 }
             }
