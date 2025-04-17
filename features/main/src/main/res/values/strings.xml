@@ -5,6 +5,7 @@
     <string name="name">Name:</string>
     <string name="link">Link:</string>
     <string name="password">Password:</string>
+    <string name="login">Login:</string>
     <string name="comment">Comment:</string>
     <string name="saved_passwords">Saved passwords</string>
     <string name="hidden_text">*******</string>

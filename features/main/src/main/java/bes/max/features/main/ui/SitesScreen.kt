@@ -442,8 +442,23 @@ fun SiteListItem(
 
             }
 
-            Spacer(modifier = Modifier.width(24.dp))
         }
+
+        if (!model.login.isNullOrBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 8.dp)
+            ) {
+                Text(text = stringResource(id = R.string.login))
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(text = model.login)
+            }
+
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -572,7 +587,8 @@ private fun SiteListItemPreview() {
         passwordIv = "",
         url = "www.ww.w.v",
         description = null,
-        categoryColor = Color.Red.toArgb()
+        categoryColor = Color.Red.toArgb(),
+        login = "Login123"
     )
     SiteListItem(
         model = model,

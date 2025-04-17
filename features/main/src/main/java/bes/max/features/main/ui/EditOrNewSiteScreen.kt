@@ -82,6 +82,7 @@ fun EditOrNewSiteScreen(
     var comment by rememberSaveable { mutableStateOf<String?>(null) }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var categoryColor by rememberSaveable { mutableStateOf<Int?>(null) }
+    var login by rememberSaveable { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
@@ -167,6 +168,7 @@ fun EditOrNewSiteScreen(
                         changePassword = { newPassword = it },
                         changeComment = { comment = it },
                         showPassword = { model -> editViewModel.showPassword(model) },
+                        changeLogin = { login = it },
                         doEdit = {
                             editViewModel.update(
                                 state.model,
@@ -196,13 +198,14 @@ fun EditOrNewSiteScreen(
                         changeUrl = { url = it },
                         changePassword = { newPassword = it },
                         create = {
-                            editViewModel.add(name, url, newPassword, comment, categoryColor)
+                            editViewModel.add(name, url, newPassword, comment, categoryColor, login)
                             navigateBack()
                         },
                         isButtonEnabled = isButtonEnabledForNew,
                         launchBiometric = authentication,
                         changeComment = { comment = it },
                         showPassword = { newPassword },
+                        changeLogin = { login = it },
                         categories = (uiState as EditScreenState.New).categories,
                         changeCategory = { categoryColor = it },
                         navigateToCategory = navigateToCategory
@@ -230,6 +233,7 @@ fun ShowEdit(
     changePassword: (String) -> Unit,
     changeComment: (String?) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
+    changeLogin: (String?) -> Unit,
     doEdit: () -> Unit,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     deleteItem: (SiteInfoModelMain) -> Unit,
@@ -255,6 +259,13 @@ fun ShowEdit(
             hintRes = R.string.hint_url,
             initialText = model.url,
             onValueChanged = changeUrl,
+            maxLines = 3,
+        )
+
+        UserInput(
+            hintRes = R.string.login,
+            initialText = model.login ?: "",
+            onValueChanged = changeLogin,
             maxLines = 3,
         )
 
@@ -323,6 +334,7 @@ fun ShowNew(
     isButtonEnabled: Boolean,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
     showPassword: () -> String,
+    changeLogin: (String) -> Unit,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
     navigateToCategory: () -> Unit,
@@ -344,6 +356,12 @@ fun ShowNew(
             hintRes = R.string.hint_url,
             initialText = stringResource(id = R.string.init_url),
             onValueChanged = changeUrl,
+            maxLines = 3,
+        )
+
+        UserInput(
+            hintRes = R.string.login,
+            onValueChanged = changeLogin,
             maxLines = 3,
         )
 
