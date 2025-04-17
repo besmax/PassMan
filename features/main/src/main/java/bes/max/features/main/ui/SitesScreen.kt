@@ -481,15 +481,17 @@ fun SiteListItem(
                     .weight(1f),
             )
 
-            Icon(
-                imageVector = globeIcon,
-                contentDescription = stringResource(R.string.go_to_web_site),
-                modifier = Modifier
-                    .clickable {
-                        openUrl(model.url)
-                    }
-                    .size(24.dp)
-            )
+           if (model.url.isNotBlank()) {
+                Icon(
+                    imageVector = globeIcon,
+                    contentDescription = stringResource(R.string.go_to_web_site),
+                    modifier = Modifier
+                        .clickable {
+                            openUrl(model.url)
+                        }
+                        .size(24.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
