@@ -551,7 +551,7 @@ fun FabAdd(addItem: () -> Unit) {
     FloatingActionButton(
         onClick = { addItem() },
         modifier = Modifier
-            .padding(end = 16.dp, bottom = 80.dp),
+            .padding(end = 16.dp, bottom = 64.dp),
         shape = RoundedCornerShape(100.dp),
     ) {
         Icon(
