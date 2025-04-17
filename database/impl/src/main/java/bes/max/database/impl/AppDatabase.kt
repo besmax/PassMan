@@ -12,8 +12,8 @@ import bes.max.database.impl.entities.SiteInfoEntity
         SiteInfoEntity::class,
         CategoryEntity::class,
     ],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun siteInfoDao(): SiteInfoDao
