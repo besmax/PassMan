@@ -442,8 +442,23 @@ fun SiteListItem(
 
             }
 
-            Spacer(modifier = Modifier.width(24.dp))
         }
+
+        if (!model.login.isNullOrBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 8.dp)
+            ) {
+                Text(text = stringResource(id = R.string.login))
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(text = model.login)
+            }
+
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -466,15 +481,17 @@ fun SiteListItem(
                     .weight(1f),
             )
 
-            Icon(
-                imageVector = globeIcon,
-                contentDescription = stringResource(R.string.go_to_web_site),
-                modifier = Modifier
-                    .clickable {
-                        openUrl(model.url)
-                    }
-                    .size(24.dp)
-            )
+           if (model.url.isNotBlank()) {
+                Icon(
+                    imageVector = globeIcon,
+                    contentDescription = stringResource(R.string.go_to_web_site),
+                    modifier = Modifier
+                        .clickable {
+                            openUrl(model.url)
+                        }
+                        .size(24.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -534,7 +551,7 @@ fun FabAdd(addItem: () -> Unit) {
     FloatingActionButton(
         onClick = { addItem() },
         modifier = Modifier
-            .padding(end = 16.dp, bottom = 80.dp),
+            .padding(end = 16.dp, bottom = 64.dp),
         shape = RoundedCornerShape(100.dp),
     ) {
         Icon(
@@ -572,7 +589,8 @@ private fun SiteListItemPreview() {
         passwordIv = "",
         url = "www.ww.w.v",
         description = null,
-        categoryColor = Color.Red.toArgb()
+        categoryColor = Color.Red.toArgb(),
+        login = "Login123"
     )
     SiteListItem(
         model = model,

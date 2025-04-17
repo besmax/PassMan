@@ -94,7 +94,14 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun add(name: String, url: String, password: String, comment: String?, categoryColor: Int?) {
+    fun add(
+        name: String,
+        url: String,
+        password: String,
+        comment: String?,
+        categoryColor: Int?,
+        login: String?
+    ) {
         val encryptedData = cipher.encrypt(alias = name.trim(), textToEncrypt = password.trim())
         viewModelScope.launch {
             siteInfoRepository.create(
@@ -105,6 +112,7 @@ class EditViewModel @Inject constructor(
                     passwordIv = encryptedData.passwordIv,
                     description = if (comment?.isBlank() == true) null else comment?.trim(),
                     categoryColor = categoryColor,
+                    login = login,
                 )
             )
         }
