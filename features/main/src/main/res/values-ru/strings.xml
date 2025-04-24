@@ -6,7 +6,7 @@
     <string name="link">Ссылка:</string>
     <string name="password">Пароль:</string>
     <string name="login">Логин:</string>
-    <string name="comment">Коментарий:</string>
+    <string name="comment">Комментарий:</string>
     <string name="saved_passwords">Сохранённые пароли</string>
     <string name="hidden_text">*******</string>
     <string name="no_sites">У вас ещё нет сохранённых паролей</string>
