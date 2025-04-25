@@ -93,6 +93,19 @@ fun EditOrNewSiteScreen(
             (name != "" && newPassword.password != "")
         }
     }
+    val isButtonEnabledForEdit by remember {
+        derivedStateOf {
+            (uiState as? EditScreenState.Edit)?.model?.anyFieldChange(
+                name,
+                url,
+                newPassword.password,
+                comment,
+                categoryColor,
+                login
+            )
+                ?: false
+        }
+    }
     var showPinCodeInput by remember { mutableStateOf(false) }
     val pinCode by settingsViewModel.pinCode.collectAsState()
     var authOnSuccess by remember { mutableStateOf({ }) }
@@ -162,7 +175,7 @@ fun EditOrNewSiteScreen(
 
                     is EditScreenState.Edit -> ShowEdit(
                         model = (uiState as EditScreenState.Edit).model,
-                        name =name,
+                        name = name,
                         url = url,
                         password = newPassword.password,
                         comment = comment,
@@ -188,11 +201,12 @@ fun EditOrNewSiteScreen(
                         },
                         categories = (uiState as EditScreenState.Edit).categories,
                         changeCategory = editViewModel::onCategoryChanged,
-                        navigateToCategory = navigateToCategory
+                        navigateToCategory = navigateToCategory,
+                        isButtonEnabled = isButtonEnabledForEdit
                     )
 
                     is EditScreenState.New -> ShowNew(
-                        name =name,
+                        name = name,
                         url = url,
                         password = newPassword.password,
                         comment = comment,
@@ -250,6 +264,7 @@ fun ShowEdit(
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
     navigateToCategory: () -> Unit,
+    isButtonEnabled: Boolean,
 ) {
     val scrollState = rememberScrollState()
 
@@ -317,6 +332,7 @@ fun ShowEdit(
         ) {
             Button(
                 onClick = { launchBiometric(doEdit, { }) },
+                enabled = isButtonEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.save),
@@ -512,4 +528,21 @@ private fun ChooseCategory(
             )
         }
     }
+}
+
+private fun SiteInfoModelMain.anyFieldChange(
+    name: String,
+    url: String,
+    password: String,
+    comment: String,
+    color: Int?,
+    login: String,
+): Boolean {
+    if (this.name != name) return true
+    if (this.url != url) return true
+    if (this.password != password) return true
+    if ((this.description ?: "") != comment) return true
+    if (this.categoryColor != color) return true
+    if ((this.login ?: "") != login) return true
+    return false
 }

@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -174,7 +175,10 @@ fun UserInputStateLess(
             imeAction = ImeAction.Done,
         ),
         keyboardActions = KeyboardActions(
-            onDone = { focusManager.clearFocus() }
+            onDone = {
+                focusManager.clearFocus()
+                focusManager.moveFocus(FocusDirection.Next)
+            }
         ),
         visualTransformation = if (!passwordIsShown && passwordInput) PasswordVisualTransformation()
         else VisualTransformation.None,
