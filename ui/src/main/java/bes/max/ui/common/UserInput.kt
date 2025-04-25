@@ -77,7 +77,7 @@ fun UserInput(
             imeAction = ImeAction.Done,
         ),
         keyboardActions = KeyboardActions(
-            onDone = { focusManager.clearFocus() }
+            onDone = { focusManager.moveFocus(FocusDirection.Next) }
         ),
         visualTransformation = if (!passwordIsShown && passwordInput) PasswordVisualTransformation()
         else VisualTransformation.None,
@@ -176,7 +176,6 @@ fun UserInputStateLess(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                focusManager.clearFocus()
                 focusManager.moveFocus(FocusDirection.Next)
             }
         ),
