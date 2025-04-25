@@ -1,5 +1,6 @@
 package bes.max.features.main.presentation.edit
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -9,7 +10,9 @@ import bes.max.cipher.api.CipherApi
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
+import bes.max.passman.features.main.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,6 +25,7 @@ class EditViewModel @Inject constructor(
     private val siteInfoRepository: SiteInfoRepository,
     private val cipher: CipherApi,
     private val categoriesRepository: CategoriesRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val id = savedStateHandle.get<Int>("id")
@@ -98,11 +102,13 @@ class EditViewModel @Inject constructor(
 
     fun update(model: SiteInfoModelMain) {
         //model with  password which is not encrypted
+        val urlUpd = url.value.ifBlank { model.url }
+        val https = appContext.getString(R.string.init_url)
         val partiallyUpdatedModel = if (password.value.password.isNotBlank()) {
             model.copy(
                 name = name.value.ifBlank { model.name },
                 password = password.value.password,
-                url = url.value.ifBlank { model.url },
+                url = if (urlUpd.contains(https.take(4))) urlUpd else "$https$urlUpd",
                 passwordIv = "",
                 description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
                 categoryColor = _color.value,
@@ -112,7 +118,7 @@ class EditViewModel @Inject constructor(
             model.copy(
                 name = name.value.ifBlank { model.name },
                 password = cipher.decrypt(model.name, model.password, model.passwordIv),
-                url = url.value.ifBlank { model.url },
+                url = if (urlUpd.contains(https.take(4))) urlUpd else "$https$urlUpd",
                 description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
                 categoryColor = _color.value,
                 login = if (login.value.isBlank()) model.login else login.value.ifBlank { null },
@@ -131,6 +137,7 @@ class EditViewModel @Inject constructor(
     }
 
     fun add() {
+        val https = appContext.getString(R.string.init_url)
         viewModelScope.launch {
             val encryptedData = cipher.encrypt(
                 alias = name.value.trim(),
@@ -140,7 +147,7 @@ class EditViewModel @Inject constructor(
                 SiteInfoModelMain(
                     name = name.value.trim(),
                     password = encryptedData.encryptedData,
-                    url = url.value.trim(),
+                    url = if (url.value.contains(https.take(4))) url.value else "$https${url.value}",
                     passwordIv = encryptedData.passwordIv,
                     description = if (comment.value.isBlank()) null else comment.value.trim(),
                     categoryColor = color.value,
