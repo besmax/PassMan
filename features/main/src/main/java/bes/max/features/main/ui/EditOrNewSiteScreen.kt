@@ -42,7 +42,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +59,7 @@ import bes.max.features.main.presentation.settings.SettingsViewModel
 import bes.max.passman.features.main.R
 import bes.max.ui.common.ShowError
 import bes.max.ui.common.ShowLoading
-import bes.max.ui.common.UserInput
+import bes.max.ui.common.UserInputStateLess
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import coil.memory.MemoryCache
@@ -77,12 +76,12 @@ fun EditOrNewSiteScreen(
 ) {
 
     val uiState by editViewModel.uiState.observeAsState(initial = EditScreenState.Loading)
-    var name by rememberSaveable { mutableStateOf("") }
-    var url by rememberSaveable { mutableStateOf("") }
-    var comment by rememberSaveable { mutableStateOf<String?>(null) }
-    var newPassword by rememberSaveable { mutableStateOf("") }
-    var categoryColor by rememberSaveable { mutableStateOf<Int?>(null) }
-    var login by rememberSaveable { mutableStateOf<String?>(null) }
+    val name by editViewModel.name.collectAsState()
+    val url by editViewModel.url.collectAsState()
+    val comment by editViewModel.comment.collectAsState()
+    val newPassword by editViewModel.password.collectAsState()
+    val categoryColor by editViewModel.color.collectAsState()
+    val login by editViewModel.login.collectAsState()
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
@@ -91,7 +90,7 @@ fun EditOrNewSiteScreen(
 
     val isButtonEnabledForNew by remember {
         derivedStateOf {
-            (name != "" && newPassword != "")
+            (name != "" && newPassword.password != "")
         }
     }
     var showPinCodeInput by remember { mutableStateOf(false) }
@@ -163,21 +162,20 @@ fun EditOrNewSiteScreen(
 
                     is EditScreenState.Edit -> ShowEdit(
                         model = (uiState as EditScreenState.Edit).model,
-                        changeName = { name = it },
-                        changeUrl = { url = it },
-                        changePassword = { newPassword = it },
-                        changeComment = { comment = it },
+                        name =name,
+                        url = url,
+                        password = newPassword.password,
+                        comment = comment,
+                        color = categoryColor,
+                        login = login,
+                        changeName = editViewModel::onNameChanged,
+                        changeUrl = editViewModel::onUrlChanged,
+                        changePassword = editViewModel::onPasswordChanged,
+                        changeComment = editViewModel::onCommentChanged,
                         showPassword = { model -> editViewModel.showPassword(model) },
-                        changeLogin = { login = it },
+                        changeLogin = editViewModel::onLoginChanged,
                         doEdit = {
-                            editViewModel.update(
-                                state.model,
-                                name,
-                                url,
-                                newPassword,
-                                comment,
-                                categoryColor
-                            )
+                            editViewModel.update(state.model)
                             navigateBack()
                         },
                         launchBiometric = authentication,
@@ -189,25 +187,31 @@ fun EditOrNewSiteScreen(
                             navigateBack()
                         },
                         categories = (uiState as EditScreenState.Edit).categories,
-                        changeCategory = { categoryColor = it },
+                        changeCategory = editViewModel::onCategoryChanged,
                         navigateToCategory = navigateToCategory
                     )
 
                     is EditScreenState.New -> ShowNew(
-                        changeName = { name = it },
-                        changeUrl = { url = it },
-                        changePassword = { newPassword = it },
+                        name =name,
+                        url = url,
+                        password = newPassword.password,
+                        comment = comment,
+                        color = categoryColor,
+                        login = login,
+                        changeName = editViewModel::onNameChanged,
+                        changeUrl = editViewModel::onUrlChanged,
+                        changePassword = editViewModel::onPasswordChanged,
                         create = {
-                            editViewModel.add(name, url, newPassword, comment, categoryColor, login)
+                            editViewModel.add()
                             navigateBack()
                         },
                         isButtonEnabled = isButtonEnabledForNew,
                         launchBiometric = authentication,
-                        changeComment = { comment = it },
-                        showPassword = { newPassword },
-                        changeLogin = { login = it },
+                        changeComment = editViewModel::onCommentChanged,
+                        showPassword = { editViewModel.showPassword() },
+                        changeLogin = editViewModel::onLoginChanged,
                         categories = (uiState as EditScreenState.New).categories,
-                        changeCategory = { categoryColor = it },
+                        changeCategory = editViewModel::onCategoryChanged,
                         navigateToCategory = navigateToCategory
                     )
                 }
@@ -228,11 +232,17 @@ fun EditOrNewSiteScreen(
 @Composable
 fun ShowEdit(
     model: SiteInfoModelMain,
+    name: String,
+    url: String,
+    password: String,
+    comment: String,
+    color: Int?,
+    login: String,
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
     changeComment: (String?) -> Unit,
-    showPassword: (SiteInfoModelMain) -> String,
+    showPassword: (SiteInfoModelMain) -> Unit,
     changeLogin: (String?) -> Unit,
     doEdit: () -> Unit,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
@@ -248,39 +258,39 @@ fun ShowEdit(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.hint_name,
-            initialText = model.name,
+            text = name,
             onValueChanged = changeName,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.hint_url,
-            initialText = model.url,
+            text = url,
             onValueChanged = changeUrl,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.login,
-            initialText = model.login ?: "",
+            text = login,
             onValueChanged = changeLogin,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.password,
-            initialText = model.password,
+            text = password,
             onValueChanged = changePassword,
             passwordInput = true,
             showPassword = { showPassword(model) },
             launchBiometric = launchBiometric
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.comment,
-            initialText = model.description ?: "",
+            text = comment,
             onValueChanged = changeComment,
             maxLines = 10,
         )
@@ -326,6 +336,12 @@ fun ShowEdit(
 
 @Composable
 fun ShowNew(
+    name: String,
+    url: String,
+    password: String,
+    comment: String,
+    color: Int?,
+    login: String,
     changeName: (String) -> Unit,
     changeUrl: (String) -> Unit,
     changePassword: (String) -> Unit,
@@ -333,7 +349,7 @@ fun ShowNew(
     create: () -> Unit,
     isButtonEnabled: Boolean,
     launchBiometric: (() -> Unit, () -> Unit) -> Unit,
-    showPassword: () -> String,
+    showPassword: () -> Unit,
     changeLogin: (String) -> Unit,
     categories: List<CategoryModelMain>,
     changeCategory: (Int?) -> Unit,
@@ -346,35 +362,39 @@ fun ShowNew(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.hint_name,
+            text = name,
             onValueChanged = changeName,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.hint_url,
-            initialText = stringResource(id = R.string.init_url),
+            text = url,
             onValueChanged = changeUrl,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.login,
+            text = login,
             onValueChanged = changeLogin,
             maxLines = 3,
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.password,
+            text = password,
             onValueChanged = changePassword,
             passwordInput = true,
             showPassword = { showPassword() },
             launchBiometric = launchBiometric
         )
 
-        UserInput(
+        UserInputStateLess(
             hintRes = R.string.comment,
+            text = comment,
             onValueChanged = changeComment,
             maxLines = 10,
         )

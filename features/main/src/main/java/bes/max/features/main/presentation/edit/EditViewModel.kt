@@ -10,6 +10,9 @@ import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.domain.repositories.CategoriesRepository
 import bes.max.features.main.domain.repositories.SiteInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +29,24 @@ class EditViewModel @Inject constructor(
         MutableLiveData(EditScreenState.Loading)
     val uiState: LiveData<EditScreenState> = _uiState
 
+    private val _name = MutableStateFlow<String>("")
+    val name = _name.asStateFlow()
+
+    private val _url = MutableStateFlow<String>("")
+    val url = _url.asStateFlow()
+
+    private val _password = MutableStateFlow<PasswordState>(PasswordState(""))
+    val password = _password.asStateFlow()
+
+    private val _login = MutableStateFlow<String>("")
+    val login = _login.asStateFlow()
+
+    private val _comment = MutableStateFlow<String>("")
+    val comment = _comment.asStateFlow()
+
+    private val _color = MutableStateFlow<Int?>(null)
+    val color = _color.asStateFlow()
+
     init {
         if (id != -1) {
             getSiteModel(id!!)
@@ -41,45 +62,60 @@ class EditViewModel @Inject constructor(
             if (model != null) {
                 _uiState.postValue(EditScreenState.Edit(model))
                 getCategories()
+                updateAllFieldsByModel(model)
             } else {
                 _uiState.postValue(EditScreenState.Error)
             }
         }
     }
 
-    fun showPassword(model: SiteInfoModelMain): String {
-        return cipher.decrypt(
-            alias = model.name,
-            encryptedData = model.password,
-            initVector = model.passwordIv
-        )
+    private fun updateAllFieldsByModel(model: SiteInfoModelMain) {
+        _name.update { model.name }
+        _url.update { model.url }
+        _password.update { it.copy(password = model.password) }
+        _login.update { model.login ?: "" }
+        _comment.update { model.description ?: "" }
+        _color.update { model.categoryColor }
     }
 
-    fun update(
-        model: SiteInfoModelMain,
-        name: String,
-        url: String,
-        password: String,
-        comment: String?,
-        categoryColor: Int?,
-    ) {
-        //model with  password which is not encrypted
-        val partiallyUpdatedModel = if (password.isNotBlank()) {
-            model.copy(
-                name = name.ifBlank { model.name },
+    fun showPassword(model: SiteInfoModelMain? = null) {
+        val password = if (model != null) {
+            cipher.decrypt(
+                alias = model.name,
+                encryptedData = model.password,
+                initVector = model.passwordIv
+            )
+        } else {
+            password.value.password
+        }
+        _password.update {
+            it.copy(
                 password = password,
-                url = url.ifBlank { model.url },
+                hiden = false
+            )
+        }
+    }
+
+    fun update(model: SiteInfoModelMain) {
+        //model with  password which is not encrypted
+        val partiallyUpdatedModel = if (password.value.password.isNotBlank()) {
+            model.copy(
+                name = name.value.ifBlank { model.name },
+                password = password.value.password,
+                url = url.value.ifBlank { model.url },
                 passwordIv = "",
-                description = if (comment.isNullOrBlank()) model.description else comment,
-                categoryColor = categoryColor,
+                description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
+                categoryColor = _color.value,
+                login = if (login.value.isBlank()) model.login else login.value.ifBlank { null }
             )
         } else {
             model.copy(
-                name = name.ifBlank { model.name },
+                name = name.value.ifBlank { model.name },
                 password = cipher.decrypt(model.name, model.password, model.passwordIv),
-                url = url.ifBlank { model.url },
-                description = if (comment.isNullOrBlank()) model.description else comment,
-                categoryColor = categoryColor,
+                url = url.value.ifBlank { model.url },
+                description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
+                categoryColor = _color.value,
+                login = if (login.value.isBlank()) model.login else login.value.ifBlank { null },
             )
         }
         val encryptedData =
@@ -94,25 +130,21 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun add(
-        name: String,
-        url: String,
-        password: String,
-        comment: String?,
-        categoryColor: Int?,
-        login: String?
-    ) {
-        val encryptedData = cipher.encrypt(alias = name.trim(), textToEncrypt = password.trim())
+    fun add() {
         viewModelScope.launch {
+            val encryptedData = cipher.encrypt(
+                alias = name.value.trim(),
+                textToEncrypt = password.value.password.trim()
+            )
             siteInfoRepository.create(
                 SiteInfoModelMain(
-                    name = name.trim(),
+                    name = name.value.trim(),
                     password = encryptedData.encryptedData,
-                    url = url.trim(),
+                    url = url.value.trim(),
                     passwordIv = encryptedData.passwordIv,
-                    description = if (comment?.isBlank() == true) null else comment?.trim(),
-                    categoryColor = categoryColor,
-                    login = login,
+                    description = if (comment.value.isBlank()) null else comment.value.trim(),
+                    categoryColor = color.value,
+                    login = login.value,
                 )
             )
         }
@@ -135,5 +167,29 @@ class EditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onNameChanged(name: String) {
+        if (name != _name.value) _name.update { name }
+    }
+
+    fun onUrlChanged(url: String) {
+        if (_url.value != url) _url.update { url }
+    }
+
+    fun onPasswordChanged(password: String) {
+        if (_password.value.password != password) _password.update { it.copy(password = password) }
+    }
+
+    fun onCommentChanged(comment: String?) {
+        if (_comment.value != comment) _comment.update { comment ?: "" }
+    }
+
+    fun onLoginChanged(login: String?) {
+        if (_login.value != login) _login.update { login ?: "" }
+    }
+
+    fun onCategoryChanged(category: Int?) {
+        if (_color.value != category) _color.update { category }
     }
 }
