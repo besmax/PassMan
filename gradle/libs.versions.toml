@@ -1,6 +1,6 @@
 [versions]
-versionCode = "322"
-versionName = "3.2.2"
+versionCode = "323"
+versionName = "3.2.3"
 accompanistPermissions = "0.37.0"
 agp = "8.3.0"
 datastore = "1.1.2"

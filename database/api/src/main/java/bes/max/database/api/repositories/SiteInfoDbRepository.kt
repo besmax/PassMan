@@ -24,6 +24,8 @@ interface SiteInfoDbRepository {
 
     suspend fun delete(model: SiteInfoModel, dispatcher: CoroutineDispatcher)
 
+    suspend fun deleteById(id: Int, dispatcher: CoroutineDispatcher)
+
     suspend fun isNotEmpty(): Boolean
 
 }

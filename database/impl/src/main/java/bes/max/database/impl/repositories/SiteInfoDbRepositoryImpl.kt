@@ -58,13 +58,17 @@ class SiteInfoDbRepositoryImpl(
         }
     }
 
-    override suspend fun delete(model: SiteInfoModel, dispatcher: CoroutineDispatcher) {
+    override suspend fun delete(model: SiteInfoModel, dispatcher: CoroutineDispatcher) =
         withContext(dispatcher) {
             siteInfoDao.delete(model.map())
         }
-    }
+
+    override suspend fun deleteById(id: Int, dispatcher: CoroutineDispatcher) =
+        withContext(dispatcher) {
+            siteInfoDao.deleteById(id)
+        }
 
     override suspend fun isNotEmpty(): Boolean {
-       return siteInfoDao.count() != 0
+        return siteInfoDao.count() != 0
     }
 }
