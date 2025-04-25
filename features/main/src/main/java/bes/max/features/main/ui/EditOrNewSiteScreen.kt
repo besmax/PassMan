@@ -304,7 +304,7 @@ fun ShowEdit(
         ChooseCategory(
             categories = categories,
             changeCategory = changeCategory,
-            categoryColor = model.categoryColor ?: -1,
+            categoryColor = color ?: -1,
             addCategory = navigateToCategory,
             addCategoryTitle = stringResource(R.string.add_category),
         )
@@ -409,6 +409,7 @@ fun ShowNew(
             categories = categories,
             changeCategory = changeCategory,
             addCategory = navigateToCategory,
+            categoryColor = color ?: -1,
             addCategoryTitle = stringResource(R.string.add_category),
         )
 
