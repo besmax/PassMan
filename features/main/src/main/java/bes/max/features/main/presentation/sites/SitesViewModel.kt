@@ -165,9 +165,14 @@ class SitesViewModel @Inject constructor(
             _event.postValue(SitesScreenEvent.WrongUrl())
             return
         }
+        val urlUpd = if (url.contains("http")) {
+            url
+        } else {
+            "https://$url"
+        }
         val intent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse(url)
+            Uri.parse(urlUpd)
         ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
 
         try {
