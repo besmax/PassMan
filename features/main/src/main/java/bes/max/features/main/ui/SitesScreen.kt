@@ -173,7 +173,7 @@ fun SitesScreen(
                 actions = {
                     if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
                         IconButton(
-                            onClick = { launchAuth(sitesViewModel::deleteSelected, {}) },
+                            onClick = { authentication(sitesViewModel::deleteSelected, {}) },
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
