@@ -35,6 +35,9 @@ class SitesViewModel @Inject constructor(
     private val _uiState = MutableLiveData<SitesScreenState>(SitesScreenState.Loading)
     val uiState: LiveData<SitesScreenState> = _uiState
 
+    private val _selectedState = MutableLiveData(SelectedState())
+    val selectedState: LiveData<SelectedState> = _selectedState
+
     private val _event = MutableLiveData<SitesScreenEvent>()
     val event: LiveData<SitesScreenEvent> = _event
 
@@ -52,8 +55,8 @@ class SitesViewModel @Inject constructor(
                 if (list.isNotEmpty()) {
                     _uiState.postValue(
                         SitesScreenState.Content(
-                            sites = list,
-                            filteredSites = list,
+                            sites = list.toImmutableList(),
+                            filteredSites = list.toImmutableList(),
                         )
                     )
                     getFilters()
@@ -87,7 +90,8 @@ class SitesViewModel @Inject constructor(
             } else {
                 _uiState.postValue(
                     currentState.copy(
-                        filteredSites = currentState.sites.filter { it.categoryColor == color },
+                        filteredSites = currentState.sites.filter { it.categoryColor == color }
+                            .toImmutableList(),
                         selectedCategory = currentState.filters.indexOfFirst {
                             it.color.toArgb() == color
                         },
@@ -114,49 +118,66 @@ class SitesViewModel @Inject constructor(
         appContext.copyTextToClipboard(decryptPassword)
     }
 
-    fun toggleItemSelection(id: Int) {
-        val current = _uiState.value
-        if (current is SitesScreenState.Content) {
-            val filteredSites = current.filteredSites.map {
-                if (it.id == id) it.copy(isSelected = !it.isSelected)
-                else it
-            }
-            val sites = current.sites.map {
-                if (it.id == id) it.copy(isSelected = !it.isSelected)
-                else it
-            }
-            val selected = sites.count { it.isSelected }
-            _uiState.postValue(
-                current.copy(
-                    filteredSites = filteredSites,
-                    sites = sites,
-                    selected = selected
-                )
+//    fun toggleItemSelection(id: Int) {
+//        val current = _uiState.value
+//        if (current is SitesScreenState.Content) {
+//            val filteredSites = current.filteredSites.map {
+//                if (it.id == id) it.copy(isSelected = !it.isSelected)
+//                else it
+//            }
+//            val sites = current.sites.map {
+//                if (it.id == id) it.copy(isSelected = !it.isSelected)
+//                else it
+//            }
+//            val selected = sites.count { it.isSelected }
+//            _uiState.postValue(
+//                current.copy(
+//                    filteredSites = filteredSites.toImmutableList(),
+//                    sites = sites.toImmutableList(),
+//                    selected = selected
+//                )
+//            )
+//        }
+//    }
+
+    fun toggleSelection(id: Int?) {
+        val currentSelected = _selectedState.value ?: return
+        val newSelecting = !currentSelected.selecting
+        _selectedState.postValue(
+            currentSelected.copy(
+                selectedIds = if (newSelecting && id != null) setOf(id) else emptySet(),
+                selecting = newSelecting
             )
+        )
+    }
+
+    fun toggleItemSelection(id: Int) {
+        val currentSelected = _selectedState.value ?: return
+
+        val newSelected = if (currentSelected.selectedIds.contains(id)) {
+            currentSelected.selectedIds - id
+        } else {
+            currentSelected.selectedIds + id
+        }
+        if (newSelected.isNotEmpty()) {
+            _selectedState.postValue(currentSelected.copy(selectedIds = newSelected))
+        } else {
+            unselectAll()
         }
     }
 
     fun unselectAll() {
-        val current = _uiState.value
-        if (current is SitesScreenState.Content) {
-            _uiState.postValue(
-                current.copy(
-                    sites = current.sites.map { it.copy(isSelected = false) },
-                    filteredSites = current.filteredSites.map { it.copy(isSelected = false) },
-                    selected = 0
-                )
-            )
-        }
+        _selectedState.postValue(SelectedState(selectedIds = emptySet(), selecting = false))
     }
 
     fun deleteSelected() {
         viewModelScope.launch {
-            val current = _uiState.value
-            if (current is SitesScreenState.Content) {
-                current.sites.filter { it.isSelected }.forEach {
-                    siteInfoRepository.delete(it)
-                }
+            val selectedState = _selectedState.value ?: return@launch
+            selectedState.selectedIds.forEach { id ->
+                siteInfoRepository.deleteById(id)
             }
+            unselectAll()
+            //getSites()
         }
     }
 

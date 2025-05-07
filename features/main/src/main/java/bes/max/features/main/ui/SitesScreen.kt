@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -64,6 +65,7 @@ import androidx.lifecycle.compose.currentStateAsState
 import bes.max.features.main.domain.models.FilterModel
 import bes.max.features.main.domain.models.SiteInfoModelMain
 import bes.max.features.main.presentation.settings.SettingsViewModel
+import bes.max.features.main.presentation.sites.SelectedState
 import bes.max.features.main.presentation.sites.SitesScreenEvent
 import bes.max.features.main.presentation.sites.SitesScreenState
 import bes.max.features.main.presentation.sites.SitesViewModel
@@ -94,6 +96,7 @@ fun SitesScreen(
 ) {
     val uiState by sitesViewModel.uiState.observeAsState(SitesScreenState.Loading)
     val event by sitesViewModel.event.observeAsState()
+    val selectedState by sitesViewModel.selectedState.observeAsState(SelectedState())
     val pinCode by settingsViewModel.pinCode.collectAsState()
     val isAnimBackgroundActive by settingsViewModel.isAnimBackgroundActive.collectAsState()
     val showPassword = { model: SiteInfoModelMain ->
@@ -155,11 +158,11 @@ fun SitesScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
+                    if (selectedState.selecting) {
                         Text(
                             text = stringResource(
                                 id = R.string.chosen,
-                                (uiState as SitesScreenState.Content).selected.toString()
+                                selectedState.selectedIds.size.toString()
                             ),
                             style = MaterialTheme.typography.headlineSmall
                         )
@@ -171,7 +174,7 @@ fun SitesScreen(
                     }
                 },
                 actions = {
-                    if (uiState is SitesScreenState.Content && (uiState as SitesScreenState.Content).selected != 0) {
+                    if (selectedState.selecting) {
                         IconButton(
                             onClick = { authentication(sitesViewModel::deleteSelected, {}) },
                         ) {
@@ -231,15 +234,19 @@ fun SitesScreen(
                         is SitesScreenState.Loading -> ShowLoading()
                         is SitesScreenState.Content -> ShowContent(
                             uiState = state,
-                            onItemClick = navigateToEdit,
+                            onItemClick = { id ->
+                                if (selectedState.selecting) sitesViewModel.toggleItemSelection(id)
+                                else navigateToEdit(id)
+                            },
                             showPassword = showPassword,
                             launchAuth = authentication,
                             navigateToCategory = navigateToCategory,
                             copyPasswordToClipboard = copyPasswordToClipboard,
-                            onItemLongClick = sitesViewModel::toggleItemSelection,
-                            isSelecting = state.selected != 0,
+                            onItemLongClick = sitesViewModel::toggleSelection,
+                            isSelecting = selectedState.selecting,
                             openUrl = sitesViewModel::openUrlInBrowser,
                             selectedCategory = state.selectedCategory,
+                            isItemSelected = { id -> selectedState.selectedIds.contains(id) }
                         )
                     }
                 }
@@ -271,10 +278,11 @@ fun ShowContent(
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
-    onItemLongClick: (Int) -> Unit,
+    onItemLongClick: (Int?) -> Unit,
     isSelecting: Boolean,
     openUrl: (String) -> Unit,
     selectedCategory: Int,
+    isItemSelected: (Int) -> Boolean,
 ) {
     SitesList(
         uiState.filteredSites,
@@ -287,24 +295,27 @@ fun ShowContent(
         onItemLongClick,
         isSelecting,
         openUrl,
-        selectedCategory
+        selectedCategory,
+        isItemSelected,
     )
 }
 
 @Composable
 fun SitesList(
-    list: List<SiteInfoModelMain>,
+    list: ImmutableList<SiteInfoModelMain>,
     filters: ImmutableList<FilterModel>,
     onItemClick: (Int) -> Unit,
     showPassword: (SiteInfoModelMain) -> String,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
     navigateToCategory: () -> Unit,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
-    onItemLongClick: (Int) -> Unit,
+    onItemLongClick: (Int?) -> Unit,
     isSelecting: Boolean,
     openUrl: (String) -> Unit,
     selectedCategory: Int,
+    isItemSelected: (Int) -> Boolean,
 ) {
+    val lazyListState = rememberLazyListState()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -326,6 +337,7 @@ fun SitesList(
         )
 
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .padding(bottom = 12.dp, top = 8.dp)
         ) {
@@ -344,7 +356,8 @@ fun SitesList(
                     launchAuth,
                     onItemLongClick,
                     isSelecting,
-                    openUrl
+                    openUrl,
+                    isItemSelected,
                 )
             }
         }
@@ -359,9 +372,10 @@ fun SiteListItem(
     showPassword: (SiteInfoModelMain) -> String,
     copyPasswordToClipboard: (SiteInfoModelMain) -> Unit,
     launchAuth: (() -> Unit, () -> Unit) -> Unit,
-    onItemLongClick: (Int) -> Unit,
+    onItemLongClick: (Int?) -> Unit,
     isSelecting: Boolean,
     openUrl: (String) -> Unit,
+    isItemSelected: (Int) -> Boolean,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
 
@@ -373,7 +387,7 @@ fun SiteListItem(
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (model.isSelected) MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (isItemSelected(model.id)) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surfaceContainer,
         ),
         modifier = Modifier
@@ -382,8 +396,13 @@ fun SiteListItem(
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = { if (isSelecting) onItemLongClick(model.id) else onItemClick(model.id) },
-                onLongClick = { onItemLongClick(model.id) }
+                onClick = {
+                    onItemClick(model.id)
+                },
+                onLongClick = {
+                    if (isSelecting) onItemLongClick(null)
+                    else onItemLongClick(model.id)
+                }
             ),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
@@ -481,7 +500,7 @@ fun SiteListItem(
                     .weight(1f),
             )
 
-           if (model.url.isNotBlank()) {
+            if (model.url.isNotBlank()) {
                 Icon(
                     imageVector = globeIcon,
                     contentDescription = stringResource(R.string.go_to_web_site),
@@ -601,5 +620,6 @@ private fun SiteListItemPreview() {
         onItemLongClick = {},
         isSelecting = false,
         openUrl = {},
+        isItemSelected = { false }
     )
 }
