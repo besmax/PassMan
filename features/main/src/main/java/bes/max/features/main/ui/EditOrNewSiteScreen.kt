@@ -278,6 +278,9 @@ fun ShowEdit(
             text = name,
             onValueChanged = changeName,
             maxLines = 3,
+            clearText = {
+                changeName("")
+            }
         )
 
         UserInputStateLess(
@@ -285,6 +288,9 @@ fun ShowEdit(
             text = url,
             onValueChanged = changeUrl,
             maxLines = 3,
+            clearText = {
+                changeUrl("")
+            }
         )
 
         UserInputStateLess(
@@ -292,6 +298,9 @@ fun ShowEdit(
             text = login,
             onValueChanged = changeLogin,
             maxLines = 3,
+            clearText = {
+                changeLogin("")
+            }
         )
 
         UserInputStateLess(
@@ -308,6 +317,9 @@ fun ShowEdit(
             text = comment,
             onValueChanged = changeComment,
             maxLines = 10,
+            clearText = {
+                changeComment("")
+            }
         )
 
         Text(
@@ -383,6 +395,9 @@ fun ShowNew(
             text = name,
             onValueChanged = changeName,
             maxLines = 3,
+            clearText = {
+                changeName("")
+            }
         )
 
         UserInputStateLess(
@@ -390,6 +405,9 @@ fun ShowNew(
             text = url,
             onValueChanged = changeUrl,
             maxLines = 3,
+            clearText = {
+                changeUrl("")
+            }
         )
 
         UserInputStateLess(
@@ -397,6 +415,9 @@ fun ShowNew(
             text = login,
             onValueChanged = changeLogin,
             maxLines = 3,
+            clearText = {
+                changeLogin("")
+            }
         )
 
         UserInputStateLess(
@@ -413,6 +434,9 @@ fun ShowNew(
             text = comment,
             onValueChanged = changeComment,
             maxLines = 10,
+            clearText = {
+                changeComment("")
+            }
         )
 
         Text(

@@ -22,4 +22,5 @@ sealed interface EditScreenState {
 data class PasswordState(
     val password: String,
     val hiden: Boolean = true,
+    val changed: Boolean = false,
 )

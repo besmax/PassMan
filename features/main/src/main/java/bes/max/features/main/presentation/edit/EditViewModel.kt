@@ -101,34 +101,33 @@ class EditViewModel @Inject constructor(
     }
 
     fun update(model: SiteInfoModelMain) {
-        //model with  password which is not encrypted
         val urlUpd = url.value.ifBlank { model.url }
         val https = appContext.getString(R.string.init_url)
-        val partiallyUpdatedModel = if (password.value.password.isNotBlank()) {
-            model.copy(
-                name = name.value.ifBlank { model.name },
-                password = password.value.password,
-                url = if (urlUpd.contains(https.take(4))) urlUpd else "$https$urlUpd",
-                passwordIv = "",
-                description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
-                categoryColor = _color.value,
-                login = if (login.value.isBlank()) model.login else login.value.ifBlank { null }
+        val passwordState = password.value
+        val (password, passwordIv) = if (model.password != passwordState.password) {
+            val encryptedData =
+                cipher.encrypt(name.value.ifBlank { model.name }, password.value.password)
+            encryptedData.encryptedData to encryptedData.passwordIv
+        } else if (model.name != (name.value.ifBlank { model.name })) {
+            val decryptedPassword = cipher.decrypt(
+                model.name,
+                model.password,
+                model.passwordIv
             )
+            val encryptedData =
+                cipher.encrypt(name.value.ifBlank { model.name }, decryptedPassword)
+            encryptedData.encryptedData to encryptedData.passwordIv
         } else {
-            model.copy(
-                name = name.value.ifBlank { model.name },
-                password = cipher.decrypt(model.name, model.password, model.passwordIv),
-                url = if (urlUpd.contains(https.take(4))) urlUpd else "$https$urlUpd",
-                description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
-                categoryColor = _color.value,
-                login = if (login.value.isBlank()) model.login else login.value.ifBlank { null },
-            )
+            model.password to model.passwordIv
         }
-        val encryptedData =
-            cipher.encrypt(partiallyUpdatedModel.name, partiallyUpdatedModel.password)
-        val updatedModel = partiallyUpdatedModel.copy(
-            password = encryptedData.encryptedData,
-            passwordIv = encryptedData.passwordIv,
+        val updatedModel =  model.copy(
+            name = name.value.ifBlank { model.name },
+            password = password,
+            url = if (urlUpd.contains(https.take(4))) urlUpd else "$https$urlUpd",
+            passwordIv = passwordIv,
+            description = if (comment.value.isBlank()) model.description else comment.value.ifBlank { null },
+            categoryColor = _color.value,
+            login = if (login.value.isBlank()) model.login else login.value.ifBlank { null }
         )
 
         viewModelScope.launch {
@@ -185,7 +184,12 @@ class EditViewModel @Inject constructor(
     }
 
     fun onPasswordChanged(password: String) {
-        if (_password.value.password != password) _password.update { it.copy(password = password) }
+        if (_password.value.password != password) _password.update {
+            it.copy(
+                password = password,
+                changed = true
+            )
+        }
     }
 
     fun onCommentChanged(comment: String?) {

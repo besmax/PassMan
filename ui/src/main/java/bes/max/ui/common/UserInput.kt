@@ -146,6 +146,7 @@ fun UserInputStateLess(
     showPassword: (() -> Unit)? = null,
     launchBiometric: ((() -> Unit, () -> Unit) -> Unit)? = null,
     maxLines: Int = 1,
+    clearText: (() -> Unit)? = null,
 ) {
     var passwordIsShown by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -219,7 +220,7 @@ fun UserInputStateLess(
                         imageVector = Icons.Outlined.Clear,
                         contentDescription = "Clear text",
                         modifier = Modifier.clickable {
-                            onValueChanged?.invoke(text)
+                            clearText?.invoke()
                         }
                     )
                 }
