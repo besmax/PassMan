@@ -36,9 +36,6 @@ class MainActivity : ComponentActivity() {
     private var cancellationSignal: CancellationSignal? = null
 
     @Inject
-    lateinit var permissionHandler: PermissionHandler
-
-    @Inject
     lateinit var settingsRepository: SettingsRepository
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -46,8 +43,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-
-        checkPermissions()
 
         setContent {
 
@@ -74,10 +69,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun checkPermissions() {
-        permissionHandler.checkPermissions(this)
     }
 
     private fun authenticationCallback(
