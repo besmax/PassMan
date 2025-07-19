@@ -1,4 +1,6 @@
 [versions]
+versionCode = "332"
+versionName = "3.3.2"
 accompanistPermissions = "0.37.0"
 agp = "8.3.0"
 datastore = "1.1.2"

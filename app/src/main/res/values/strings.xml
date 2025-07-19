@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">PassMan</string>
-    <string name="prompt_title">Аутентификация</string>
-    <string name="prompt_description">Для продолжения необходимо пройти аутентификацию</string>
-    <string name="prompt_info_use_app_password">Использовать пин-код</string>
-    <string name="prompt_info_no_credentials">Для продолжения добавьте отпечаток пальца или пин-код в настройках телефона</string>
-    <string name="prompt_info_auth_cancelled">Аутентификация отменена</string>
+    <string name="prompt_title">Authentication</string>
+    <string name="prompt_description">Authenticate to continue</string>
+    <string name="prompt_info_use_app_password">Use PIN</string>
+    <string name="prompt_info_no_credentials">To continue, add a fingerprint or PIN in settings</string>
+    <string name="prompt_info_auth_cancelled">Authentication canceled</string>
 </resources>

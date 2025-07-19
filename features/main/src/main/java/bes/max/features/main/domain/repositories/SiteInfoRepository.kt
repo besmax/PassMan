@@ -17,6 +17,8 @@ interface SiteInfoRepository {
 
     suspend fun delete(model: SiteInfoModelMain)
 
+    suspend fun deleteById(id: Int)
+
     suspend fun isNotEmpty(): Boolean
 
 }

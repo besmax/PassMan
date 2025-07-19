@@ -13,8 +13,8 @@ fun SiteInfoEntity.map(): SiteInfoModel = SiteInfoModel(
     passwordIv = passwordIv,
     description = description,
     categoryColor = category,
+    login = login,
 )
-
 
 fun SiteInfoModel.map(): SiteInfoEntity = SiteInfoEntity(
     id = if (id < 0) null else id,
@@ -24,6 +24,7 @@ fun SiteInfoModel.map(): SiteInfoEntity = SiteInfoEntity(
     passwordIv = passwordIv,
     description = description,
     category = categoryColor,
+    login = login,
 )
 
 fun CategoryEntity.map(): CategoryModel = CategoryModel(

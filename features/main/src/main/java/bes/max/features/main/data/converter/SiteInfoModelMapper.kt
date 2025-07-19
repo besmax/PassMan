@@ -11,6 +11,7 @@ fun SiteInfoModelMain.map(): SiteInfoModel = SiteInfoModel(
     passwordIv = passwordIv,
     description = description,
     categoryColor = categoryColor,
+    login = login,
 )
 
 fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
@@ -21,4 +22,5 @@ fun SiteInfoModel.map(): SiteInfoModelMain = SiteInfoModelMain(
     passwordIv = passwordIv,
     description = description,
     categoryColor = categoryColor,
+    login = login,
 )
