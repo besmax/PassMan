@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "bes.max.passman.features.main"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 29

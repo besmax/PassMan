@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "bes.max.passman.database.api"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 29
