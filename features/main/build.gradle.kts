@@ -1,5 +1,7 @@
-import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.id
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.androidLibrary)
@@ -8,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -29,49 +32,50 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        }
     }
-}
 
-dependencies {
+    dependencies {
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.compose.ui)
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.compose.tooling)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.lifecycle)
+        implementation(libs.compose.livedata)
+        implementation(libs.androidx.material3)
+        implementation(libs.hilt)
+        implementation(libs.androidx.datastore.preferences)
+        implementation(libs.androidx.datastore)
+        implementation(libs.kotlin.immutable.collections)
+        ksp(libs.hilt.compiler)
+        implementation(libs.hilt.nav.compose)
+        implementation(libs.lifecycle.viewmodel)
+        implementation(libs.coil)
+        implementation(libs.biometric.ktx)
+        implementation(libs.accompanist.permissions)
+        implementation(libs.kotlinx.serialization)
+        implementation(libs.protobuf.javalite)
+        implementation(libs.protobuf.kotlin.lite)
+        implementation(libs.androidx.compose.material.icons.extended)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.compose.ui)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.compose.tooling)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.lifecycle)
-    implementation(libs.compose.livedata)
-    implementation(libs.androidx.material3)
-    implementation(libs.hilt)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore)
-    implementation(libs.kotlin.immutable.collections)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.nav.compose)
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.coil)
-    implementation(libs.biometric.ktx)
-    implementation(libs.accompanist.permissions)
-    implementation(libs.kotlinx.serialization)
-    implementation(libs.protobuf.javalite)
-    implementation(libs.protobuf.kotlin.lite)
+        implementation(project(":database:api"))
+        implementation(project(":cipher:api"))
+        implementation(project(":ui"))
 
-    implementation(project(":database:api"))
-    implementation(project(":cipher:api"))
-    implementation(project(":ui"))
+        testImplementation(libs.junit)
 
-    testImplementation(libs.junit)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.espresso.core)
+    }
 }
 
 protobuf {
@@ -91,14 +95,20 @@ protobuf {
 androidComponents {
     onVariants(selector().all()) { variant ->
         afterEvaluate {
-            val protoTask =
-                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+            val protoTaskName = "generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto"
+            val protoTask = project.tasks.getByName(protoTaskName) as com.google.protobuf.gradle.GenerateProtoTask
 
-            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+            variant.sources.kotlin?.addGeneratedSourceDirectory(
+                project.tasks.named<com.google.protobuf.gradle.GenerateProtoTask>(protoTaskName)
+            ) { task ->
+                project.objects.directoryProperty().apply {
+                    set(project.layout.projectDirectory.dir(task.outputBaseDir))
+                }
+            }
+
+            val kspTaskName = "ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin"
+            project.tasks.getByName(kspTaskName) {
                 dependsOn(protoTask)
-                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-                    protoTask.outputBaseDir
-                )
             }
         }
     }
