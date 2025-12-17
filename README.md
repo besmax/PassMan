@@ -3,6 +3,7 @@
 Реализована возможность импорта и экспорта информации в зашифрованном виде в файл .csv. 
 
 RuStore: https://www.rustore.ru/catalog/app/bes.max.passman
+GooglePlay: https://play.google.com/store/apps/details?id=bes.max.passman
 
 ## Используемые технологии и инструменты
 - Многомодульность
