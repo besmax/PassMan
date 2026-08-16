@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "bes.max.passman.cipher.impl"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29

@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "bes.max.passman"
-    compileSdk = 36
+    compileSdk = 37
 
     packaging.resources {
         pickFirsts += "/META-INF/LICENSE.md"
@@ -24,7 +24,7 @@ android {
     defaultConfig {
         applicationId = "bes.max.passman"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
 

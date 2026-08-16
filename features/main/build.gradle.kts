@@ -15,7 +15,7 @@ plugins {
 
 android {
     namespace = "bes.max.passman.features.main"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
@@ -75,41 +75,5 @@ android {
 
         androidTestImplementation(libs.androidx.junit)
         androidTestImplementation(libs.androidx.espresso.core)
-    }
-}
-
-protobuf {
-    protoc {
-        artifact = libs.plugins.protobuf.protoc.get().toString()
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                id("java") { option("lite") }
-                id("kotlin") { option("lite") }
-            }
-        }
-    }
-}
-
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val protoTaskName = "generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto"
-            val protoTask = project.tasks.getByName(protoTaskName) as com.google.protobuf.gradle.GenerateProtoTask
-
-            variant.sources.kotlin?.addGeneratedSourceDirectory(
-                project.tasks.named<com.google.protobuf.gradle.GenerateProtoTask>(protoTaskName)
-            ) { task ->
-                project.objects.directoryProperty().apply {
-                    set(project.layout.projectDirectory.dir(task.outputBaseDir))
-                }
-            }
-
-            val kspTaskName = "ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin"
-            project.tasks.getByName(kspTaskName) {
-                dependsOn(protoTask)
-            }
-        }
     }
 }
