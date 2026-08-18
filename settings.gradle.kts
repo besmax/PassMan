@@ -8,6 +8,7 @@ pluginManagement {
             }
         }
         mavenCentral()
+        google()
         gradlePluginPortal()
     }
 }
@@ -21,13 +22,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "PassMan"
 include(":app")
-include(":database")
 include(":database:api")
 include(":database:impl")
-include(":cipher")
 include(":cipher:api")
 include(":cipher:impl")
-include(":features")
 include(":features:main")
 include(":features:export")
 include(":ui")

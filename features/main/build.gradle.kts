@@ -1,11 +1,5 @@
-import com.google.protobuf.gradle.id
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -19,28 +13,15 @@ android {
 
     defaultConfig {
         minSdk = 29
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
-    }
-
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-        }
     }
 
     dependencies {
@@ -66,6 +47,7 @@ android {
         implementation(libs.protobuf.javalite)
         implementation(libs.protobuf.kotlin.lite)
         implementation(libs.androidx.compose.material.icons.extended)
+        implementation(platform(libs.androidx.compose.bom))
 
         implementation(project(":database:api"))
         implementation(project(":cipher:api"))
