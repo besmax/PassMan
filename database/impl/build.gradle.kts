@@ -1,46 +1,26 @@
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("passman.android.library")
     alias(libs.plugins.hilt)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.ksp)
 }
+
 android {
     namespace = "bes.max.passman.database.impl"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 29
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
+        release { isMinifyEnabled = false }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
+}
 
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-        }
-    }
-
-    dependencies {
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.room.ktx)
-        ksp(libs.androidx.room.compiler)
-        implementation(libs.hilt)
-        ksp(libs.hilt.compiler)
-        implementation(project(":database:api"))
-    }
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.hilt)
+    ksp(libs.hilt.compiler)
+    implementation(project(":database:api"))
 }

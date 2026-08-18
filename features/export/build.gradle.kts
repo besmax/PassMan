@@ -1,10 +1,5 @@
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("passman.android.library.compose")
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
@@ -13,11 +8,8 @@ plugins {
 
 android {
     namespace = "bes.max.export"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 29
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -31,44 +23,30 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        compose = true
-    }
+}
 
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-        }
-    }
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.hilt)
+    debugImplementation(libs.androidx.ui.tooling)
+    ksp(libs.hilt.compiler)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.androidx.compose.material.icons.extended)
 
-    dependencies {
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.appcompat)
-        implementation(libs.material)
-        implementation(platform(libs.androidx.compose.bom))
-        implementation(libs.androidx.ui)
-        implementation(libs.androidx.ui.graphics)
-        implementation(libs.androidx.ui.tooling.preview)
-        implementation(libs.androidx.material3)
-        implementation(libs.hilt)
-        debugImplementation(libs.androidx.ui.tooling)
-        ksp(libs.hilt.compiler)
-        implementation(libs.accompanist.permissions)
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.kotlinx.serialization)
-        implementation(libs.androidx.compose.material.icons.extended)
+    implementation(project(":cipher:api"))
+    implementation(project(":ui"))
+    implementation(project(":database:api"))
 
-        implementation(project(":cipher:api"))
-        implementation(project(":ui"))
-        implementation(project(":database:api"))
-
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit)
-        androidTestImplementation(libs.androidx.espresso.core)
-    }
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
